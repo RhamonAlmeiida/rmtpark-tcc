@@ -14,7 +14,7 @@ import { Blog1Component } from './components/blog1/blog1.component';
 import { Blog2Component } from './components/blog2/blog2.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' }, 
+  { path: '', redirectTo: 'home', pathMatch: 'full' }, 
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'blog', component: BlogComponent },
