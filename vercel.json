@@ -1,7 +1,9 @@
 {
   "version": 2,
   "builds": [
-    { "src": "angular.json", "use": "@vercel/static-build", "config": { "distDir": "dist/rmt-park/browser" } }
+    { "src": "angular.json",
+     "use": "@vercel/static-build",
+      "config": { "distDir": "dist/rmt-park" } }
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/index.html" }

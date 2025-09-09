@@ -2,14 +2,12 @@
   "name": "rmt-park",
   "version": "0.0.0",
   "scripts": {
-    "start": "ng serve",
-    "start:backend": "cd backend && python main.py",
-    "start:dev": "concurrently \"npm run start\" \"npm run start:backend\"",
-    "build": "ng build --configuration production",
-    "vercel-build": "ng build --configuration production",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "install:backend": "cd backend && pip install -r requirements.txt"
+  "start": "ng serve",
+  "build": "ng build --configuration production",
+  "vercel-build": "ng build --configuration production",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test"
+
   },
   "dependencies": {
     "@angular/common": "^19.2.14",
