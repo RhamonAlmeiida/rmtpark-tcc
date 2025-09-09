@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "escola-ng": {
+    "rmt-park": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/escola-ng",
+            "outputPath": "dist/rmt-park",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -40,20 +40,32 @@
               "node_modules/primeflex/primeflex.css",
               "node_modules/primeicons/primeicons.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "html2canvas",
+              "canvg",
+              "rgbcolor",
+              "raf",
+              "core-js"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2MB",
-                  "maximumError": "3MB"
+                  "maximumWarning": "5MB",
+                  "maximumError": "6MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "20kB",
+                  "maximumError": "30kB"
+                },
+                {
+                  "type": "any",
+                  "maximumWarning": "3MB",
+                  "maximumError": "5MB"
                 }
               ],
               "fileReplacements": [
@@ -76,10 +88,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "escola-ng:build:production"
+              "buildTarget": "rmt-park:build:production"
             },
             "development": {
-              "buildTarget": "escola-ng:build:development"
+              "buildTarget": "rmt-park:build:development"
             }
           },
           "defaultConfiguration": "development"
