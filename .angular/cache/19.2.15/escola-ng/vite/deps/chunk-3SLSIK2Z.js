@@ -8,10 +8,10 @@ import {
 } from "./chunk-5G7WYC4N.js";
 import {
   BaseComponent
-} from "./chunk-I3IY6SCC.js";
+} from "./chunk-UF4VIY2Y.js";
 import {
   BaseStyle
-} from "./chunk-XFMSOUSH.js";
+} from "./chunk-DMIA76Y3.js";
 import {
   OverlayService,
   PrimeTemplate,
@@ -21,7 +21,7 @@ import {
   getTargetElement,
   isTouchDevice,
   removeClass
-} from "./chunk-MCCZ4PW4.js";
+} from "./chunk-35XLOOET.js";
 import {
   animate,
   animation,
@@ -36,10 +36,10 @@ import {
   NgIf,
   NgStyle,
   NgTemplateOutlet
-} from "./chunk-ANF7L3EE.js";
+} from "./chunk-C3RLSBDP.js";
 import {
   isPlatformBrowser
-} from "./chunk-WHHPWXTZ.js";
+} from "./chunk-KWBX7L4D.js";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -1056,4 +1056,4 @@ export {
   Overlay,
   OverlayModule
 };
-//# sourceMappingURL=chunk-XXOO3OHJ.js.map
+//# sourceMappingURL=chunk-3SLSIK2Z.js.map
