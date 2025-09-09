@@ -1,0 +1,149 @@
+@import "primeicons/primeicons.css";
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  color: #222;
+  line-height: 1.6;
+}
+
+/* Links */
+a {
+  color: #000;
+  text-decoration: none;
+}
+
+/* Botão voltar */
+.page-bg {
+  margin: 20px 50px;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #7ef0bbf8;
+  color: #0a1610;
+  border: 1px solid #03fca1;
+  border-radius: 10px;
+  font-size: 13px;
+  margin: 15px 20px;
+}
+.badge i {
+  margin-right: 5px;
+  color: #000;
+}
+
+/* Artigo */
+.blog-article {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.blog-article header h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #000;
+}
+
+.blog-meta {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.blog-image {
+  width: 100%;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+/* Conteúdo */
+.conteudo-educativo h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  color: #000;
+}
+.conteudo-educativo h3 {
+  font-size: 1.2rem;
+  margin-top: 1.2rem;
+  color: #222;
+}
+.conteudo-educativo p,
+.conteudo-educativo li {
+  color: #444;
+  margin-top: 0.8rem;
+}
+.conteudo-educativo ul {
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+}
+
+/* Footer (mantido) */
+.home-footer {
+  background-color: #333;
+  color: white;
+  padding: 4rem 2rem 2rem;
+}
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+}
+.footer-logo {
+  flex: 1;
+  min-width: 250px;
+}
+.footer-logo h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.footer-column {
+  min-width: 150px;
+}
+.footer-column h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+.footer-column ul {
+  list-style: none;
+}
+.footer-column li {
+  margin-bottom: 0.8rem;
+}
+.footer-column a {
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+.footer-column a:hover {
+  color: #fff;
+}
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 0.9rem;
+  color: #aaa;
+}

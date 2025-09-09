@@ -1,0 +1,88 @@
+
+.input-dark {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  padding: 0.75rem !important;
+  border-radius: 0.5rem !important;
+}
+
+::ng-deep .p-inputtext::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+::ng-deep .p-dialog.custom-dark-dialog .p-dialog-content {
+  background-color: #1e1e1e;
+  color: white;
+}
+.p-button-success {
+  background-color: #00c853 !important;
+  color: white !important;
+  border: none !important;
+}
+.botao-azul {
+  background-color: #2196f3 !important; // azul
+  color: white !important;
+  border: none !important;
+}
+.botao-azul {
+  background-color: #007bff !important;
+  border: none !important;
+  color: white !important;
+}
+
+
+// ----------------------------------------------
+// Variáveis de breakpoint
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+$xl: 1200px;
+
+// ----------------------------------------------
+// Input e formulário responsivo
+.input-dark {
+  background-color: #2c2c2c;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+
+  &:focus {
+    border-color: #007ad9;
+    outline: none;
+  }
+}
+
+.custom-calendar {
+  .p-inputtext {
+    @extend .input-dark;
+  }
+}
+
+// ----------------------------------------------
+// Modal responsivo
+.custom-dark-dialog {
+  ::ng-deep .p-dialog {
+    width: 100% !important;
+
+    @media (min-width: $md) {
+      width: 640px !important;
+    }
+
+    .p-dialog-content {
+      padding: 1.5rem;
+      background-color: #1e1e1e;
+      color: white;
+    }
+
+    .p-dialog-header {
+      background-color: #1e1e1e;
+      color: white;
+      border-bottom: 1px solid #333;
+    }
+  }
+}
+
+

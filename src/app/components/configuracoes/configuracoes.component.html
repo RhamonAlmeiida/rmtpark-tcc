@@ -1,0 +1,99 @@
+<p-toast></p-toast>
+
+<div class="field col-12 md:col-4">
+    <label for="valor-hora">Valor da hora (R$)</label>
+    <p-inputNumber inputId="valor-hora" [(ngModel)]="empresa.valorHora" mode="decimal" [minFractionDigits]="2"
+        class="w-full">
+    </p-inputNumber>
+</div>
+
+<div class="field col-12 md:col-4">
+    <label for="valor-diaria">Valor da diária (R$)</label>
+    <p-inputNumber inputId="valor-diaria" [(ngModel)]="empresa.valorDiaria" mode="decimal" [minFractionDigits]="2"
+        class="w-full">
+    </p-inputNumber>
+</div>
+
+<div class="field col-12 md:col-4">
+    <label for="valor-mensalista">Valor mensalista (R$)</label>
+    <p-inputNumber inputId="valor-mensalista" [(ngModel)]="empresa.valorMensalista" mode="decimal"
+        [minFractionDigits]="2" class="w-full">
+    </p-inputNumber>
+</div>
+
+
+<div class="field col-12 md:col-6">
+    <label for="arredondamento">Tipo de arredondamento</label>
+    <select id="arredondamento" class="input-dark w-full" [(ngModel)]="empresa.arredondamento">
+        <option value="15">15 minutos</option>
+        <option value="30">30 minutos</option>
+    </select>
+</div>
+
+<div class="field col-12 md:col-6">
+    <label for="forma-pagamento">Forma padrão de pagamento</label>
+    <select id="forma-pagamento" class="input-dark w-full" [(ngModel)]="empresa.formaPagamento">
+        <option value="Pix">Pix</option>
+        <option value="Cartao">Cartão</option>
+        <option value="Dinheiro">Dinheiro</option>
+    </select>
+</div>
+
+<div class="col-12 border-top-1 border-gray-700 pt-4 mt-4">
+    <h4 class="text-lg mb-3">Dados para Nota Fiscal / Comprovante</h4>
+</div>
+
+<div class="field col-12 md:col-6">
+    <label for="nome-empresa">Nome da empresa</label>
+    <input pInputText id="nome-empresa" type="text" class="input-dark w-full" [(ngModel)]="empresa.nome" />
+</div>
+
+<div class="field col-12 md:col-6">
+    <label for="cnpj">CNPJ</label>
+    <input pInputMask mask="99.999.999/9999-99" id="cnpj" type="text" class="input-dark w-full"
+        [(ngModel)]="empresa.cnpj" />
+</div>
+
+<div class="field col-12">
+    <label for="endereco">Endereço completo</label>
+    <input pInputText id="endereco" type="text" class="input-dark w-full" [(ngModel)]="empresa.endereco" />
+</div>
+
+<div class="field col-6 md:col-3">
+    <label for="cidade">Cidade</label>
+    <input pInputText id="cidade" type="text" class="input-dark w-full" [(ngModel)]="empresa.cidade" />
+</div>
+
+<div class="field col-3 md:col-2">
+    <label for="estado">Estado</label>
+    <input pInputText id="estado" type="text" maxlength="2" class="input-dark w-full" [(ngModel)]="empresa.estado" />
+</div>
+
+<div class="field col-3 md:col-2">
+    <label for="cep">CEP</label>
+    <input pInputMask mask="99999-999" id="cep" type="text" class="input-dark w-full" [(ngModel)]="empresa.cep" />
+</div>
+
+<div class="field col-12">
+    <label for="observacoes">Observações do rodapé</label>
+    <textarea id="observacoes" rows="3" class="input-dark w-full" [(ngModel)]="empresa.rodape"></textarea>
+</div>
+
+<div class="col-12 border-top-1 border-gray-700 pt-4 mt-4">
+    <h4 class="text-lg mb-3">QR Code para Pagamento</h4>
+</div>
+
+<div class="field col-12 md:col-6">
+    <label for="chave-pix">Chave Pix</label>
+    <input pInputText id="chave-pix" type="text" class="input-dark w-full" [(ngModel)]="empresa.pix" />
+</div>
+
+<div class="field col-12 md:col-6 flex align-items-center justify-content-center">
+    <img [src]="qrCodeBase64" alt="QR Code" />
+</div>
+
+<div class="col-12 flex justify-content-end gap-2 pt-4">
+    <p-button label="Salvar Configurações" (click)="SalvarConfiguracoes()" icon="pi pi-save"></p-button>
+    <p-button label="Impressão de Comprovante" (click)="testarImpressao()" icon="pi pi-print"
+        class="p-button-secondary"></p-button>
+</div>

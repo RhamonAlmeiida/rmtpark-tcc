@@ -1,0 +1,97 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="flex justify-content-end mb-2 p-2">
+  <button pButton label="Novo Mensalista" icon="pi pi-plus" class="botao-azul"
+    (click)="abrirModalCadastrarMensalista()"></button>
+
+</div>
+
+<p-dialog header="Cadastrar Mensalista" [(visible)]="dialogVisivelCadastrarMensalista" [modal]="true"
+  [style]="{ width: '100%', maxWidth: '640px' }" class="custom-dark-dialog">
+  <div class="grid gap-4 p-4">
+    <div class="col-12 md:col-6">
+      <label class="block text-white font-medium mb-1">Placa</label>
+      <input pInputText [(ngModel)]="mensalistaCadastro.placa" (input)="transformarPlacaParaMaiuscula()"
+        class="input-dark w-full" placeholder="ABC1234" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label class="block text-white font-medium mb-1">Cor</label>
+      <input pInputText [(ngModel)]="mensalistaCadastro.cor" class="input-dark w-full" placeholder="Ex: Prata" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label class="block text-white font-medium mb-1">Nome</label>
+      <input pInputText [(ngModel)]="mensalistaCadastro.nome" class="input-dark w-full" placeholder="Nome completo" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label class="block text-white font-medium mb-1">Veículo</label>
+      <input pInputText [(ngModel)]="mensalistaCadastro.veiculo" class="input-dark w-full"
+        placeholder="Modelo do veículo" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label class="block text-white font-medium mb-1">CPF</label>
+      <input pInputText [(ngModel)]="mensalistaCadastro.cpf" class="input-dark w-full" placeholder="000.000.000-00" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label class="block text-white font-medium mb-1">Validade</label>
+      <p-calendar [(ngModel)]="mensalistaCadastro.validade" dateFormat="dd/mm/yy" showIcon="true"
+        class="w-full custom-calendar" inputStyleClass="input-dark"></p-calendar>
+    </div>
+
+    <div class="col-12 flex justify-end gap-2 pt-2">
+      <p-button label="Cancelar" icon="pi pi-times" (click)="dialogVisivelCadastrarMensalista = false"
+        class="p-button-secondary"></p-button>
+
+      <p-button label="Salvar" icon="pi pi-check" (click)="salvar()" class="p-button-success botao-salvar"></p-button>
+    </div>
+  </div>
+</p-dialog>
+
+<p-table [value]="mensalistas" dataKey="id" [tableStyle]="{ 'min-width': '50rem' }">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Código</th>
+      <th>Nome</th>
+      <th>CPF</th>
+      <th>Placa</th>
+      <th>Veículo</th>
+      <th>Cor</th>
+      <th>Validade</th>
+      <th>Status</th>
+      <th>Ações</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-mensalista>
+    <tr>
+      <td>{{ mensalista.id }}</td>
+      <td>{{ mensalista.nome }}</td>
+      <td>{{ mensalista.cpf }}</td>
+      <td>{{ mensalista.placa }}</td>
+      <td>{{ mensalista.veiculo }}</td>
+      <td>{{ mensalista.cor }}</td>
+      <td>{{ mensalista.validade | date: 'shortDate' }}</td>
+      <td>
+        <p-tag [value]="mensalista.status" [severity]="
+            mensalista.status === 'ativo'
+              ? 'success'
+              : mensalista.status === 'vencendo'
+              ? 'warning'
+              : 'danger'
+          "></p-tag>
+      </td>
+      <td>
+        <p-button icon="pi pi-refresh" class="p-button-text p-button-sm" label="Renovar"
+          (click)="renovarValidade(mensalista)"></p-button>
+        <p-button icon="pi pi-sign-out" label="Cancelar assinatura" severity="danger"
+          (click)="cancelarAssinatura($event, mensalista.id)">
+        </p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

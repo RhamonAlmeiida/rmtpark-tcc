@@ -1,0 +1,95 @@
+.menu-inferior {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1e1e1e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #ccc;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 1.5rem;
+  padding: 0.5rem;
+}
+
+.menu-item i {
+  font-size: 1.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.menu-item:hover {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+/* Item ativo via routerLinkActive */
+.menu-item.ativo {
+  background-color: #007bff;
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(0, 123, 255, 0.2);
+}
+
+/* Ícone flutuante no meio */
+.menu-destaque i {
+  background-color: #2196f3;
+  color: white;
+  padding: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .menu-inferior {
+    gap: 1rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .menu-item {
+    font-size: 0.75rem;
+  }
+
+  .menu-item i {
+    font-size: 1.1rem;
+  }
+}
+::ng-deep .p-megamenu {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 40px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+::ng-deep .p-megamenu {
+  background: rgba(30, 30, 30, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.conteudo-principal {
+  margin-top: 15px; /* ou mais, se quiser mais espaço */
+}
+
+.espacamento-topo {
+  height: 130px; /* ajuste conforme necessário */
+}

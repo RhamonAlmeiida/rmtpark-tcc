@@ -1,0 +1,38 @@
+<!-- TOAST (pode manter se ainda usar PrimeNG para outras coisas) -->
+<p-toast></p-toast>
+
+<!-- MENU SUPERIOR FIXO -->
+<nav class="menu-inferior">
+  <a routerLink="/home" routerLinkActive="ativo" class="menu-item">
+    <i class="pi pi-globe"></i>
+    <span>Home</span>
+  </a>
+  <a routerLink="/vagas" routerLinkActive="ativo" class="menu-item">
+    <i class="pi pi-home"></i>
+    <span>Geral</span>
+  </a>
+  <a routerLink="/mensalistas" routerLinkActive="ativo" class="menu-item">
+    <i class="pi pi-users"></i>
+    <span>Mensalistas</span>
+  </a>
+  <a routerLink="/relatorio" routerLinkActive="ativo" class="menu-item menu-destaque">
+    <i class="pi pi-file"></i>
+    <span>Relatórios</span>
+  </a>
+  <a routerLink="/configuracoes" routerLinkActive="ativo" class="menu-item">
+    <i class="pi pi-cog"></i>
+    <span>Configurações</span>
+  </a>
+  <a routerLink="/logout" class="menu-item" (click)="logout()">
+    <i class="pi pi-sign-out"></i>
+    <span>Sair</span>
+  </a>
+</nav>
+
+<!-- ESPAÇAMENTO PARA A NAVBAR NÃO SOBREPOR -->
+<div class="espacamento-topo"></div>
+
+<!-- CONTEÚDO PRINCIPAL (tabela, etc) -->
+<div class="conteudo-principal">
+  <!-- SUA TABELA AQUI -->
+</div>

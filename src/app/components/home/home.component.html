@@ -1,0 +1,160 @@
+<p-toast></p-toast>
+<router-outlet></router-outlet>
+
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>RMT Park</h1>
+      <h2>A solução completa para gestão do seu estacionamento</h2>
+      <p>Aumente a eficiência, reduza custos e melhore a experiência dos seus clientes com nosso sistema inteligente de gerenciamento de estacionamentos.</p>
+      <div class="hero-buttons">
+        <button pButton label="Comece agora mesmo"  icon="pi pi-arrow-right" class="p-button-raised p-button-rounded"  (click)="direcionarCadastro()"></button>
+        <button pButton label="Entrar" icon="pi pi-sign-in" class="p-button-outlined p-button-rounded" (click)="irParaLogin()"></button>
+      </div>
+    </div>
+    <div class="hero-image">
+       <img src="assets/telaprincipal.png" alt="Mockup do app" class="hero-image" />
+    </div>
+  </section>
+
+  <!-- Seção de Recursos -->
+  <section class="features-section">
+    <h2>Por que escolher o RMT Park?</h2>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let recurso of recursos">
+        <div class="feature-icon">
+          <i [class]="recurso.icone"></i>
+        </div>
+        <h3>{{recurso.titulo}}</h3>
+        <p>{{recurso.descricao}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção de Planos -->
+<section class="plans-section">
+  <h2>Escolha o plano ideal para seu negócio</h2>
+  <div class="plans-container">
+    <div *ngFor="let plano of planos; let i = index" class="plan-card" [class.plan-highlight]="plano.destaque">
+      <div class="plan-header">
+        <h3>{{ plano.titulo }}</h3>
+        <div class="plan-price">{{ plano.preco }}</div>
+      </div>
+
+      <div class="plan-features">
+        <ul>
+          <li *ngFor="let recurso of plano.recursos">
+            <i class="pi pi-check"></i> {{ recurso }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="plan-footer">
+        <button
+          pButton
+          label="Contratar"
+          class="p-button-raised"
+          [class.p-button-primary]="!plano.destaque"
+          [class.p-button-success]="plano.destaque"
+          [loading]="loadingIndex === i"
+          (click)="contratarPlano(i)">
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- Seção de Depoimentos -->
+  <section class="testimonials-section">
+    <h2>O que nossos clientes dizem</h2>
+    <p-carousel [value]="depoimentos" [numVisible]="1" [numScroll]="1" [circular]="true" [autoplayInterval]="5000">
+      <ng-template let-depoimento pTemplate="item">
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <div class="testimonial-quote">
+              <i class="pi pi-quote-left"></i>
+              <p>{{depoimento.texto}}</p>
+              <i class="pi pi-quote-right"></i>
+            </div>
+            <div class="testimonial-author">
+              <h4>{{depoimento.nome}}</h4>
+              <p>{{depoimento.cargo}}, {{depoimento.empresa}}</p>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </p-carousel>
+  </section>
+
+  <!-- Seção Blog-->
+
+  <section class="blog-section">
+  <div class="blog-header">
+    <span class="blog-tag"><i class="pi pi-book"></i> Blog</span>
+  </div>
+  <h2 class="blog-title">Fique por dentro!</h2>
+
+  <div class="blog-cards">
+    <div class="blog-card" *ngFor="let post of posts" (click)="irParaPost(post.link)">
+      <img [src]="post.imagem" alt="Imagem do post" class="blog-img" />
+      <div class="blog-overlay">
+        <p class="blog-categoria">Sem categoria</p>
+        <p class="blog-info">{{ post.tempoLeitura }} • {{ post.data }}</p>
+      </div>
+      <h3 class="blog-post-titulo">{{ post.titulo }}</h3>
+      <p class="blog-post-resumo">{{ post.resumo }}</p>
+    </div>
+  </div>
+</section>
+
+  <!-- Seção CTA -->
+   <section class="cta">
+  <div class="hero-container">
+    <img src="assets/telafinal.jpg" alt="Mockup do app" class="hero-image2" />
+ </div>
+ <div class="cta-hero">
+  <p class="badge-gestao"> <i class="pi pi-chart-line"></i> Gestão Inteligente</p>
+    <h3>Transforme sua operação agora</h3>
+    <p>Mais controle, mais receita e menos custos. Digitalize seu estacionamento e <br><strong>simplifique a gestão.</strong></p>
+    <p-button label="Comece agora sem compromisso"  icon="pi pi-arrow-right"  iconPos="right" styleClass="btn-cta" (click)="direcionarCadastro()"></p-button>
+
+ </div>
+</section>
+
+  <!-- Footer -->
+  <footer class="home-footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <h3>RMT Park</h3>
+        <p>A melhor solução para seu estacionamento</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Produto</h4>
+          <ul>
+            <li><a href="#">Recursos</a></li>
+            <li><a href="#">Planos</a></li>
+            <li><a href="#">Demonstração</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#">Sobre nós</a></li>
+            <li><a href="#">Contato</a></li>
+            <li><a href="#">Carreiras</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="#">Central de ajuda</a></li>
+            <li><a href="#">Documentação</a></li>
+            <li><a href="#">Status</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 RMT Park. Todos os direitos reservados.</p>
+    </div>
+  </footer>

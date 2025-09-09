@@ -1,0 +1,111 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="card">
+  <div class="flex justify-content-end mb-2">
+    <button pButton label="Nova entrada" icon="pi pi-plus" (click)="abrirModalCadastrar()"
+      class="p-button-info"></button>
+  </div>
+
+  <p-table [value]="vagas" dataKey="id" [loading]="carregandoVagas" [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Código</th>
+        <th>Placa</th>
+        <th>Tipo</th>
+        <th>Data/Hora entrada</th>
+        <th>Ações</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-vaga>
+      <tr>
+        <td>{{ vaga.id }}</td>
+        <td>{{ vaga.placa }}</td>
+        <td>
+          <p-tag [severity]="vaga.tipo === 'Mensalista' ? 'error' : 'secondary'" [value]="vaga.tipo"></p-tag>
+        </td>
+        <td>{{ vaga.dataHora | date: 'short' }}</td>
+        <td>
+          <button pButton icon="pi pi-sign-out" label="Registrar Saída" severity="danger"
+            (click)="confirmaSaida($event, vaga.id)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  header="Nova Entrada"
+  [(visible)]="dialogVisivelCadastrar"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  styleClass="custom-dark-dialog"
+  [style]="{ width: '30vw' }"
+>
+
+
+ <div class="form-container">
+
+<div>
+  <label for="placa">Placa:</label>
+  <input
+    id="placa"
+    pInputText
+    class="unput-dark"
+    [(ngModel)]="vagaCadastro.placa"
+    maxlength="7"
+    (input)="transformarPlacaParaMaiuscula(); verificarTipoPorPlaca(vagaCadastro.placa)"
+    placeholder="ABC1D23"
+  />
+</div>
+
+    <div>
+      <label for="campo-tipo">Tipo : </label>
+      <input pInputText id="campo-tipo" class="input-dark" [(ngModel)]="vagaCadastro.tipo" readonly />
+    </div>
+
+    <div>
+      <label for="campo-data">Data/Hora </label>
+      <input pInputText id="campo-data" class="input-dark" [value]="vagaCadastro.dataHora | date: 'short'" readonly />
+    </div>
+
+    <div class="footer-buttons">
+      <button pButton label="Cancelar" class="p-button-outlined p-button-secondary"
+        (click)="dialogVisivelCadastrar = false"></button>
+      <button pButton label="Salvar" class="p-button-success" (click)="salvar()"></button>
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog
+  header="Resumo da Saída"
+  [(visible)]="dialogResumoSaidaVisivel"
+  [modal]="true"
+  [closable]="true"
+  styleClass="custom-dark-dialog"
+  [style]="{ width: '30vw' }"
+>
+  <div class="form-container">
+    <p><strong>Placa:</strong> {{ vagaSelecionada?.placa }}</p>
+    <p><strong>Tipo:</strong> {{ vagaSelecionada?.tipo }}</p>
+    <p><strong>Entrada:</strong> {{ vagaSelecionada?.dataHora | date:'short' }}</p>
+    <p><strong>Saída:</strong> {{ dataHoraSaida | date:'short' }}</p>
+    <p><strong>Duração:</strong> {{ duracao }}</p>
+    <p><strong>Valor a Pagar:</strong> R$ {{ valorTotal | number:'1.2-2' }}</p>
+
+    <label for="forma-pagamento">Forma de Pagamento:</label>
+    <select id="forma-pagamento" class="input-dark" [(ngModel)]="formaPagamento">
+      <option value="dinheiro">Dinheiro</option>
+      <option value="pix">PIX</option>
+      <option value="cartao">Cartão</option>
+    </select>
+  </div>
+
+  <div class="footer-buttons">
+    <button pButton label="Cancelar" class="p-button-outlined p-button-secondary"
+      (click)="dialogResumoSaidaVisivel = false"></button>
+    <button pButton label="Concluir" class="p-button-success" (click)="finalizarSaida()"></button>
+  </div>
+</p-dialog>
