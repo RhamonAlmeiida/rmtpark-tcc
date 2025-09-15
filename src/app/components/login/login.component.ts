@@ -38,14 +38,22 @@ export class LoginComponent {
     private messageService: MessageService,
   ) {}
 
-  login() {
-    if (this.loginService.login(this.email, this.senha)) {
+login() {
+  this.loginService.login(this.email, this.senha).subscribe({
+    next: (res) => {
+      // Salva o token JWT
+      this.loginService.salvarToken(res.access_token);
+
       this.apresentarMensagemLogado();
+
       setTimeout(() => this.router.navigate(['/vagas']), 2000);
-    } else {
+    },
+    error: () => {
       this.apresentarMensagemFalhaLogin();
     }
-  }
+  });
+}
+
 
   private apresentarMensagemFalhaLogin() {
     this.messageService.add({

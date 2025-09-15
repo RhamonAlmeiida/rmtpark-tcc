@@ -28,6 +28,9 @@ import { LoginService } from '../../services/login.service';
   styleUrl: './site-cadastro.component.scss'
 })
 export class SiteCadastroComponent  {
+
+  senha: string = '';
+  
   constructor(
     private loginService: LoginService,    
     private router: Router,

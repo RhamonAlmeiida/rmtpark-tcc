@@ -1,29 +1,38 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  private readonly usuarioFake = {
-    email: 'admin@estacionamento.com',
-    senha: '123456'
-  };
+  private apiUrl = 'http://127.0.0.1:8000';
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
-  login(email: string, senha: string): boolean {
-    if (email === this.usuarioFake.email && senha === this.usuarioFake.senha) {
-      localStorage.setItem('usuarioLogado', JSON.stringify({ email }));
-      return true;
-    }
-    return false;
+  login(email: string, senha: string): Observable<any> {
+    const body = new URLSearchParams();
+    body.set('username', email);
+    body.set('password', senha);
+
+    return this.http.post(`${this.apiUrl}/auth/login`, body.toString(), {
+      headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
+    });
+  }
+
+  salvarToken(token: string): void {
+    localStorage.setItem('token', token);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   logout(): void {
-    localStorage.removeItem('usuarioLogado');
+    localStorage.removeItem('token');
   }
 
   estaLogado(): boolean {
-    return !!localStorage.getItem('usuarioLogado');
+    return !!this.getToken();
   }
 }

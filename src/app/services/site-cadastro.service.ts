@@ -7,25 +7,27 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SiteCadastroService {
-  private urlAPI: string;
-constructor(private http: HttpClient) {
-  this.urlAPI = "http://localhost:4200/"
- }
+  private urlAPI = 'http://127.0.0.1:8000/empresas'; // ✅ corrigido
 
+  constructor(private http: HttpClient) {}
 
- cadastrar(SiteCadastro: SiteCadastro): Observable<SiteCadastro>{
-  return this.http.post<SiteCadastro>(this.urlAPI, SiteCadastro);
- }
- obterTodos() : Observable<SiteCadastro[]>{
-  return this.http.get<SiteCadastro[]>(this.urlAPI)
- }
- obterPorId(id: number) : Observable<SiteCadastro>{
-  return this.http.get<SiteCadastro>(`${this.urlAPI}/${id}`);
- }
- atualizar(id: number, dados: SiteCadastro): Observable<SiteCadastro> {
-  return this.http.put<SiteCadastro>(`${this.urlAPI}/${id}`, dados);
- }
- apagar(id: number): Observable<any>{
-  return this.http.delete<any>(`${this.urlAPI}/${id}`);
- }
+  cadastrar(dados: SiteCadastro): Observable<SiteCadastro> {
+    return this.http.post<SiteCadastro>(this.urlAPI, dados);
+  }
+
+  obterTodos(): Observable<SiteCadastro[]> {
+    return this.http.get<SiteCadastro[]>(this.urlAPI);
+  }
+
+  obterPorId(id: number): Observable<SiteCadastro> {
+    return this.http.get<SiteCadastro>(`${this.urlAPI}/${id}`);
+  }
+
+  atualizar(id: number, dados: SiteCadastro): Observable<SiteCadastro> {
+    return this.http.put<SiteCadastro>(`${this.urlAPI}/${id}`, dados);
+  }
+
+  apagar(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.urlAPI}/${id}`);
+  }
 }
