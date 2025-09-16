@@ -12,7 +12,8 @@ import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-site-cadastro',
-     imports: [
+  standalone: true, // 👈 importante se não usar módulo tradicional
+  imports: [
     FormsModule,
     ToastModule,
     MessageModule,
@@ -21,24 +22,63 @@ import { LoginService } from '../../services/login.service';
     ButtonModule,
     CardModule,
     CommonModule,
-    
   ],
-   providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './site-cadastro.component.html',
-  styleUrl: './site-cadastro.component.scss'
+  styleUrls: ['./site-cadastro.component.scss'] // 👈 corrigido
 })
-export class SiteCadastroComponent  {
+export class SiteCadastroComponent {
 
-  senha: string = '';
-  
+  // Modelo para armazenar os dados do formulário
+  cadastro = {
+    nome: '',
+    empresa: '',
+    email: '',
+    telefone: '',
+    cnpj: '',
+    senha: '',
+    aceite: false
+  };
+
   constructor(
-    private loginService: LoginService,    
+    private loginService: LoginService,
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-  ){}
+  ) {}
 
-  voltarPagina(){
-    this.router.navigate(['/home'])
+  voltarPagina() {
+    this.router.navigate(['/home']);
+  }
+
+  finalizarCadastro() {
+    // Validação simples
+    if (!this.cadastro.nome || !this.cadastro.email || !this.cadastro.senha) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Atenção',
+        detail: 'Preencha todos os campos obrigatórios!'
+      });
+      return;
+    }
+
+    // Chamada ao serviço de API
+    this.loginService.cadastrar(this.cadastro).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Cadastro realizado',
+          detail: 'Entraremos em contato em breve!'
+        });
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Não foi possível concluir o cadastro.'
+        });
+      }
+    });
   }
 }

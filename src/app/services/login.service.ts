@@ -6,10 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'http://127.0.0.1:8000';
+  private apiUrl = 'http://127.0.0.1:8000'; // 👉 coloque no environment.ts depois
 
   constructor(private http: HttpClient) {}
 
+  // 🔑 Login
   login(email: string, senha: string): Observable<any> {
     const body = new URLSearchParams();
     body.set('username', email);
@@ -20,18 +21,29 @@ export class LoginService {
     });
   }
 
+  // 🆕 Cadastro
+  cadastrar(dados: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/cadastrar`, dados, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  // Salvar token no localStorage
   salvarToken(token: string): void {
     localStorage.setItem('token', token);
   }
 
+  // Obter token
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
+  // Logout
   logout(): void {
     localStorage.removeItem('token');
   }
 
+  // Verifica se está logado
   estaLogado(): boolean {
     return !!this.getToken();
   }

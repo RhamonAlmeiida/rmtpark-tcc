@@ -1,10 +1,14 @@
 <p-toast></p-toast>
 
 <div class="cadastro-container">
+  <div class="page-bg">
+    <p-button
+      label="Página Principal"
+      (click)="voltarPagina()"
+      icon="pi pi-arrow-left">
+    </p-button>
+  </div>
 
-    <div class="page-bg">
-      <p-button class="" label="Página Principal" (click)="voltarPagina()" icon="pi pi-arrow-left"></p-button>
-    </div>
   <!-- Coluna Esquerda -->
   <div class="cadastro-info">
     <span class="tag">💬 Fale conosco</span>
@@ -26,39 +30,46 @@
       Preencha os dados abaixo para realizar o seu cadastro e entraremos em contato:
     </p>
 
-    <form>
+    <!-- 👇 Formulário Angular -->
+    <form #cadastroForm="ngForm">
       <div class="input-group">
-        <input type="text" placeholder="Nome" required />
+        <input type="text" placeholder="Nome" required name="nome" [(ngModel)]="cadastro.nome" autocomplete="name" />
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder="Empresa" required />
+        <input type="text" placeholder="Empresa" required name="empresa" [(ngModel)]="cadastro.empresa" autocomplete="organization" />
       </div>
 
       <div class="input-group">
-        <input type="email" placeholder="Email" required />
+        <input type="email" placeholder="Email" required name="email" [(ngModel)]="cadastro.email" autocomplete="email" />
       </div>
 
       <div class="input-group">
-        <input type="tel" placeholder="Telefone" required />
+        <input type="tel" placeholder="Telefone" required name="telefone" [(ngModel)]="cadastro.telefone" autocomplete="tel" />
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder="CNPJ" required />
+        <input type="text" placeholder="CNPJ" required name="cnpj" [(ngModel)]="cadastro.cnpj" autocomplete="off" />
       </div>
 
       <div class="input-group">
-        <input type="password" placeholder="Senha" name="senha" required [(ngModel)]="senha"/>
+        <input
+          type="password"
+          placeholder="Senha"
+          name="senha"
+          required
+          [(ngModel)]="cadastro.senha"
+          autocomplete="new-password" />
       </div>
 
       <div class="checkbox">
-        <input type="checkbox" id="privacy" required />
+        <input type="checkbox" id="privacy" [(ngModel)]="cadastro.aceite" name="aceite" required />
         <label for="privacy">
           Estou de acordo com a <a href="#">Política de Privacidade</a>
         </label>
       </div>
 
-      <button type="submit" class="btn-submit">
+      <button type="button" class="btn-submit" (click)="finalizarCadastro()">
         Finalizar <i class="pi pi-arrow-right"></i>
       </button>
     </form>
@@ -68,41 +79,42 @@
     </small>
   </div>
 </div>
-  <!-- Footer -->
-  <footer class="home-footer">
-    <div class="footer-content">
-      <div class="footer-logo">
-        <h3>RMT Park</h3>
-        <p>A melhor solução para seu estacionamento</p>
+
+<!-- Footer -->
+<footer class="home-footer">
+  <div class="footer-content">
+    <div class="footer-logo">
+      <h3>RMT Park</h3>
+      <p>A melhor solução para seu estacionamento</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-column">
+        <h4>Produto</h4>
+        <ul>
+          <li><a href="#">Recursos</a></li>
+          <li><a href="#">Planos</a></li>
+          <li><a href="#">Demonstração</a></li>
+        </ul>
       </div>
-      <div class="footer-links">
-        <div class="footer-column">
-          <h4>Produto</h4>
-          <ul>
-            <li><a href="#">Recursos</a></li>
-            <li><a href="#">Planos</a></li>
-            <li><a href="#">Demonstração</a></li>
-          </ul>
-        </div>
-        <div class="footer-column">
-          <h4>Empresa</h4>
-          <ul>
-            <li><a href="#">Sobre nós</a></li>
-            <li><a href="#">Contato</a></li>
-            <li><a href="#">Carreiras</a></li>
-          </ul>
-        </div>
-        <div class="footer-column">
-          <h4>Suporte</h4>
-          <ul>
-            <li><a href="#">Central de ajuda</a></li>
-            <li><a href="#">Documentação</a></li>
-            <li><a href="#">Status</a></li>
-          </ul>
-        </div>
+      <div class="footer-column">
+        <h4>Empresa</h4>
+        <ul>
+          <li><a href="#">Sobre nós</a></li>
+          <li><a href="#">Contato</a></li>
+          <li><a href="#">Carreiras</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4>Suporte</h4>
+        <ul>
+          <li><a href="#">Central de ajuda</a></li>
+          <li><a href="#">Documentação</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2025 RMT Park. Todos os direitos reservados.</p>
-    </div>
-  </footer>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 RMT Park. Todos os direitos reservados.</p>
+  </div>
+</footer>
