@@ -9,6 +9,7 @@ import { DialogModule } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { LoginService } from '../../services/login.service';
+import { InputMaskModule } from 'primeng/inputmask';
 
 @Component({
   selector: 'app-site-cadastro',
@@ -21,6 +22,7 @@ import { LoginService } from '../../services/login.service';
     DialogModule,
     ButtonModule,
     CardModule,
+    InputMaskModule,
     CommonModule,
   ],
   providers: [ConfirmationService, MessageService],
@@ -32,7 +34,6 @@ export class SiteCadastroComponent {
   // Modelo para armazenar os dados do formulário
   cadastro = {
     nome: '',
-    empresa: '',
     email: '',
     telefone: '',
     cnpj: '',
@@ -61,7 +62,7 @@ export class SiteCadastroComponent {
       });
       return;
     }
-
+    debugger
     // Chamada ao serviço de API
     this.loginService.cadastrar(this.cadastro).subscribe({
       next: () => {

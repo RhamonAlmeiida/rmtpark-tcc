@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'http://127.0.0.1:8000'; // 👉 coloque no environment.ts depois
+  private apiUrl = 'http://127.0.0.1:8000'; 
 
   constructor(private http: HttpClient) {}
 
@@ -23,9 +23,7 @@ export class LoginService {
 
   // 🆕 Cadastro
   cadastrar(dados: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/cadastrar`, dados, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-    });
+    return this.http.post(`${this.apiUrl}/auth/cadastrar`, dados);
   }
 
   // Salvar token no localStorage

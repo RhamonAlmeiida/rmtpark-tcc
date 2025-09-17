@@ -1,13 +1,16 @@
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 
+
+
+
 <div class="card">
   <div class="flex justify-content-end mb-2">
     <button pButton label="Nova entrada" icon="pi pi-plus" (click)="abrirModalCadastrar()"
       class="p-button-info"></button>
   </div>
 
-  <p-table [value]="vagas" dataKey="id" [loading]="carregandoVagas" [tableStyle]="{ 'min-width': '50rem' }">
+  <p-table [value]="vagas" dataKey="id"  [tableStyle]="{ 'min-width': '50rem' }">
     <ng-template pTemplate="header">
       <tr>
         <th>Código</th>

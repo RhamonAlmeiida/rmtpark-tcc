@@ -2,10 +2,7 @@
 
 <div class="cadastro-container">
   <div class="page-bg">
-    <p-button
-      label="Página Principal"
-      (click)="voltarPagina()"
-      icon="pi pi-arrow-left">
+    <p-button label="Página Principal" (click)="voltarPagina()" icon="pi pi-arrow-left">
     </p-button>
   </div>
 
@@ -31,34 +28,26 @@
     </p>
 
     <!-- 👇 Formulário Angular -->
-    <form #cadastroForm="ngForm">
+    <div class="form">
       <div class="input-group">
         <input type="text" placeholder="Nome" required name="nome" [(ngModel)]="cadastro.nome" autocomplete="name" />
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder="Empresa" required name="empresa" [(ngModel)]="cadastro.empresa" autocomplete="organization" />
+        <input type="email" placeholder="Email" required name="email" [(ngModel)]="cadastro.email"
+          autocomplete="email" />
       </div>
 
       <div class="input-group">
-        <input type="email" placeholder="Email" required name="email" [(ngModel)]="cadastro.email" autocomplete="email" />
+        <p-inputmask mask="(99) 99999-9999" required [(ngModel)]="cadastro.telefone" placeholder="(99) 99999-9999" />
       </div>
 
       <div class="input-group">
-        <input type="tel" placeholder="Telefone" required name="telefone" [(ngModel)]="cadastro.telefone" autocomplete="tel" />
+        <p-inputmask mask="99.999.999/9999-99" required [(ngModel)]="cadastro.cnpj" placeholder="99.999.999/9999-99" />
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder="CNPJ" required name="cnpj" [(ngModel)]="cadastro.cnpj" autocomplete="off" />
-      </div>
-
-      <div class="input-group">
-        <input
-          type="password"
-          placeholder="Senha"
-          name="senha"
-          required
-          [(ngModel)]="cadastro.senha"
+        <input type="password" placeholder="Senha" name="senha" required [(ngModel)]="cadastro.senha"
           autocomplete="new-password" />
       </div>
 
@@ -72,7 +61,7 @@
       <button type="button" class="btn-submit" (click)="finalizarCadastro()">
         Finalizar <i class="pi pi-arrow-right"></i>
       </button>
-    </form>
+    </div>
 
     <small>
       Prometemos não utilizar suas informações de contato para enviar qualquer tipo de SPAM

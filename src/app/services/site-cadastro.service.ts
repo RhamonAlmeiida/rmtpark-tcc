@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SiteCadastroService {
-  private urlAPI = 'http://127.0.0.1:8000/empresas'; // ✅ corrigido
+  private urlAPI = 'http://127.0.0.1:8000/empresas';
 
   constructor(private http: HttpClient) {}
 

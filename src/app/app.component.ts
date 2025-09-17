@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
   }
 
   atualizarStatusUsuario() {
-    const estaLogado = !!localStorage.getItem('usuarioLogado');
+    const estaLogado = !!localStorage.getItem('token');
     const rotaAtual = this.router.url;
     // Não mostrar a navbar na página de login ou na página inicial
     this.usuarioLogado = estaLogado && rotaAtual !== '/login' && rotaAtual !== '/home' && rotaAtual !== '/' && rotaAtual !== '/site-cadastro' && rotaAtual !== '/blog' && rotaAtual !== '/blog1' && rotaAtual !== '/blog2';
