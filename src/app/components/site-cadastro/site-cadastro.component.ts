@@ -62,7 +62,6 @@ export class SiteCadastroComponent {
       });
       return;
     }
-    debugger
     // Chamada ao serviço de API
     this.loginService.cadastrar(this.cadastro).subscribe({
       next: () => {

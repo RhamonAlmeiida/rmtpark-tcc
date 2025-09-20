@@ -1,4 +1,4 @@
-// app/app.routes.ts
+
 import { Routes } from '@angular/router';
 import { VagaListaComponent } from './components/vagas/vaga-lista/vaga-lista.component';
 import { MensalistasComponent } from './components/mensalistas/mensalistas.component';
@@ -11,6 +11,7 @@ import { SiteCadastroComponent } from './components/site-cadastro/site-cadastro.
 import { BlogComponent } from './components/blog/blog.component';
 import { Blog1Component } from './components/blog1/blog1.component';
 import { Blog2Component } from './components/blog2/blog2.component';
+import { ConfirmarEmailComponent } from './components/confirmar-email/confirmar-email.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' }, 
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'blog1', component: Blog1Component},
   { path: 'blog2', component: Blog2Component},
   { path: 'site-cadastro', component: SiteCadastroComponent },
+  { path: 'confirmar-email', component: ConfirmarEmailComponent },
   { path: 'vagas', component: VagaListaComponent, canActivate: [authGuard] },
   { path: 'mensalistas', component: MensalistasComponent, canActivate: [authGuard] },
   { path: 'relatorio', component: RelatorioComponent, canActivate: [authGuard] },
