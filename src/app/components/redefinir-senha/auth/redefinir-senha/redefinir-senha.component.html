@@ -1,0 +1,33 @@
+<div class="reset-container">
+  <h2>Redefinir Senha</h2>
+
+  <div class="field">
+    <label for="novaSenha">Nova Senha</label>
+    <input
+      id="novaSenha"
+      type="password"
+      [(ngModel)]="novaSenha"
+      class="p-inputtext p-component"
+      style="width: 100%; padding: 0.5rem"
+    />
+  </div>
+
+  <div class="field">
+    <label for="confirmarSenha">Confirmar Senha</label>
+    <input
+      id="confirmarSenha"
+      type="password"
+      [(ngModel)]="confirmarSenha"
+      class="p-inputtext p-component"
+      style="width: 100%; padding: 0.5rem"
+    />
+  </div>
+
+  <button
+    pButton
+    label="Redefinir Senha"
+    icon="pi pi-check"
+    (click)="redefinirSenha()"
+    [disabled]="carregando"
+  ></button>
+</div>

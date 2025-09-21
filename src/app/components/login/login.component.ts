@@ -78,17 +78,27 @@ login() {
       return;
     }
 
-    this.carregandoRecuperacao = true;
-    setTimeout(() => {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Enviado',
-        detail: `Link de recuperação enviado para ${this.emailRecuperacao}`,
-      });
-      this.dialogModalEsqueceuSenha = false;
-      this.emailRecuperacao = '';
-      this.carregandoRecuperacao = false;
-    }, 1500);
+this.carregandoRecuperacao = true;
+this.loginService.recuperarSenha(this.emailRecuperacao).subscribe({
+  next: () => {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Enviado',
+      detail: `Link de recuperação enviado para ${this.emailRecuperacao}`,
+    });
+    this.dialogModalEsqueceuSenha = false;
+    this.emailRecuperacao = '';
+  },
+  error: (err) => {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: err.error?.detail || 'Falha ao enviar link de recuperação',
+    });
+  },
+  complete: () => this.carregandoRecuperacao = false
+});
+
   }
 
   private apresentarMensagemLogado() {

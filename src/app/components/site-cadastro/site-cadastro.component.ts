@@ -51,34 +51,34 @@ export class SiteCadastroComponent {
   voltarPagina() {
     this.router.navigate(['/home']);
   }
+finalizarCadastro() {
+  // Validação simples
+  if (!this.cadastro.nome || !this.cadastro.email || !this.cadastro.senha) {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Atenção',
+      detail: 'Preencha todos os campos obrigatórios!'
+    });
+    return;
+  }
 
-  finalizarCadastro() {
-    // Validação simples
-    if (!this.cadastro.nome || !this.cadastro.email || !this.cadastro.senha) {
+  this.loginService.cadastrar(this.cadastro).subscribe({
+    next: () => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Cadastro realizado',
+        detail: 'Entraremos em contato em breve!'
+      });
+      this.router.navigate(['/login']);
+    },
+    error: (err) => {
+      const detalhe = err.error?.detail || 'CNPJ já cadastrado !';
       this.messageService.add({
         severity: 'error',
-        summary: 'Atenção',
-        detail: 'Preencha todos os campos obrigatórios!'
+        summary: 'Erro',
+        detail: detalhe
       });
-      return;
     }
-    // Chamada ao serviço de API
-    this.loginService.cadastrar(this.cadastro).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Cadastro realizado',
-          detail: 'Entraremos em contato em breve!'
-        });
-        this.router.navigate(['/login']);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível concluir o cadastro.'
-        });
-      }
-    });
-  }
+  });
+}
 }

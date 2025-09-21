@@ -45,4 +45,15 @@ export class LoginService {
   estaLogado(): boolean {
     return !!this.getToken();
   }
+
+  // Solicitar recuperação
+recuperarSenha(email: string): Observable<any> {
+  return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
+}
+
+// Resetar senha
+resetarSenha(token: string, novaSenha: string): Observable<any> {
+  return this.http.post(`${this.apiUrl}/auth/resetar-senha`, { token, nova_senha: novaSenha });
+}
+
 }

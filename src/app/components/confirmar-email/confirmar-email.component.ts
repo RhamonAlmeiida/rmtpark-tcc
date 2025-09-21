@@ -1,34 +1,41 @@
-
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-confirmar-email',
-  template: `
-    <div class="confirmacao-email">
-      <h2>{{ mensagem }}</h2>
-    </div>
-  `,
-  styles: [`
-    .confirmacao-email { text-align: center; margin-top: 50px; font-family: sans-serif; }
-  `]
+  templateUrl: './confirmar-email.component.html',
+  styleUrls: ['./confirmar-email.component.scss']
 })
 export class ConfirmarEmailComponent implements OnInit {
   mensagem: string = "Confirmando seu e-mail...";
+  imagem: string = "assets/loading.gif"; // imagem de carregamento padrão
+  mostrarBotaoLogin: boolean = false;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     const token = this.route.snapshot.queryParamMap.get('token');
     if (token) {
       this.http.get(`http://localhost:8000/auth/confirmar-email?token=${token}`)
         .subscribe({
-          next: () => this.mensagem = 'E-mail confirmado com sucesso! ✅',
-          error: () => this.mensagem = 'Token inválido ou expirado ❌'
+          next: () => {
+            this.mensagem = 'E-mail confirmado com sucesso! ✅';
+            this.imagem = 'assets/email_confirmado.png'; // imagem de sucesso
+            this.mostrarBotaoLogin = true;
+          },
+          error: () => {
+            this.mensagem = 'Token inválido ou expirado ❌';
+            this.imagem = 'assets/erro.png'; // imagem de erro
+          }
         });
     } else {
       this.mensagem = 'Token não encontrado na URL ❌';
+      this.imagem = 'assets/erro.png';
     }
+  }
+
+  irParaLogin() {
+    this.router.navigate(['/login']);
   }
 }

@@ -17,7 +17,6 @@ import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'app-mensalistas',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
