@@ -6,8 +6,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-
-import { LoginService } from '../../services/login.service';  
+import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-login',
@@ -20,11 +19,11 @@ import { LoginService } from '../../services/login.service';
     DialogModule,
     ButtonModule
   ],
-  providers: [ConfirmationService, MessageService ],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {  
+export class LoginComponent {
   email = '';
   senha = '';
   dialogModalEsqueceuSenha = false;
@@ -32,37 +31,39 @@ export class LoginComponent {
   carregandoRecuperacao = false;
 
   constructor(
-    private loginService: LoginService,   
+    private loginService: LoginService,
     private router: Router,
-    private confirmationService: ConfirmationService,
     private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
-login() {
-  this.loginService.login(this.email, this.senha).subscribe({
-    next: (res) => {
-      // Salva o token JWT
-      this.loginService.salvarToken(res.access_token);
+  // ---------------- LOGIN ----------------
+  login() {
+    this.loginService.login(this.email, this.senha).subscribe({
+      next: res => {
+        // Salva o token JWT no localStorage
+        localStorage.setItem('access_token', res.access_token);
 
-      this.apresentarMensagemLogado();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Login efetuado',
+          detail: 'Bem-vindo ao sistema!'
+        });
 
-      setTimeout(() => this.router.navigate(['/vagas']), 2000);
-    },
-    error: () => {
-      this.apresentarMensagemFalhaLogin();
-    }
-  });
-}
-
-
-  private apresentarMensagemFalhaLogin() {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: 'Login ou senha incorretos',
+        // Redireciona para a lista de vagas
+        this.router.navigate(['/vagas']);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Login ou senha incorretos'
+        });
+      }
     });
   }
 
+  // ---------------- ESQUECI SENHA ----------------
   esqueciSenha() {
     this.emailRecuperacao = '';
     this.dialogModalEsqueceuSenha = true;
@@ -73,39 +74,31 @@ login() {
       this.messageService.add({
         severity: 'warn',
         summary: 'Aviso',
-        detail: 'Informe um email válido',
+        detail: 'Informe um email válido'
       });
       return;
     }
 
-this.carregandoRecuperacao = true;
-this.loginService.recuperarSenha(this.emailRecuperacao).subscribe({
-  next: () => {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Enviado',
-      detail: `Link de recuperação enviado para ${this.emailRecuperacao}`,
-    });
-    this.dialogModalEsqueceuSenha = false;
-    this.emailRecuperacao = '';
-  },
-  error: (err) => {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: err.error?.detail || 'Falha ao enviar link de recuperação',
-    });
-  },
-  complete: () => this.carregandoRecuperacao = false
-});
+    this.carregandoRecuperacao = true;
 
-  }
-
-  private apresentarMensagemLogado() {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Login efetuado',
-      detail: 'Bem-vindo ao sistema!',
+    this.loginService.recuperarSenha(this.emailRecuperacao).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Enviado',
+          detail: `Link de recuperação enviado para ${this.emailRecuperacao}`
+        });
+        this.dialogModalEsqueceuSenha = false;
+        this.emailRecuperacao = '';
+      },
+      error: (err: any) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: err.error?.detail || 'Falha ao enviar link de recuperação'
+        });
+      },
+      complete: () => this.carregandoRecuperacao = false
     });
   }
 }

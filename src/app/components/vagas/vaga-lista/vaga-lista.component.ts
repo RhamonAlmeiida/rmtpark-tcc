@@ -8,11 +8,11 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TagModule } from 'primeng/tag';
-import { VagaCadastro } from '../../../models/vaga-cadastro';
-import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
+import { FormsModule } from '@angular/forms';
 import { MensalistaService } from '../../../services/mensalista.service';
 import { ConfiguracoesService } from '../../../services/configuracoes.service';
+import { VagaCadastro } from '../../../models/vaga-cadastro';
 import { Vaga } from '../../../models/vaga';
 
 @Component({
@@ -37,8 +37,8 @@ export class VagaListaComponent implements OnInit {
   vagaCadastro: VagaCadastro = new VagaCadastro();
   dialogVisivelCadastrar = false;
   dialogTituloCadastrar?: string;
-  vagaSelecionada?: Vaga;
-  dataHoraSaida?: Date;
+  vagaSelecionada: Vaga | null = null;
+  dataHoraSaida: Date | null = null;
   dialogResumoSaidaVisivel = false;
   valorTotal = 0;
   duracao = '';
@@ -56,17 +56,26 @@ export class VagaListaComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.carregarVagas();
     this.valorHora = this.configuracoesService.obterValorHora();
+    this.carregarVagas();
   }
 
-  // ---------------- MÉTODOS PARA O TEMPLATE ----------------
-  public transformarPlacaParaMaiuscula(): void {
-    if (!this.vagaCadastro.placa) return;
-    this.vagaCadastro.placa = this.vagaCadastro.placa.toUpperCase();
+  // -------------------------------
+  // Formatação segura de datas
+  formatarData(data: Date | null): string {
+    if (!data) return '-';
+    const d = new Date(data);
+    return isNaN(d.getTime()) ? '-' : d.toLocaleString();
   }
 
-  public verificarTipoPorPlaca(placa: string): void {
+  // -------------------------------
+  private transformarPlacaParaMaiuscula(): void {
+    if (this.vagaCadastro.placa) {
+      this.vagaCadastro.placa = this.vagaCadastro.placa.toUpperCase();
+    }
+  }
+
+  private verificarTipoPorPlaca(placa: string): void {
     if (!placa) return;
     this.mensalistaService.obterTodos().subscribe({
       next: mensalistas => {
@@ -75,69 +84,113 @@ export class VagaListaComponent implements OnInit {
         );
         this.vagaCadastro.tipo = encontrado ? 'Mensalista' : 'Diarista';
       },
-      error: err => {
-        console.error('Erro ao verificar placa de mensalista', err);
+      error: () => {
         this.vagaCadastro.tipo = 'Diarista';
       }
     });
   }
 
-  public atualizarPlaca(): void {
+  atualizarPlaca(): void {
     this.transformarPlacaParaMaiuscula();
-    this.verificarTipoPorPlaca(this.vagaCadastro.placa);
+    this.verificarTipoPorPlaca(this.vagaCadastro.placa ?? '');
   }
 
-  // ---------------- MÉTODOS DE VAGA ----------------
-  public abrirModalCadastrar(): void {
+  abrirModalCadastrar(): void {
     this.dialogTituloCadastrar = 'Cadastro de Vaga';
     this.vagaCadastro = new VagaCadastro();
+    // **Sempre usa a hora local atual**
     this.vagaCadastro.dataHora = new Date();
     this.dialogVisivelCadastrar = true;
   }
 
-  public salvar(): void {
-    const placa = (this.vagaCadastro.placa ?? '').toUpperCase().trim();
-    if (placa.length !== 7) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Placa inválida',
-        detail: 'A placa deve conter exatamente 7 caracteres.'
-      });
-      return;
-    }
-    this.vagaCadastro.placa = placa;
-
-    this.mensalistaService.obterTodos().subscribe({
-      next: mensalistas => {
-        const mensalistaEncontrado = mensalistas.find(
-          m => m.placa.replace('-', '').toUpperCase() === placa
-        );
-        const tipo = mensalistaEncontrado ? 'Mensalista' : 'Diarista';
-
-        const novaVaga: Vaga = {
-          id: this.vagas.length + 1,
-          placa: this.vagaCadastro.placa,
-          tipo: tipo,
-          dataHora: this.vagaCadastro.dataHora
-        };
-
-        this.vagas.push(novaVaga);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Veículo cadastrado com sucesso'
-        });
-
-        this.dialogVisivelCadastrar = false;
-        this.vagaCadastro = new VagaCadastro();
-        this.carregarVagas();
-      },
-      error: erro => console.error('Erro ao buscar mensalistas:', erro)
+salvar(): void {
+  const placa = (this.vagaCadastro.placa ?? '').toUpperCase().trim();
+  if (placa.length !== 7) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Placa inválida',
+      detail: 'A placa deve conter exatamente 7 caracteres.'
     });
+    return;
   }
+  this.vagaCadastro.placa = placa;
 
-  public confirmaSaida(event: Event, id: number): void {
-    this.vagaSelecionada = this.vagas.find(v => v.id === id);
+  // Buscar todas as vagas do banco
+  this.vagaService.obterTodos().subscribe({
+    next: (vagas: Vaga[]) => {
+      // Verifica se já existe alguma vaga ativa com a mesma placa
+      const placaEmUso = vagas.find(
+        v => v.placa.replace('-', '').toUpperCase() === placa && !v.saida
+      );
+
+      if (placaEmUso) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Placa em uso',
+          detail: 'Já existe um veículo com essa placa estacionado. Registre a saída antes de cadastrar novamente.'
+        });
+        return;
+      }
+
+      // Garantindo que dataHora sempre tenha valor
+      if (!this.vagaCadastro.dataHora) {
+        this.vagaCadastro.dataHora = new Date();
+      }
+
+      // Verificar se é mensalista
+      this.mensalistaService.obterTodos().subscribe({
+        next: mensalistas => {
+          const mensalistaEncontrado = mensalistas.find(
+            m => m.placa.replace('-', '').toUpperCase() === placa
+          );
+          this.vagaCadastro.tipo = mensalistaEncontrado ? 'Mensalista' : 'Diarista';
+
+          // Cadastrar vaga
+          this.vagaService.cadastrar(this.vagaCadastro).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Sucesso',
+                detail: 'Veículo cadastrado com sucesso'
+              });
+              this.dialogVisivelCadastrar = false;
+              this.carregarVagas();
+            },
+            error: err => {
+              console.error(err);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro',
+                detail: 'Não foi possível cadastrar a vaga.'
+              });
+            }
+          });
+        },
+        error: err => {
+          console.error(err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Não foi possível validar a placa.'
+          });
+        }
+      });
+    },
+    error: err => {
+      console.error(err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível buscar vagas no banco.'
+      });
+    }
+  });
+}
+
+
+  // -------------------------------
+  confirmaSaida(event: Event, id: number): void {
+    this.vagaSelecionada = this.vagas.find(v => v.id === id) ?? null;
     if (!this.vagaSelecionada) return;
 
     this.confirmationService.confirm({
@@ -151,42 +204,41 @@ export class VagaListaComponent implements OnInit {
     });
   }
 
-  public registrarSaidaComResumo(): void {
-    if (!this.vagaSelecionada) return;
+  private registrarSaidaComResumo(): void {
+    if (!this.vagaSelecionada || !this.vagaSelecionada.dataHora) return;
 
     this.dataHoraSaida = new Date();
+
+    // Cálculo seguro
     const entrada = this.vagaSelecionada.dataHora;
-    const diffHoras = (this.dataHoraSaida.getTime() - entrada.getTime()) / (1000 * 60 * 60);
+    const diffMs = this.dataHoraSaida.getTime() - entrada.getTime();
+    const diffHoras = diffMs / (1000 * 60 * 60);
 
     this.valorHora = this.configuracoesService.obterValorHora();
     this.valorTotal = Math.ceil(diffHoras) * this.valorHora;
+
     const minutos = Math.round((diffHoras % 1) * 60);
     this.duracao = `${Math.floor(diffHoras)}h ${minutos}min`;
 
     this.dialogResumoSaidaVisivel = true;
   }
 
-  public finalizarSaida(): void {
+  finalizarSaida(): void {
     if (!this.vagaSelecionada || !this.dataHoraSaida) return;
 
     const relatorioSaida: Vaga = {
-      id: this.vagaSelecionada.id,
-      placa: this.vagaSelecionada.placa,
-      tipo: this.vagaSelecionada.tipo,
-      dataHora: this.vagaSelecionada.dataHora,
+      ...this.vagaSelecionada,
       saida: this.dataHoraSaida,
       duracao: this.duracao,
       valor: this.valorTotal,
       formaPagamento: this.formaPagamento
     };
 
-    if (this.vagaSelecionada) {
-      this.vagas = this.vagas.filter(v => v.id !== this.vagaSelecionada!.id);
-    }
+    this.vagas = this.vagas.filter(v => v.id !== this.vagaSelecionada?.id);
 
     this.dialogResumoSaidaVisivel = false;
-    this.vagaSelecionada = undefined;
-    this.dataHoraSaida = undefined;
+    this.vagaSelecionada = null;
+    this.dataHoraSaida = null;
     this.valorTotal = 0;
     this.duracao = '';
     this.formaPagamento = 'dinheiro';
@@ -202,18 +254,22 @@ export class VagaListaComponent implements OnInit {
       detail: 'Veículo liberado e relatório salvo localmente.'
     });
   }
-  public carregarVagas() {
-  this.carregandoVagas = true;
-  this.vagaService.obterTodos().subscribe({
-    next: vagas => {
-      this.vagas = vagas.map(v => ({ ...v, dataHora: new Date(v.dataHora) }));
-      this.carregandoVagas = false;
-    },
-    error: erro => {
-      console.error(erro);
-      this.carregandoVagas = false;
-    }
-  });
-}
 
+  carregarVagas(): void {
+    this.carregandoVagas = true;
+    this.vagaService.obterTodos().subscribe({
+      next: (vagas: any[]) => {
+        // Converte dataHora de string para Date e garante que não seja null
+        this.vagas = vagas.map(v => ({
+          ...v,
+          dataHora: v.dataHora ? new Date(v.dataHora) : new Date()
+        }));
+        this.carregandoVagas = false;
+      },
+      error: err => {
+        console.error(err);
+        this.carregandoVagas = false;
+      }
+    });
+  }
 }

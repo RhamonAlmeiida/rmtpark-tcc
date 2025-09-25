@@ -4,7 +4,7 @@ export class Vaga {
     public id?: number,
     public placa: string = '',
     public tipo: 'Mensalista' | 'Diarista' = 'Diarista',
-    public dataHora: Date = new Date(),
+    public dataHora: Date | null = null,
     public saida?: Date,
     public duracao?: string,
     public valor?: number,

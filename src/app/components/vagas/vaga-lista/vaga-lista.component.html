@@ -1,16 +1,13 @@
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 
-
-
-
 <div class="card">
   <div class="flex justify-content-end mb-2">
     <button pButton label="Nova entrada" icon="pi pi-plus" (click)="abrirModalCadastrar()"
       class="p-button-info"></button>
   </div>
 
-  <p-table [value]="vagas" dataKey="id"  [tableStyle]="{ 'min-width': '50rem' }">
+  <p-table [value]="vagas" dataKey="id" [tableStyle]="{ 'min-width': '50rem' }">
     <ng-template pTemplate="header">
       <tr>
         <th>Código</th>
@@ -28,7 +25,7 @@
         <td>
           <p-tag [severity]="vaga.tipo === 'Mensalista' ? 'error' : 'secondary'" [value]="vaga.tipo"></p-tag>
         </td>
-        <td>{{ vaga.dataHora | date: 'short' }}</td>
+        <td>{{ formatarData(vaga.dataHora) }}</td>
         <td>
           <button pButton icon="pi pi-sign-out" label="Registrar Saída" severity="danger"
             (click)="confirmaSaida($event, vaga.id)"></button>
@@ -38,6 +35,7 @@
   </p-table>
 </div>
 
+<!-- Modal de cadastro -->
 <p-dialog
   header="Nova Entrada"
   [(visible)]="dialogVisivelCadastrar"
@@ -47,32 +45,28 @@
   styleClass="custom-dark-dialog"
   [style]="{ width: '30vw' }"
 >
-
-
- <div class="form-container">
-
-<div>
-  <label for="placa">Placa:</label>
-  <input
-    id="placa"
-    pInputText
-    class="unput-dark"
-    [(ngModel)]="vagaCadastro.placa"
-    maxlength="7"
-    (input)="atualizarPlaca()"
-    placeholder="ABC1D23"
-  />
-</div>
-
+  <div class="form-container">
+    <div>
+      <label for="placa">Placa:</label>
+      <input
+        id="placa"
+        pInputText
+        class="input-dark"
+        [(ngModel)]="vagaCadastro.placa"
+        maxlength="7"
+        (input)="atualizarPlaca()"
+        placeholder="ABC1234"
+      />
+    </div>
 
     <div>
-      <label for="campo-tipo">Tipo : </label>
+      <label for="campo-tipo">Tipo:</label>
       <input pInputText id="campo-tipo" class="input-dark" [(ngModel)]="vagaCadastro.tipo" readonly />
     </div>
 
     <div>
-      <label for="campo-data">Data/Hora </label>
-      <input pInputText id="campo-data" class="input-dark" [value]="vagaCadastro.dataHora | date: 'short'" readonly />
+      <label for="campo-data">Data/Hora:</label>
+      <input pInputText id="campo-data" class="input-dark" [value]="formatarData(vagaCadastro.dataHora)" readonly />
     </div>
 
     <div class="footer-buttons">
@@ -83,6 +77,7 @@
   </div>
 </p-dialog>
 
+<!-- Modal de saída -->
 <p-dialog
   header="Resumo da Saída"
   [(visible)]="dialogResumoSaidaVisivel"
@@ -94,8 +89,8 @@
   <div class="form-container">
     <p><strong>Placa:</strong> {{ vagaSelecionada?.placa }}</p>
     <p><strong>Tipo:</strong> {{ vagaSelecionada?.tipo }}</p>
-    <p><strong>Entrada:</strong> {{ vagaSelecionada?.dataHora | date:'short' }}</p>
-    <p><strong>Saída:</strong> {{ dataHoraSaida | date:'short' }}</p>
+    <p><strong>Entrada:</strong> {{ formatarData(vagaSelecionada?.dataHora ?? null) }}</p>
+    <p><strong>Saída:</strong> {{ formatarData(dataHoraSaida) }}</p>
     <p><strong>Duração:</strong> {{ duracao }}</p>
     <p><strong>Valor a Pagar:</strong> R$ {{ valorTotal | number:'1.2-2' }}</p>
 

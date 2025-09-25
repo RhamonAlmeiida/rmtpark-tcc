@@ -6,54 +6,57 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'http://127.0.0.1:8000'; 
+  private apiUrl = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/api'
+    : 'https://api.rmt-park.com/api';
 
   constructor(private http: HttpClient) {}
 
   // 🔑 Login
-  login(email: string, senha: string): Observable<any> {
+  login(email: string, senha: string): Observable<{ access_token: string; token_type: string }> {
     const body = new URLSearchParams();
     body.set('username', email);
     body.set('password', senha);
 
-    return this.http.post(`${this.apiUrl}/auth/login`, body.toString(), {
-      headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
-    });
+    return this.http.post<{ access_token: string; token_type: string }>(
+      `${this.apiUrl}/auth/login`,
+      body.toString(),
+      { headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }) }
+    );
   }
 
-  // 🆕 Cadastro
+  // 🆕 Cadastro de empresa
   cadastrar(dados: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/cadastrar`, dados);
   }
 
-  // Salvar token no localStorage
+  // 📧 Recuperar senha
+  recuperarSenha(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
+  }
+
+  // 🔑 Redefinir senha
+  redefinirSenha(token: string, novaSenha: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/redefinir-senha`, {
+      token,
+      nova_senha: novaSenha
+    });
+  }
+
+  // 💾 Gerenciar token local
   salvarToken(token: string): void {
-    localStorage.setItem('token', token);
+    localStorage.setItem('access_token', token);
   }
 
-  // Obter token
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem('access_token');
   }
 
-  // Logout
   logout(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem('access_token');
   }
 
-  // Verifica se está logado
   estaLogado(): boolean {
     return !!this.getToken();
   }
-
-  // Solicitar recuperação
-recuperarSenha(email: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
-}
-
-// Resetar senha
-resetarSenha(token: string, novaSenha: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/auth/resetar-senha`, { token, nova_senha: novaSenha });
-}
-
 }
