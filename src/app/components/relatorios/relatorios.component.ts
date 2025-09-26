@@ -84,9 +84,9 @@ carregarRelatorios(): void {
           ? r.duracao 
           : (r.data_hora_entrada && r.data_hora_saida 
               ? this.calcularDuracao(r.data_hora_entrada, r.data_hora_saida) 
-              : ''), // ✅ agora o campo existe sempre
+              : ''),
         tempoPermanencia: r.tempo_permanencia ?? '',
-        valorPago: r.valor ?? 0,
+        valorPago: r.valor_pago ?? 0,
         formaPagamento: r.forma_pagamento ?? '',
         statusPagamento: r.status_pagamento ?? ''
       }));

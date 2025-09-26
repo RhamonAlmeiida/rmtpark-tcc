@@ -78,8 +78,8 @@ export class VagaListaComponent implements OnInit {
 
   private formatarDataParaMySQL(date: Date): string {
     const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-           `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} `
+         + `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
   // ======================
@@ -118,9 +118,12 @@ export class VagaListaComponent implements OnInit {
     }
     this.vagaCadastro.placa = placa;
 
+    // define dataHora no formato MySQL ANTES de salvar
+    this.vagaCadastro.dataHora = new Date(); // 👈 agora é Date, não string
+
+
     this.vagaService.obterTodos().subscribe({
       next: vagas => {
-        // agora usa Vaga (não VagaCadastro)
         const placaEmUso = vagas.find((v: Vaga) =>
           v.placa.replace('-', '').toUpperCase() === placa && !v.dataHoraSaida
         );
@@ -184,7 +187,6 @@ export class VagaListaComponent implements OnInit {
     this.duracao = `${Math.floor(diffHoras)}h ${minutos}min`;
 
     this.dialogResumoSaidaVisivel = true;
-
   }
 
   finalizarSaida(): void {
@@ -214,7 +216,6 @@ export class VagaListaComponent implements OnInit {
         console.error(err);
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível registrar a saída.' });
       }
-      
     });
   }
 
@@ -230,11 +231,12 @@ export class VagaListaComponent implements OnInit {
           placa: v.placa,
           tipo: v.tipo,
           dataHora: v.data_hora ? new Date(v.data_hora) : null,
-          dataHoraSaida: v.data_hora_saida ? new Date(v.data_hora_saida) : null,
+dataHoraSaida: v.data_hora_saida ? new Date(v.data_hora_saida) : null,
+
           duracao: v.duracao,
-          valor_pago: v.valor,                 // corrigido
+          valor_pago: v.valor, // se o backend mudar p/ valor_pago, ajustar aqui
           formaPagamento: v.forma_pagamento,
-          status_pagamento: v.status_pagamento // mapeia se vier do backend
+          status_pagamento: v.status_pagamento
         }));
         this.carregandoVagas = false;
       },
