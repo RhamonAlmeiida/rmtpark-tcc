@@ -86,10 +86,10 @@
   styleClass="custom-dark-dialog"
   [style]="{ width: '30vw' }"
 >
-  <div class="form-container">
-    <p><strong>Placa:</strong> {{ vagaSelecionada?.placa }}</p>
-    <p><strong>Tipo:</strong> {{ vagaSelecionada?.tipo }}</p>
-    <p><strong>Entrada:</strong> {{ formatarData(vagaSelecionada?.dataHora ?? null) }}</p>
+  <div class="form-container" *ngIf="vagaSelecionada">
+    <p><strong>Placa:</strong> {{ vagaSelecionada.placa }}</p>
+    <p><strong>Tipo:</strong> {{ vagaSelecionada.tipo }}</p>
+    <p><strong>Entrada:</strong> {{ formatarData(vagaSelecionada.dataHora ?? null) }}</p>
     <p><strong>Saída:</strong> {{ formatarData(dataHoraSaida) }}</p>
     <p><strong>Duração:</strong> {{ duracao }}</p>
     <p><strong>Valor a Pagar:</strong> R$ {{ valorTotal | number:'1.2-2' }}</p>
@@ -102,9 +102,9 @@
     </select>
   </div>
 
-  <div class="footer-buttons">
+  <div class="footer-buttons" *ngIf="vagaSelecionada">
     <button pButton label="Cancelar" class="p-button-outlined p-button-secondary"
       (click)="dialogResumoSaidaVisivel = false"></button>
-    <button pButton label="Concluir" class="p-button-success" (click)="finalizarSaida()"></button>
+    <button pButton label="Finalizar Saída" (click)="finalizarSaida()"></button>
   </div>
 </p-dialog>

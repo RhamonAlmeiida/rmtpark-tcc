@@ -1,13 +1,14 @@
-// src/app/models/vaga.ts
+
 export class Vaga {
   constructor(
-    public id?: number,
+    public id: number = 0,
     public placa: string = '',
-    public tipo: 'Mensalista' | 'Diarista' = 'Diarista',
-    public dataHora: Date | null = null,
-    public saida?: Date,
+    public tipo: string = '',
+    public dataHora?: Date | null,      // entrada
+    public dataHoraSaida?: Date | null, // saída
     public duracao?: string,
-    public valor?: number,
-    public formaPagamento?: string
+    public valor_pago?: number,         // valor pago
+    public formaPagamento?: string,     // forma de pagamento
+    public status_pagamento?: string    // status do pagamento
   ) {}
 }
