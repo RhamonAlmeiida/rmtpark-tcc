@@ -1,10 +1,9 @@
 <p-toast></p-toast>
-<router-outlet></router-outlet>
 
 <div class="page-content">
   <div class="login-container">
     <h2>Login</h2>
-    <p>Entre com seus dados corretamente para acessar o sistema.</p>
+    <p>Entre com seus dados para acessar o sistema.</p>
 
     <label for="email">Email:</label>
     <input id="email" type="email" [(ngModel)]="email" placeholder="Digite seu email" class="p-inputtext p-component" />
@@ -12,7 +11,7 @@
     <label for="password">Senha:</label>
     <input id="password" type="password" [(ngModel)]="senha" placeholder="Digite sua senha" class="p-inputtext p-component" />
 
-    <div class="login-options" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+    <div class="login-options">
       <label><input type="checkbox" /> Lembrar-me</label>
       <button pButton label="Esqueceu a senha?" icon="pi pi-key" (click)="esqueciSenha()" class="p-button-text p-button-sm"></button>
     </div>
@@ -26,26 +25,11 @@
 
   <div class="field" style="margin-top: 1rem;">
     <label for="recuperacaoEmail">Email</label>
-    <input
-      id="recuperacaoEmail"
-      type="email"
-      [(ngModel)]="emailRecuperacao"
-      placeholder="Digite seu email"
-      class="p-inputtext p-component"
-      style="width: 100%; padding: 0.5rem"
-    />
+    <input id="recuperacaoEmail" type="email" [(ngModel)]="emailRecuperacao" placeholder="Digite seu email" class="p-inputtext p-component" style="width: 100%; padding: 0.5rem" />
   </div>
 
   <ng-template pTemplate="footer">
     <button pButton label="Cancelar" icon="pi pi-times" (click)="dialogModalEsqueceuSenha = false" class="p-button-text"></button>
-<button 
-  pButton 
-  label="Enviar link de recuperação" 
-  icon="pi pi-check" 
-  [loading]="carregandoRecuperacao"
-  (click)="enviarEmailRecuperacao()">
-</button>
-
-
+    <button pButton label="Enviar link de recuperação" icon="pi pi-check" [loading]="carregandoRecuperacao" (click)="enviarEmailRecuperacao()"></button>
   </ng-template>
 </p-dialog>

@@ -6,7 +6,10 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'https://rmtpark-api.onrender.com/api';
+  private apiUrl = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000/api'
+  : 'https://rmtpark-bd.onrender.com/api';
+
 
   constructor(private http: HttpClient) {}
 
@@ -15,6 +18,7 @@ export class LoginService {
     const body = new URLSearchParams();
     body.set('username', email);
     body.set('password', senha);
+    body.set('grant_type', 'password');
 
     return this.http.post<{ access_token: string; token_type: string }>(
       `${this.apiUrl}/auth/login`,

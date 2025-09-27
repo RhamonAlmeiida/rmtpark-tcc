@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -15,7 +15,6 @@ import { LoginService } from '../../services/login.service';
     FormsModule,
     ToastModule,
     MessageModule,
-    RouterModule,
     DialogModule,
     ButtonModule
   ],
@@ -33,15 +32,22 @@ export class LoginComponent {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private messageService: MessageService
   ) {}
 
   // ---------------- LOGIN ----------------
   login() {
+    if (!this.email || !this.senha) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: 'Preencha email e senha'
+      });
+      return;
+    }
+
     this.loginService.login(this.email, this.senha).subscribe({
       next: res => {
-        // Salva o token JWT no localStorage
         localStorage.setItem('access_token', res.access_token);
 
         this.messageService.add({
@@ -50,14 +56,17 @@ export class LoginComponent {
           detail: 'Bem-vindo ao sistema!'
         });
 
-        // Redireciona para a lista de vagas
         this.router.navigate(['/vagas']);
       },
-      error: () => {
+      error: (err: any) => {
+        let detail = 'Login ou senha incorretos';
+        if (err.error?.detail) {
+          detail = err.error.detail;
+        }
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
-          detail: 'Login ou senha incorretos'
+          detail
         });
       }
     });
