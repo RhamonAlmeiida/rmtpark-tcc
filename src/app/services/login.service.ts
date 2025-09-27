@@ -6,9 +6,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api'
-    : 'https://api.rmt-park.com/api';
+ private apiUrl = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000/api'
+  : 'https://rmtpark-api.onrender.com/api';
+
 
   constructor(private http: HttpClient) {}
 

@@ -7,7 +7,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SiteCadastroService {
-  private urlAPI = 'http://127.0.0.1:8000/empresas';
+  private urlAPI = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000/empresas'
+  : 'https://api.rmt-park.com/empresas';
+
 
   constructor(private http: HttpClient) {}
 
