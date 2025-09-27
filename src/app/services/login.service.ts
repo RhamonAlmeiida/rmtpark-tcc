@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
- private apiUrl = window.location.hostname === 'localhost'
-  ? 'http://127.0.0.1:8000/api'
-  : 'https://rmtpark-api.onrender.com/api';
-
+  private apiUrl = 'https://rmtpark-api.onrender.com/api';
 
   constructor(private http: HttpClient) {}
 
@@ -23,6 +20,8 @@ export class LoginService {
       `${this.apiUrl}/auth/login`,
       body.toString(),
       { headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }) }
+    ).pipe(
+      tap(res => this.salvarToken(res.access_token))
     );
   }
 
