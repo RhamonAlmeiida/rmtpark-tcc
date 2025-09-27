@@ -36,41 +36,46 @@ export class RedefinirSenhaComponent {
   ) {
     this.token = this.route.snapshot.queryParamMap.get('token');
   }
-
-  redefinirSenha() {
-    if (this.novaSenha !== this.confirmarSenha) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Aviso',
-        detail: 'As senhas não coincidem',
-      });
-      return;
-    }
-
-    this.carregando = true;
-    this.http.post('http://127.0.0.1:8000/auth/redefinir-senha', {
-      token: this.token,
-      nova_senha: this.novaSenha
-    })
-    .subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Senha redefinida com sucesso!',
-        });
-        setTimeout(() => this.router.navigate(['/']), 2000);
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: err.error?.detail || 'Falha ao redefinir senha',
-        });
-      },
-      complete: () => {
-        this.carregando = false;
-      }
+redefinirSenha() {
+  if (this.novaSenha !== this.confirmarSenha) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Aviso',
+      detail: 'As senhas não coincidem',
     });
+    return;
   }
+
+  this.carregando = true;
+
+  // URL da API em produção
+  const apiUrl = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/auth/redefinir-senha'
+    : 'https://rmtpark-api.onrender.com/api/auth/redefinir-senha';
+
+  this.http.post(apiUrl, {
+    token: this.token,
+    nova_senha: this.novaSenha
+  }).subscribe({
+    next: () => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'Senha redefinida com sucesso!',
+      });
+      setTimeout(() => this.router.navigate(['/login']), 2000);
+    },
+    error: (err) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: err.error?.detail || 'Falha ao redefinir senha',
+      });
+    },
+    complete: () => {
+      this.carregando = false;
+    }
+  });
+}
+
 }
