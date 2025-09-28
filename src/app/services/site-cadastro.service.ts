@@ -7,11 +7,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SiteCadastroService {
-private urlAPI = window.location.hostname === 'localhost'
-  ? 'http://127.0.0.1:8000/api/empresa'
-  : 'https://rmtpark-bd.onrender.com/api/empresa';
-
-
+  private urlAPI = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/api/empresa/empresas'
+    : 'https://rmtpark-bd.onrender.com/api/empresa/empresas';
 
   constructor(private http: HttpClient) {}
 
