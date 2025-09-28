@@ -27,11 +27,10 @@ import { InputMaskModule } from 'primeng/inputmask';
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './site-cadastro.component.html',
-  styleUrls: ['./site-cadastro.component.scss'] // 👈 corrigido
+  styleUrls: ['./site-cadastro.component.scss'] 
 })
 export class SiteCadastroComponent {
 
-  // Modelo para armazenar os dados do formulário
   cadastro = {
     nome: '',
     email: '',

@@ -7,9 +7,9 @@ import { Relatorio } from '../models/relatorio';
   providedIn: 'root'
 })
 export class RelatorioService {
-  private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/relatorios'
-    : 'https://api.rmt-park.com/api/relatorios';
+   private apiUrl = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/api/relatorios/'
+    : 'https://rmtpark-bd.onrender.com/api/relatorios/';
 
   constructor(private http: HttpClient) {}
 

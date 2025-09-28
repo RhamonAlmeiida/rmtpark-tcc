@@ -18,7 +18,7 @@ export class ConfirmarEmailComponent implements OnInit {
   ngOnInit(): void {
     const token = this.route.snapshot.queryParamMap.get('token');
     if (token) {
-      this.http.get(`https://rmtpark-api.onrender.com/api/auth/confirmar-email?token=${token}`)
+      this.http.get(`http://127.0.0.1:8000/api/auth/confirmar-email?token=${token}`)
 
         .subscribe({
           next: () => {
