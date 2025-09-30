@@ -8,7 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { SelectModule } from 'primeng/select';
+import { DropdownModule } from 'primeng/dropdown'; // ✅ corrigido
 import { Relatorio } from '../../models/relatorio';
 import { Router } from '@angular/router';
 import { RelatorioService } from '../../services/relatorio.service';
@@ -31,7 +31,7 @@ import * as XLSX from 'xlsx';
     ConfirmDialogModule,
     TagModule,
     DialogModule,
-    SelectModule
+    DropdownModule
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -69,50 +69,53 @@ export class RelatorioComponent implements OnInit {
     this.carregarRelatorios();
   }
 
-carregarRelatorios(): void {
-  this.carregandoRelatorios = true;
+  carregarRelatorios(): void {
+    this.carregandoRelatorios = true;
 
-  this.relatorioService.getRelatorios().subscribe({
-    next: (res: any[]) => {
-      this.relatorios = res.map((r: any) => ({
-        id: r.id,
-        placa: r.placa,
-        tipo: r.tipo,
-        dataHoraEntrada: r.data_hora_entrada ? new Date(r.data_hora_entrada) : null,
-        dataHoraSaida: r.data_hora_saida ? new Date(r.data_hora_saida) : null,
-        duracao: r.duracao 
-          ? r.duracao 
-          : (r.data_hora_entrada && r.data_hora_saida 
-              ? this.calcularDuracao(r.data_hora_entrada, r.data_hora_saida) 
-              : ''),
-        tempoPermanencia: r.tempo_permanencia ?? '',
-        valorPago: r.valor_pago ?? 0,
-        formaPagamento: r.forma_pagamento ?? '',
-        statusPagamento: r.status_pagamento ?? ''
-      }));
+    this.relatorioService.getRelatorios().subscribe({
+      next: (res: any[]) => {
+        this.relatorios = res.map((r: any) => ({
+          id: r.id,
+          placa: r.placa,
+          tipo: r.tipo,
+          dataHoraEntrada: r.data_hora_entrada ? new Date(r.data_hora_entrada) : null,
+          dataHoraSaida: r.data_hora_saida ? new Date(r.data_hora_saida) : null,
+          duracao: r.duracao 
+            ? r.duracao 
+            : (r.data_hora_entrada && r.data_hora_saida 
+                ? this.calcularDuracao(r.data_hora_entrada, r.data_hora_saida) 
+                : ''),
+          tempoPermanencia: r.tempo_permanencia ?? '',
+          valorPago: r.valor_pago ?? 0,
+          formaPagamento: r.forma_pagamento ?? '',
+          statusPagamento: r.status_pagamento ?? ''
+        }));
 
-      this.relatoriosFiltrados = [...this.relatorios];
-      this.carregandoRelatorios = false;
-    },
-    error: (erro) => {
-      console.error('Erro ao carregar relatórios:', erro);
-      this.carregandoRelatorios = false;
-    }
-  });
-}
-
+        this.relatoriosFiltrados = [...this.relatorios];
+        this.carregandoRelatorios = false;
+      },
+      error: (erro) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Falha ao carregar relatórios'
+        });
+        console.error('Erro ao carregar relatórios:', erro);
+        this.carregandoRelatorios = false;
+      }
+    });
+  }
 
   calcularDuracao(entrada: string, saida: string): string {
-  const inicio = new Date(entrada);
-  const fim = new Date(saida);
-  const diffMs = fim.getTime() - inicio.getTime();
+    const inicio = new Date(entrada);
+    const fim = new Date(saida);
+    const diffMs = fim.getTime() - inicio.getTime();
 
-  const horas = Math.floor(diffMs / (1000 * 60 * 60));
-  const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const horas = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-  return `${horas}h ${minutos}min`;
-}
-
+    return `${horas}h ${minutos}min`;
+  }
 
   filtrarRelatorios() {
     this.relatoriosFiltrados = this.relatorios.filter((r) => {

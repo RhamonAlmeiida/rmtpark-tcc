@@ -1,33 +1,40 @@
 .confirmacao-email {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   text-align: center;
-  margin: 50px auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 400px;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  color: #333;
 }
 
 .status-img {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   margin-bottom: 20px;
   animation: fadeIn 1s ease-in-out;
 }
 
 h2 {
-  font-size: 1.5rem;
-  color: #333;
+  font-size: 1.6rem;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1rem;
+  color: #eaeaea;
+  margin-bottom: 20px;
 }
 
 button {
-  margin-top: 20px;
   padding: 12px 25px;
   font-size: 16px;
   font-weight: 600;
   color: #fff;
-  background-color: #007bff;
+  background-color: #28a745;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -35,10 +42,16 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #218838;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

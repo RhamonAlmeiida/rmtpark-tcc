@@ -16,23 +16,23 @@
       class="input-dark"
     />
 
-    <p-select
+    <p-dropdown
       [(ngModel)]="filtroTipo"
       [options]="tiposFiltro"
       optionLabel="label"
       optionValue="value"
       placeholder="Tipo"
       class="input-dark"
-    ></p-select>
+    ></p-dropdown>
 
-    <p-select
+    <p-dropdown
       [(ngModel)]="filtroPagamento"
       [options]="formasPagamentoFiltro"
       optionLabel="label"
       optionValue="value"
       placeholder="Pagamento"
       class="input-dark"
-    ></p-select>
+    ></p-dropdown>
 
     <button pButton type="button" label="Buscar" icon="pi pi-search" (click)="filtrarRelatorios()" class="p-button-primary"></button>
     <button pButton type="button" label="Limpar Filtros" icon="pi pi-times" (click)="limparFiltros()" class="p-button-secondary"></button>

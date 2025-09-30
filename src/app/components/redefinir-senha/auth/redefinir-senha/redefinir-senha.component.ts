@@ -49,9 +49,10 @@ redefinirSenha() {
   this.carregando = true;
 
   // URL da API em produção
-  const apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/auth/redefinir-senha'
-    : 'https://rmtpark-api.onrender.com/api/auth/redefinir-senha';
+const apiUrl = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000/api/auth/redefinir-senha'
+  : 'https://rmtpark-api.onrender.com/api/auth/redefinir-senha';
+
 
   this.http.post(apiUrl, {
     token: this.token,

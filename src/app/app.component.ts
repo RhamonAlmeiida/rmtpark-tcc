@@ -28,12 +28,26 @@ export class AppComponent implements OnInit {
       });
   }
 
-  atualizarStatusUsuario() {
-    const estaLogado = !!localStorage.getItem('token');
-    const rotaAtual = this.router.url;
-    // Não mostrar a navbar na página de login ou na página inicial
-    this.usuarioLogado = estaLogado && rotaAtual !== '/login' && rotaAtual !== '/home' && rotaAtual !== '/' && rotaAtual !== '/site-cadastro' && rotaAtual !== '/blog' && rotaAtual !== '/blog1' && rotaAtual !== '/blog2';
-  }
+atualizarStatusUsuario() {
+  const estaLogado = !!localStorage.getItem('access_token');
+  const rotaAtual = this.router.url.split('?')[0]; // remove query params
+
+  const rotasSemNavbar = [
+    '/login',
+    '/home',
+    '/',
+    '/site-cadastro',
+    '/blog',
+    '/blog1',
+    '/blog2',
+    '/confirmar-email',
+    '/redefinir-senha'
+  ];
+
+  // só mostra navbar se usuário estiver logado e rota não estiver na lista
+  this.usuarioLogado = estaLogado && !rotasSemNavbar.includes(rotaAtual);
+}
+
 
   redirecionarHome() {
     this.router.navigate(['/vagas']);

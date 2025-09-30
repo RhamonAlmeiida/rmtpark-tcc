@@ -8,12 +8,12 @@ import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
-import { LoginService } from '../../services/login.service';
 import { InputMaskModule } from 'primeng/inputmask';
+import { SiteCadastroService } from '../../services/site-cadastro.service';
 
 @Component({
   selector: 'app-site-cadastro',
-  standalone: true, // 👈 importante se não usar módulo tradicional
+  standalone: true,
   imports: [
     FormsModule,
     ToastModule,
@@ -27,21 +27,22 @@ import { InputMaskModule } from 'primeng/inputmask';
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './site-cadastro.component.html',
-  styleUrls: ['./site-cadastro.component.scss'] 
+  styleUrls: ['./site-cadastro.component.scss']
 })
 export class SiteCadastroComponent {
 
   cadastro = {
-    nome: '',
-    email: '',
-    telefone: '',
-    cnpj: '',
-    senha: '',
-    aceite: false
-  };
+  nome: '',
+  email: '',
+  telefone: '',
+  cnpj: '',
+  senha: '',
+  aceite: false
+};
+
 
   constructor(
-    private loginService: LoginService,
+    private siteCadastroService: SiteCadastroService,
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -50,34 +51,34 @@ export class SiteCadastroComponent {
   voltarPagina() {
     this.router.navigate(['/home']);
   }
-finalizarCadastro() {
-  // Validação simples
-  if (!this.cadastro.nome || !this.cadastro.email || !this.cadastro.senha) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Atenção',
-      detail: 'Preencha todos os campos obrigatórios!'
-    });
-    return;
-  }
 
-  this.loginService.cadastrar(this.cadastro).subscribe({
-    next: () => {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Cadastro realizado',
-        detail: 'Entraremos em contato em breve!'
-      });
-      this.router.navigate(['/login']);
-    },
-    error: (err) => {
-      const detalhe = err.error?.detail || 'CNPJ já cadastrado !';
+  finalizarCadastro() {
+    if (!this.cadastro.nome || !this.cadastro.email || !this.cadastro.senha) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro',
-        detail: detalhe
+        summary: 'Atenção',
+        detail: 'Preencha todos os campos obrigatórios!'
       });
+      return;
     }
-  });
-}
+
+    this.siteCadastroService.cadastrar(this.cadastro).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Cadastro realizado',
+          detail: 'Entraremos em contato em breve!'
+        });
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        const detalhe = err.error?.detail || 'CNPJ já cadastrado !';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: detalhe
+        });
+      }
+    });
+  }
 }

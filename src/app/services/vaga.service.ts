@@ -17,29 +17,41 @@ private apiUrl = window.location.hostname === 'localhost'
   constructor(private http: HttpClient, private loginService: LoginService) {}
 
   // Gera headers com token automaticamente
-  private getHeaders(): HttpHeaders {
-    const token = this.loginService.getToken(); // pega token do serviço
-    if (!token) throw new Error('Usuário não autenticado');
+private getHeaders(): HttpHeaders {
+  const token = this.loginService.getToken();
+  if (!token) throw new Error('Usuário não autenticado');
 
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-  }
+  return new HttpHeaders({
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  });
+}
+
 
   obterTodos(): Observable<VagaCadastro[]> {
     return this.http.get<VagaCadastro[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
-  cadastrar(vaga: VagaCadastro): Observable<VagaCadastro> {
-    return this.http.post<VagaCadastro>(this.apiUrl, vaga, { headers: this.getHeaders() });
-  }
+cadastrar(vaga: VagaCadastro): Observable<VagaCadastro> {
+  const payload = {
+    placa: vaga.placa,
+    tipo: vaga.tipo,
+    data_hora: vaga.dataHora   // <-- backend espera snake_case
+  };
+  return this.http.post<VagaCadastro>(this.apiUrl, payload, { headers: this.getHeaders() });
+}
+
 
   deletar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}${id}`, { headers: this.getHeaders() });
   }
 
-  registrarSaida(id: number, dados: VagaSaida): Observable<VagaCadastro> {
-    return this.http.put<VagaCadastro>(`${this.apiUrl}${id}/saida`, dados, { headers: this.getHeaders() });
-  }
+registrarSaida(vagaId: number, dados: any): Observable<any> {
+  return this.http.put<any>(`${this.apiUrl}${vagaId}/saida`, dados, { headers: this.getHeaders() });
+}
+
+
+
+
+
 }

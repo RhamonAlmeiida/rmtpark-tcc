@@ -1,48 +1,39 @@
-// src/app/interceptors/auth.interceptor.ts
-import { Injectable } from '@angular/core';
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { inject } from '@angular/core';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { LoginService } from '../services/login.service';
+import { catchError, throwError } from 'rxjs';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const router = inject(Router);
+  const messageService = inject(MessageService);
+  const loginService = inject(LoginService);
 
-  constructor(private router: Router, private messageService: MessageService) {}
+  const token = localStorage.getItem('access_token');
+  let authReq = req;
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('access_token');
-
-    let authReq = req;
-    if (token) {
-      authReq = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
-
-    return next.handle(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {
-        // Token inválido ou expirado
-        if (error.status === 401 || error.status === 403) {
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Sessão expirada',
-            detail: 'Por favor, faça login novamente.'
-          });
-          localStorage.removeItem('access_token');
-          this.router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
-    );
+  if (token) {
+    authReq = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` }
+    });
   }
-}
+
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 || error.status === 403) {
+        messageService.add({
+          severity: 'warn',
+          summary: 'Sessão expirada',
+          detail: 'Por favor, faça login novamente.'
+        });
+
+        loginService.logout();
+        if (router.url !== '/login') {
+          router.navigate(['/login']);
+        }
+      }
+      return throwError(() => error);
+    })
+  );
+};

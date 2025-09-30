@@ -1,23 +1,40 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { Empresa } from '../models/configuracoes';
+import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfiguracoesService {
-  private readonly STORAGE_KEY = 'config_empresa';
+  private readonly API_URL = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/api/vagas/configuracoes'
+    : 'https://rmtpark-bd.onrender.com/api/vagas/configuracoes';
 
-  salvarConfiguracoes(empresa: Empresa): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(empresa));
+  constructor(private http: HttpClient, private loginService: LoginService) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = this.loginService.getToken();
+    if (!token) throw new Error('Usuário não autenticado');
+
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
   }
 
-  obterConfiguracoes(): Empresa {
-    const dados = localStorage.getItem(this.STORAGE_KEY);
-    return dados ? JSON.parse(dados) : new Empresa();
+  salvarConfiguracoes(empresa: Empresa): Observable<Empresa> {
+    return this.http.post<Empresa>(this.API_URL, empresa, { headers: this.getHeaders() });
   }
 
-  obterValorHora(): number {
-    const dados = this.obterConfiguracoes();
-    return dados.valorHora || 10; // valor padrão 10 caso não tenha nada salvo
+  obterConfiguracoes(): Observable<Empresa> {
+    return this.http.get<Empresa>(this.API_URL, { headers: this.getHeaders() });
+  }
+
+  obterValorHora(): Observable<number> {
+    return this.http.get<any>(this.API_URL, { headers: this.getHeaders() }).pipe(
+      map(config => config.valor_hora ?? 10) // fallback se backend não retornar
+    );
   }
 }

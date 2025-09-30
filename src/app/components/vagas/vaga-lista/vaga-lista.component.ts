@@ -38,9 +38,9 @@ import { SelectModule } from 'primeng/select';
 export class VagaListaComponent implements OnInit {
   carregandoVagas = false;
 
-  vagas: Vaga[] = [];                   // para listar e finalizar
-  vagaCadastro: VagaCadastro = new VagaCadastro(); // para entrada
-  vagaSelecionada: Vaga | null = null;  // para saída
+  vagas: Vaga[] = [];
+  vagaCadastro: VagaCadastro = new VagaCadastro();
+  vagaSelecionada: Vaga | null = null;
 
   // Modais
   dialogVisivelCadastrar = false;
@@ -52,7 +52,7 @@ export class VagaListaComponent implements OnInit {
   duracao = '';
   valorTotal = 0;
   valorHora = 10;
-  formaPagamento = 'dinheiro';
+  formaPagamento: string | null = null;
 
   constructor(
     private router: Router,
@@ -64,7 +64,10 @@ export class VagaListaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.valorHora = this.configuracoesService.obterValorHora();
+    this.configuracoesService.obterValorHora().subscribe({
+      next: valor => this.valorHora = valor,
+      error: () => this.valorHora = 10 // fallback caso o backend falhe
+    });
     this.carregarVagas();
   }
 
@@ -117,10 +120,7 @@ export class VagaListaComponent implements OnInit {
       return;
     }
     this.vagaCadastro.placa = placa;
-
-    // define dataHora no formato MySQL ANTES de salvar
-    this.vagaCadastro.dataHora = new Date(); // 👈 agora é Date, não string
-
+    this.vagaCadastro.dataHora = new Date();
 
     this.vagaService.obterTodos().subscribe({
       next: vagas => {
@@ -177,39 +177,63 @@ export class VagaListaComponent implements OnInit {
 
     this.dataHoraSaida = new Date();
 
+    // Se for mensalista → finaliza direto
+    if (this.vagaSelecionada.tipo === 'Mensalista') {
+      this.finalizarSaida();
+      return;
+    }
+
+    // Diarista
     const diffMs = this.dataHoraSaida.getTime() - this.vagaSelecionada.dataHora.getTime();
     const diffHoras = diffMs / (1000 * 60 * 60);
 
-    this.valorHora = this.configuracoesService.obterValorHora();
-    this.valorTotal = Math.ceil(diffHoras) * this.valorHora;
+    this.configuracoesService.obterValorHora().subscribe({
+      next: valor => {
+        this.valorHora = valor;
+        this.valorTotal = Math.ceil(diffHoras) * this.valorHora;
 
-    const minutos = Math.round((diffHoras % 1) * 60);
-    this.duracao = `${Math.floor(diffHoras)}h ${minutos}min`;
+        const minutos = Math.round((diffHoras % 1) * 60);
+        this.duracao = `${Math.floor(diffHoras)}h ${minutos}min`;
 
-    this.dialogResumoSaidaVisivel = true;
+        this.dialogResumoSaidaVisivel = true;
+      },
+      error: () => {
+        this.valorHora = 10; // fallback
+      }
+    });
   }
 
   finalizarSaida(): void {
     if (!this.vagaSelecionada) return;
 
     const now = new Date();
-    const dados: VagaSaida = {
-      saida: this.formatarDataParaMySQL(now),
-      duracao: this.duracao,
-      valor: this.valorTotal,
-      formaPagamento: this.formaPagamento
-    };
+    let dados: VagaSaida;
+
+    if (this.vagaSelecionada.tipo === 'Mensalista') {
+      dados = {
+        saida: this.formatarDataParaMySQL(now),
+        duracao: 'Mensalista ativo',
+        valor: 0,
+        formaPagamento: null
+      };
+    } else {
+      dados = {
+        saida: this.formatarDataParaMySQL(now),
+        duracao: this.duracao,
+        valor: this.valorTotal,
+        formaPagamento: this.formaPagamento
+      };
+    }
 
     this.vagaService.registrarSaida(this.vagaSelecionada.id, dados).subscribe({
       next: vaga => {
-        this.messageService.add({ severity: 'success', summary: 'Saída registrada', detail: `Saída do veículo ${vaga.placa} registrada com sucesso` });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Saída registrada',
+          detail: `Saída do veículo ${vaga.placa} registrada com sucesso`
+        });
         this.dialogResumoSaidaVisivel = false;
-
-        // Atualiza localmente
-        this.vagaSelecionada!.dataHoraSaida = now;
-        this.vagaSelecionada!.duracao = this.duracao;
-        this.vagaSelecionada!.valor_pago = this.valorTotal;
-        this.vagas = this.vagas.filter(v => v.id !== this.vagaSelecionada!.id);
+        this.carregarVagas();
         this.vagaSelecionada = null;
       },
       error: err => {
@@ -227,17 +251,17 @@ export class VagaListaComponent implements OnInit {
     this.vagaService.obterTodos().subscribe({
       next: (vagas: any[]) => {
         this.vagas = vagas.map(v => ({
-          id: v.id,
-          placa: v.placa,
-          tipo: v.tipo,
-          dataHora: v.data_hora ? new Date(v.data_hora) : null,
-dataHoraSaida: v.data_hora_saida ? new Date(v.data_hora_saida) : null,
+            id: v.id,
+            placa: v.placa,
+            tipo: v.tipo,
+            dataHora: v.data_hora ? new Date(v.data_hora) : null,
+            dataHoraSaida: v.data_hora_saida ? new Date(v.data_hora_saida) : null,
+            duracao: v.duracao,
+            valor_pago: v.valor_pago,
+            formaPagamento: v.forma_pagamento,
+            status_pagamento: v.status_pagamento
+          }));
 
-          duracao: v.duracao,
-          valor_pago: v.valor, // se o backend mudar p/ valor_pago, ajustar aqui
-          formaPagamento: v.forma_pagamento,
-          status_pagamento: v.status_pagamento
-        }));
         this.carregandoVagas = false;
       },
       error: err => {

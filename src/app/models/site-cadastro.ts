@@ -1,10 +1,17 @@
-export class SiteCadastro {
-  constructor(
-    public id: number = 0,
-    public nome: string = '',
-    public email: string = '',
-    public telefone: string = '', 
-    public cnpj: string = '',     
-    public senha: string = '' 
-  ) {}
+export interface SiteCadastroCreate {
+  nome: string;
+  email: string;
+  telefone: string;
+  cnpj: string;
+  senha: string;
+  aceite?: boolean;
+}
+
+export interface SiteCadastro {
+  id: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  cnpj: string;
+  email_confirmado: boolean;
 }

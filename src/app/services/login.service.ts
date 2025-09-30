@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
   private apiUrl = window.location.hostname === 'localhost'
-  ? 'http://127.0.0.1:8000/api'
-  : 'https://rmtpark-bd.onrender.com/api';
+    ? 'http://127.0.0.1:8000/api'
+    : 'https://rmtpark-bd.onrender.com/api';
 
+  // 🔔 Estado do login (true/false)
+  private loggedIn = new BehaviorSubject<boolean>(!!localStorage.getItem('access_token'));
+  isLoggedIn$ = this.loggedIn.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -29,15 +33,11 @@ export class LoginService {
     );
   }
 
-  // 🆕 Cadastro de empresa
-  cadastrar(dados: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/cadastrar`, dados);
-  }
-
   // 📧 Recuperar senha
-  recuperarSenha(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
-  }
+recuperarSenha(email: string) {
+  return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
+}
+
 
   // 🔑 Redefinir senha
   redefinirSenha(token: string, novaSenha: string): Observable<any> {
@@ -50,6 +50,7 @@ export class LoginService {
   // 💾 Gerenciar token local
   salvarToken(token: string): void {
     localStorage.setItem('access_token', token);
+    this.loggedIn.next(true); // ✅ notifica login
   }
 
   getToken(): string | null {
@@ -58,6 +59,7 @@ export class LoginService {
 
   logout(): void {
     localStorage.removeItem('access_token');
+    this.loggedIn.next(false); // ✅ notifica logout
   }
 
   estaLogado(): boolean {

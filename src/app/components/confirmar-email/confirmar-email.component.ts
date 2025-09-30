@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { CommonModule } from '@angular/common'; // 👈 importa aqui
 
 @Component({
   selector: 'app-confirmar-email',
+  standalone: true, // 👈 standalone component
+  imports: [CommonModule], // 👈 adiciona o CommonModule
   templateUrl: './confirmar-email.component.html',
   styleUrls: ['./confirmar-email.component.scss']
 })
@@ -19,7 +21,6 @@ export class ConfirmarEmailComponent implements OnInit {
     const token = this.route.snapshot.queryParamMap.get('token');
     if (token) {
       this.http.get(`http://127.0.0.1:8000/api/auth/confirmar-email?token=${token}`)
-
         .subscribe({
           next: () => {
             this.mensagem = 'E-mail confirmado com sucesso! ✅';

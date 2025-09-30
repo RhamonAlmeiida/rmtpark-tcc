@@ -1,79 +1,43 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { MensalistaCadastro } from '../models/mensalista-cadastro';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Mensalista } from '../models/mensalista';
+import { MensalistaCadastro } from '../models/mensalista-cadastro';
+import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MensalistaService {
+  private readonly API_URL = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/api/mensalistas'
+    : 'https://rmtpark-bd.onrender.com/api/mensalistas';
 
-  private readonly STORAGE_KEY = 'mensalistas';
+  constructor(private http: HttpClient, private loginService: LoginService) {}
 
-  constructor() {}
+  private getHeaders(): HttpHeaders {
+    const token = this.loginService.getToken();
+    if (!token) throw new Error('Usuário não autenticado');
 
-  private getMensalistas(): Mensalista[] {
-    const data = localStorage.getItem(this.STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
   }
 
-  private salvarMensalistas(lista: Mensalista[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(lista));
+  cadastrar(mensalista: MensalistaCadastro): Observable<Mensalista> {
+    return this.http.post<Mensalista>(this.API_URL, mensalista, { headers: this.getHeaders() });
   }
-cadastrar(mensalistaCadastro: MensalistaCadastro): Observable<Mensalista> {
-  const lista = this.getMensalistas();
-
-  const proximoId = lista.length
-    ? Math.max(...lista.map(m => m.id ?? 0)) + 1
-    : 1;
-
-  const hoje = new Date();
-  const validade = mensalistaCadastro.validade
-    ? new Date(mensalistaCadastro.validade)
-    : hoje;
-
-  const diasRestantes = Math.ceil(
-    (validade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  const status: 'ativo' | 'inadimplente' | 'vencendo' =
-    validade < hoje
-      ? 'inadimplente'
-      : diasRestantes <= 5
-        ? 'vencendo'
-        : 'ativo';
-
-  const novo: Mensalista = {
-    id: proximoId,
-    nome: mensalistaCadastro.nome,
-    placa: mensalistaCadastro.placa,
-    veiculo: mensalistaCadastro.veiculo,
-    cor: mensalistaCadastro.cor,
-    cpf: mensalistaCadastro.cpf,
-    validade: validade.toISOString().split('T')[0], // formato yyyy-MM-dd
-    status: status
-  };
-
-  lista.push(novo);
-  this.salvarMensalistas(lista);
-  return of(novo);
-}
-
-
-
 
   obterTodos(): Observable<Mensalista[]> {
-    return of(this.getMensalistas());
+    return this.http.get<Mensalista[]>(this.API_URL, { headers: this.getHeaders() });
   }
 
   obterPorId(id: number): Observable<Mensalista> {
-    const encontrado = this.getMensalistas().find(m => m.id === id)!;
-    return of(encontrado);
+    return this.http.get<Mensalista>(`${this.API_URL}/${id}`, { headers: this.getHeaders() });
   }
 
   apagar(id: number): Observable<any> {
-    const lista = this.getMensalistas().filter(m => m.id !== id);
-    this.salvarMensalistas(lista);
-    return of({ sucesso: true });
+    return this.http.delete(`${this.API_URL}/${id}`, { headers: this.getHeaders() });
   }
 }

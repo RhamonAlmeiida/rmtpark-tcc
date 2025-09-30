@@ -1,21 +1,20 @@
-import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
-import { provideHttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
+import { MessageService } from 'primeng/api';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideClientHydration(), 
+    provideClientHydration(),
     providePrimeNG({
       theme: {
         preset: Aura,
@@ -23,5 +22,10 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: '.rmt-park',
         }
       }
-    })]
+    }),
+    MessageService,
+    provideHttpClient(
+      withInterceptors([authInterceptor]) // ✅ agora funciona
+    )
+  ]
 };

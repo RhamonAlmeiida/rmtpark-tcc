@@ -136,48 +136,28 @@ export class MensalistasComponent implements OnInit {
 
 
 
-  salvar() {
-    const hoje = new Date();
-    const validadeStr = this.mensalistaCadastro.validade;
-    const validade = validadeStr ? new Date(validadeStr) : hoje;
-
-    const diasRestantes = Math.ceil((validade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-    const status: 'ativo' | 'inadimplente' | 'vencendo' =
-      validade < hoje ? 'inadimplente' :
-        diasRestantes <= 5 ? 'vencendo' : 'ativo';
-
-    const novoMensalista: Mensalista = {
-      id: this.mensalistas.length
-        ? Math.max(...this.mensalistas.map(m => m.id ?? 0)) + 1
-        : 1,
-      nome: this.mensalistaCadastro.nome,
-      placa: this.mensalistaCadastro.placa,
-      veiculo: this.mensalistaCadastro.veiculo,
-      cor: this.mensalistaCadastro.cor,
-      cpf: this.mensalistaCadastro.cpf,
-      validade: validade.toISOString().split('T')[0],
-      status: status,
-    };
-
-    this.mensalistas.push(novoMensalista);
-    localStorage.setItem('mensalistas', JSON.stringify(this.mensalistas));
-
-    this.apresentarmensagemCadastrado();
-
-    if (status === 'vencendo') {
+ salvar() {
+  this.mensalistaService.cadastrar(this.mensalistaCadastro).subscribe({
+    next: (novo) => {
       this.messageService.add({
-        severity: 'warn',
-        summary: 'Atenção',
-        detail: `Validade vence em ${diasRestantes} dia(s)!`,
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'Mensalista cadastrado com sucesso'
+      });
+      this.dialogVisivelCadastrarMensalista = false;
+      this.carregarMensalistas();
+    },
+    error: erro => {
+      console.error("Erro ao cadastrar mensalista:", erro);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível cadastrar o mensalista.'
       });
     }
+  });
+}
 
-
-    this.dialogVisivelCadastrarMensalista = false;
-    this.mensalistaCadastro = new MensalistaCadastro();
-
-    this.carregarMensalistas();
-  }
 
 
 
