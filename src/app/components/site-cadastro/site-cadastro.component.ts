@@ -61,8 +61,14 @@ export class SiteCadastroComponent {
       });
       return;
     }
-
-    this.siteCadastroService.cadastrar(this.cadastro).subscribe({
+  
+    // Remove a formatação do CNPJ antes de enviar
+    const cadastroFormatado = {
+      ...this.cadastro,
+      cnpj: this.cadastro.cnpj.replace(/\D/g, '')  // Remove tudo que não for número
+    };
+  
+    this.siteCadastroService.cadastrar(cadastroFormatado).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
@@ -72,7 +78,7 @@ export class SiteCadastroComponent {
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        const detalhe = err.error?.detail || 'CNPJ já cadastrado !';
+        const detalhe = err.error?.detail || 'CNPJ já cadastrado!';
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
@@ -81,4 +87,5 @@ export class SiteCadastroComponent {
       }
     });
   }
+  
 }

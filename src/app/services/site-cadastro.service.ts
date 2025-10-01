@@ -7,8 +7,10 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class SiteCadastroService {
-  private urlAPI = `${environment.apiUrl}/empresa/empresas`; 
+export class SiteCadastroService {  
+  urlAPI = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/api/empresa'
+    : 'https://rmtpark-bd.onrender.com/api/empresa';;
 
   constructor(private http: HttpClient) {}
 
