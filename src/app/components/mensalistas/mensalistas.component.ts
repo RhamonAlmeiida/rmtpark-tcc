@@ -49,6 +49,7 @@ export class MensalistasComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private router: Router,
     private mensalistaService: MensalistaService,
+    
   ) {
     this.mensalistaCadastro = new MensalistaCadastro()
   }
@@ -136,7 +137,12 @@ export class MensalistasComponent implements OnInit {
 
 
 
- salvar() {
+salvar() {
+  // Se não tiver, seta como "ativo" por padrão
+  if (!this.mensalistaCadastro.status) {
+    this.mensalistaCadastro.status = "ativo";
+  }
+
   this.mensalistaService.cadastrar(this.mensalistaCadastro).subscribe({
     next: (novo) => {
       this.messageService.add({

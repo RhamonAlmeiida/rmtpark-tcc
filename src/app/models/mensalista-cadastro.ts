@@ -1,8 +1,10 @@
 export class MensalistaCadastro {
-  nome: string = '';
-  placa: string = '';
-  veiculo: string = '';
-  cor: string = '';
-  cpf: string = '';
-  validade: string = ''; 
+  public id: number = 0;
+  public nome: string = "";
+  public cpf: string = "";
+  public veiculo: string = "";
+  public placa: string = "";
+  public validade: string = "";
+  public cor?: string;
+  public status: string = "ativo"; 
 }
