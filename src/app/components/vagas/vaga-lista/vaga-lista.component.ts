@@ -203,35 +203,89 @@ atualizarPlaca(event: Event): void {
     });
   }
 
-  finalizarSaida(): void {
-    if (!this.vagaSelecionada) return;
+finalizarSaida(): void {
+  if (!this.vagaSelecionada) return;
 
-    const now = new Date();
-    const dados = {
-      saida: this.formatarDataParaMySQL(now),
-      duracao: this.vagaSelecionada.tipo === 'Mensalista' ? 'Mensalista ativo' : this.duracao,
-      valor: this.vagaSelecionada.tipo === 'Mensalista' ? 0 : this.valorTotal,
-      formaPagamento: this.vagaSelecionada.tipo === 'Mensalista' ? null : this.formaPagamento
-    };
+  const now = new Date();
 
-    this.vagaService.registrarSaida(this.vagaSelecionada.id, dados)
-      .subscribe({
-        next: (relatorio: Relatorio) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Saída registrada',
-            detail: `Veículo ${relatorio.placa} registrado no relatório`
-          });
-          this.dialogResumoSaidaVisivel = false;
-          this.carregarVagas();
-          this.vagaSelecionada = null;
-        },
-        error: err => {
-          console.error(err);
-          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível registrar a saída.' });
-        }
-      });
+  // Calcula diferença de tempo apenas se for diarista
+  let duracaoStr = 'Mensalista ativo';
+  let valor = 0;
+
+  if (this.vagaSelecionada.tipo === 'Diarista') {
+    const diffMs = now.getTime() - (this.vagaSelecionada.dataHora?.getTime() ?? now.getTime());
+    const diffHoras = diffMs / (1000 * 60 * 60);
+
+    // Obtém valorHora do serviço de configurações
+    this.configuracoesService.obterValorHora().subscribe({
+      next: valorHora => {
+        this.valorHora = valorHora;
+        valor = Math.ceil(diffHoras) * this.valorHora;
+
+        const minutos = Math.round((diffHoras % 1) * 60);
+        duracaoStr = `${Math.floor(diffHoras)}h ${minutos}min`;
+
+        this.enviarSaida(duracaoStr, valor, now);
+      },
+      error: () => {
+        this.valorHora = 10;
+        valor = Math.ceil(diffHoras) * this.valorHora;
+        const minutos = Math.round((diffHoras % 1) * 60);
+        duracaoStr = `${Math.floor(diffHoras)}h ${minutos}min`;
+
+        this.enviarSaida(duracaoStr, valor, now);
+      }
+    });
+  } else {
+    // Mensalista → envia direto
+    this.enviarSaida(duracaoStr, valor, now);
   }
+}
+
+// Função separada para enviar a saída e atualizar UI
+private enviarSaida(duracaoStr: string, valor: number, saida: Date) {
+  let formaPag: string | null = null;
+
+  if (this.vagaSelecionada?.tipo === 'Diarista' && this.formaPagamento) {
+    formaPag = this.formaPagamento.charAt(0).toUpperCase() + this.formaPagamento.slice(1);
+  }
+
+  const dados = {
+    saida: this.formatarDataParaMySQL(saida),
+    duracao: duracaoStr,
+    valor: valor,
+    formaPagamento: formaPag
+  };
+
+  const vagaId = this.vagaSelecionada?.id;
+
+  this.vagaService.registrarSaida(vagaId!, dados)
+    .subscribe({
+      next: (relatorio: Relatorio) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Saída registrada',
+          detail: `Veículo ${relatorio.placa} registrado no relatório`
+        });
+
+        this.dialogResumoSaidaVisivel = false;
+        this.vagaSelecionada = null;
+
+        // Atualiza tabela localmente
+        this.vagas = this.vagas.filter(v => v.id !== vagaId);
+      },
+      error: err => {
+        console.error(err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Não foi possível registrar a saída.'
+        });
+      }
+    });
+}
+
+
 
   // ======================
   // CARREGAMENTO DE VAGAS
