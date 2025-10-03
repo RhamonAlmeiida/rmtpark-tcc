@@ -101,71 +101,39 @@ atualizarPlaca(event: Event): void {
 
 
 
-  salvar(): void {
-    const placa = (this.vagaCadastro.placa ?? '').toUpperCase().trim();
-    if (placa.length !== 7) {
-      this.messageService.add({ severity: 'warn', summary: 'Placa inválida', detail: 'A placa deve conter exatamente 7 caracteres.' });
-      return;
+salvar(): void {
+  const placa = (this.vagaCadastro.placa ?? '').toUpperCase().trim();
+  if (placa.length !== 7) {
+    this.messageService.add({ severity: 'warn', summary: 'Placa inválida', detail: 'A placa deve conter exatamente 7 caracteres.' });
+    return;
+  }
+  this.vagaCadastro.placa = placa;
+  this.vagaCadastro.dataHora = new Date();
+
+  this.mensalistaService.obterTodos().subscribe({
+    next: mensalistas => {
+      this.vagaCadastro.tipo = mensalistas.some(m => m.placa.replace('-', '').toUpperCase() === placa) 
+        ? 'Mensalista' 
+        : 'Diarista';
+
+      this.vagaService.cadastrar(this.vagaCadastro).subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Veículo cadastrado com sucesso' });
+          this.dialogVisivelCadastrar = false;
+          this.carregarVagas();
+        },
+        error: err => {
+          console.error(err);
+          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível cadastrar a vaga.' });
+        }
+      });
+    },
+    error: err => {
+      console.error(err);
+      this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao obter mensalistas.' });
     }
-    this.vagaCadastro.placa = placa;
-    this.vagaCadastro.dataHora = new Date();
-
-    // Obtem mensalistas para determinar tipo
-    this.mensalistaService.obterTodos().subscribe({
-      next: mensalistas => {
-        const mensalistaEncontrado = mensalistas.find(m => m.placa.replace('-', '').toUpperCase() === placa);
-        this.vagaCadastro.tipo = mensalistaEncontrado ? 'Mensalista' : 'Diarista';
-
-        // Verifica se a placa já está em uso
-        this.vagaService.obterTodos().subscribe({
-          next: vagas => {
-            const placaEmUso = vagas.find((v: Vaga) =>
-  v.placa.replace('-', '').toUpperCase() === placa && !v.dataHoraSaida
-);
-
-            if (placaEmUso) {
-              this.messageService.add({ severity: 'warn', summary: 'Placa em uso', detail: 'Já existe um veículo com essa placa estacionado.' });
-              return;
-            }
-
-            // Cadastra a vaga
-            this.vagaService.cadastrar(this.vagaCadastro).subscribe({
-              next: () => {
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Veículo cadastrado com sucesso' });
-                this.dialogVisivelCadastrar = false;
-                this.carregarVagas();
-              },
-              error: err => {
-                console.error(err);
-                this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível cadastrar a vaga.' });
-              }
-            });
-          }
-        });
-      },
-      error: () => {
-        this.vagaCadastro.tipo = 'Diarista';
-      }
-    });
-  }
-
-  // ======================
-  // SAÍDA DE VAGA
-  // ======================
-  confirmaSaida(event: Event, id: number): void {
-    this.vagaSelecionada = this.vagas.find(v => v.id === id) ?? null;
-    if (!this.vagaSelecionada) return;
-
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Deseja realmente registrar a Saída?',
-      header: 'CUIDADO',
-      icon: 'pi pi-exclamation-triangle',
-      rejectButtonProps: { label: 'Cancelar', severity: 'secondary', outlined: true },
-      acceptButtonProps: { label: 'Saída' },
-      accept: () => this.registrarSaidaFluxo()
-    });
-  }
+  });
+}
 
   private registrarSaidaFluxo(): void {
     if (!this.vagaSelecionada || !this.vagaSelecionada.dataHora) return;

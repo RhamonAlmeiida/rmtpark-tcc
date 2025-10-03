@@ -10,8 +10,8 @@ import { VagaSaida } from './vagaSaida';
 })
 export class VagaService {
 private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/vagas/'
-    : 'https://rmtpark-bd.onrender.com/api/vagas/';
+    ? 'http://127.0.0.1:8000/api/vagas'
+    : 'https://rmtpark-bd.onrender.com/api/vagas';
 
 
   constructor(private http: HttpClient, private loginService: LoginService) {}
@@ -36,19 +36,20 @@ cadastrar(vaga: VagaCadastro): Observable<VagaCadastro> {
   const payload = {
     placa: vaga.placa,
     tipo: vaga.tipo,
-    data_hora: vaga.dataHora   // <-- backend espera snake_case
+    data_hora: vaga.dataHora?.toISOString() // envia como string ISO
   };
   return this.http.post<VagaCadastro>(this.apiUrl, payload, { headers: this.getHeaders() });
 }
 
 
-  deletar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}${id}`, { headers: this.getHeaders() });
-  }
+deletar(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+}
 
 registrarSaida(vagaId: number, dados: any): Observable<any> {
-  return this.http.put<any>(`${this.apiUrl}${vagaId}/saida`, dados, { headers: this.getHeaders() });
+  return this.http.put<any>(`${this.apiUrl}/${vagaId}/saida`, dados, { headers: this.getHeaders() });
 }
+
 
 
 
