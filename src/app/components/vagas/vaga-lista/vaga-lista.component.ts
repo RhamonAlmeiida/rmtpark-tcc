@@ -65,8 +65,7 @@ export class VagaListaComponent implements OnInit {
 
   ngOnInit(): void {
     this.configuracoesService.obterValorHora().subscribe({
-      next: valor => this.valorHora = valor,
-      error: () => this.valorHora = 10
+      next: valor => this.valorHora = valor
     });
     this.carregarVagas();
   }

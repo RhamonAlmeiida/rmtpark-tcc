@@ -1,40 +1,45 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { Empresa } from '../models/configuracoes';
-import { LoginService } from './login.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface Configuracoes {
+  valorHora: number;
+  valorDiaria: number;
+  valorMensalista: number;
+  arredondamento: number;
+  formaPagamento: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfiguracoesService {
-  private readonly API_URL = window.location.hostname === 'localhost'
+  private apiUrl = window.location.hostname === 'localhost'
     ? 'http://127.0.0.1:8000/api/vagas/configuracoes'
     : 'https://rmtpark-bd.onrender.com/api/vagas/configuracoes';
 
-  constructor(private http: HttpClient, private loginService: LoginService) {}
+  constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = this.loginService.getToken();
-    if (!token) throw new Error('Usuário não autenticado');
-
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+  obterConfiguracoes(): Observable<Configuracoes> {
+    return this.http.get<Configuracoes>(this.apiUrl);
   }
 
-  salvarConfiguracoes(empresa: Empresa): Observable<Empresa> {
-    return this.http.post<Empresa>(this.API_URL, empresa, { headers: this.getHeaders() });
-  }
-
-  obterConfiguracoes(): Observable<Empresa> {
-    return this.http.get<Empresa>(this.API_URL, { headers: this.getHeaders() });
+  salvarConfiguracoes(config: Configuracoes): Observable<Configuracoes> {
+    return this.http.post<Configuracoes>(this.apiUrl, config);
   }
 
   obterValorHora(): Observable<number> {
-    return this.http.get<any>(this.API_URL, { headers: this.getHeaders() }).pipe(
-      map(config => config.valor_hora ?? 10) // fallback se backend não retornar
-    );
+    return new Observable<number>(observer => {
+      this.obterConfiguracoes().subscribe({
+        next: (config) => {
+          observer.next(config.valorHora);
+          observer.complete();
+        },
+        error: () => {
+          observer.next(10); // fallback
+          observer.complete();
+        }
+      });
+    });
   }
 }
