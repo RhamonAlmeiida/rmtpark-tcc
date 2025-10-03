@@ -9,8 +9,8 @@ import { Configuracoes } from '../models/configuracoes';
 })
 export class ConfiguracoesService {
   private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/vagas/configuracoes'
-    : 'https://rmtpark-bd.onrender.com/api/vagas/configuracoes';
+    ? 'http://127.0.0.1:8000/api/vagas/configuracoes/'
+    : 'https://rmtpark-bd.onrender.com/api/vagas/configuracoes/';
 
   constructor(private http: HttpClient) {}
 

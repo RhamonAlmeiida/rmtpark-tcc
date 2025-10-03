@@ -10,8 +10,8 @@ import { VagaSaida } from './vagaSaida';
 })
 export class VagaService {
 private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/vagas'
-    : 'https://rmtpark-bd.onrender.com/api/vagas';
+    ? 'http://127.0.0.1:8000/api/vagas/'
+    : 'https://rmtpark-bd.onrender.com/api/vagas/';
 
 
   constructor(private http: HttpClient, private loginService: LoginService) {}
