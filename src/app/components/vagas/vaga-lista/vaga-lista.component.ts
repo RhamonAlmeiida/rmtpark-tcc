@@ -250,12 +250,19 @@ private enviarSaida(duracaoStr: string, valor: number, saida: Date) {
     formaPag = this.formaPagamento.charAt(0).toUpperCase() + this.formaPagamento.slice(1);
   }
 
- const dados = {
-  saida: this.formatarDataParaMySQL(new Date()), // 'YYYY-MM-DD HH:MM:SS'
-  duracao: this.duracao,
-  valor: this.valorTotal,
-  formaPagamento: this.formaPagamento // 'Dinheiro', 'Cartão' ou 'Pix'
+const now = new Date();
+// Substitua este trecho dentro de enviarSaida:
+const dados: any = {
+  saida: now.toISOString(), // ISO string
+  duracao: this.vagaSelecionada!.tipo === 'Mensalista' ? 'Mensalista ativo' : this.duracao,
+  valor: this.vagaSelecionada!.tipo === 'Mensalista' ? 0 : this.valorTotal,
 };
+
+if (this.vagaSelecionada!.tipo !== 'Mensalista') {
+  dados.formaPagamento = this.formaPagamento;
+}
+
+
 
   const vagaId = this.vagaSelecionada?.id;
 
