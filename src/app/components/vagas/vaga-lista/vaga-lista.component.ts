@@ -7,7 +7,7 @@ import { MensalistaService } from '../../../services/mensalista.service';
 import { ConfiguracoesService } from '../../../services/configuracoes.service';
 import { VagaCadastro } from '../../../models/vaga-cadastro';
 import { Vaga } from '../../../models/vaga';
-import { VagaSaida } from '../../../services/vagaSaida';
+import { Relatorio } from '../../../models/relatorio';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -36,8 +36,8 @@ import { SelectModule } from 'primeng/select';
   styleUrls: ['./vaga-lista.component.scss']
 })
 export class VagaListaComponent implements OnInit {
-  carregandoVagas = false;
 
+  carregandoVagas = false;
   vagas: Vaga[] = [];
   vagaCadastro: VagaCadastro = new VagaCadastro();
   vagaSelecionada: Vaga | null = null;
@@ -52,7 +52,7 @@ export class VagaListaComponent implements OnInit {
   duracao = '';
   valorTotal = 0;
   valorHora = 10;
-  formaPagamento: string | null = null;
+  formaPagamento: 'Dinheiro' | 'Cartão' | 'Pix' | null = null;
 
   constructor(
     private router: Router,
@@ -66,7 +66,7 @@ export class VagaListaComponent implements OnInit {
   ngOnInit(): void {
     this.configuracoesService.obterValorHora().subscribe({
       next: valor => this.valorHora = valor,
-      error: () => this.valorHora = 10 // fallback caso o backend falhe
+      error: () => this.valorHora = 10
     });
     this.carregarVagas();
   }
@@ -81,8 +81,7 @@ export class VagaListaComponent implements OnInit {
 
   private formatarDataParaMySQL(date: Date): string {
     const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} `
-         + `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
   // ======================
@@ -168,22 +167,21 @@ export class VagaListaComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       rejectButtonProps: { label: 'Cancelar', severity: 'secondary', outlined: true },
       acceptButtonProps: { label: 'Saída' },
-      accept: () => this.registrarSaidaComResumo()
+      accept: () => this.registrarSaidaFluxo()
     });
   }
 
-  private registrarSaidaComResumo(): void {
+  private registrarSaidaFluxo(): void {
     if (!this.vagaSelecionada || !this.vagaSelecionada.dataHora) return;
 
     this.dataHoraSaida = new Date();
 
-    // Se for mensalista → finaliza direto
     if (this.vagaSelecionada.tipo === 'Mensalista') {
       this.finalizarSaida();
       return;
     }
 
-    // Diarista
+    // Diarista → abrir modal de resumo
     const diffMs = this.dataHoraSaida.getTime() - this.vagaSelecionada.dataHora.getTime();
     const diffHoras = diffMs / (1000 * 60 * 60);
 
@@ -198,7 +196,7 @@ export class VagaListaComponent implements OnInit {
         this.dialogResumoSaidaVisivel = true;
       },
       error: () => {
-        this.valorHora = 10; // fallback
+        this.valorHora = 10;
       }
     });
   }
@@ -207,40 +205,30 @@ export class VagaListaComponent implements OnInit {
     if (!this.vagaSelecionada) return;
 
     const now = new Date();
-    let dados: VagaSaida;
+    const dados = {
+      saida: this.formatarDataParaMySQL(now),
+      duracao: this.vagaSelecionada.tipo === 'Mensalista' ? 'Mensalista ativo' : this.duracao,
+      valor: this.vagaSelecionada.tipo === 'Mensalista' ? 0 : this.valorTotal,
+      formaPagamento: this.vagaSelecionada.tipo === 'Mensalista' ? null : this.formaPagamento
+    };
 
-    if (this.vagaSelecionada.tipo === 'Mensalista') {
-      dados = {
-        saida: this.formatarDataParaMySQL(now),
-        duracao: 'Mensalista ativo',
-        valor: 0,
-        formaPagamento: null
-      };
-    } else {
-      dados = {
-        saida: this.formatarDataParaMySQL(now),
-        duracao: this.duracao,
-        valor: this.valorTotal,
-        formaPagamento: this.formaPagamento
-      };
-    }
-
-    this.vagaService.registrarSaida(this.vagaSelecionada.id, dados).subscribe({
-      next: vaga => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Saída registrada',
-          detail: `Saída do veículo ${vaga.placa} registrada com sucesso`
-        });
-        this.dialogResumoSaidaVisivel = false;
-        this.carregarVagas();
-        this.vagaSelecionada = null;
-      },
-      error: err => {
-        console.error(err);
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível registrar a saída.' });
-      }
-    });
+    this.vagaService.registrarSaida(this.vagaSelecionada.id, dados)
+      .subscribe({
+        next: (relatorio: Relatorio) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Saída registrada',
+            detail: `Veículo ${relatorio.placa} registrado no relatório`
+          });
+          this.dialogResumoSaidaVisivel = false;
+          this.carregarVagas();
+          this.vagaSelecionada = null;
+        },
+        error: err => {
+          console.error(err);
+          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível registrar a saída.' });
+        }
+      });
   }
 
   // ======================
@@ -250,18 +238,17 @@ export class VagaListaComponent implements OnInit {
     this.carregandoVagas = true;
     this.vagaService.obterTodos().subscribe({
       next: (vagas: any[]) => {
-        this.vagas = vagas.map(v => ({
-            id: v.id,
-            placa: v.placa,
-            tipo: v.tipo,
-            dataHora: v.data_hora ? new Date(v.data_hora) : null,
-            dataHoraSaida: v.data_hora_saida ? new Date(v.data_hora_saida) : null,
-            duracao: v.duracao,
-            valor_pago: v.valor_pago,
-            formaPagamento: v.forma_pagamento,
-            status_pagamento: v.status_pagamento
-          }));
-
+        this.vagas = vagas.map(v => new Vaga(
+          v.id,
+          v.placa,
+          v.tipo,
+          v.data_hora ? new Date(v.data_hora) : null,
+          v.data_hora_saida ? new Date(v.data_hora_saida) : null,
+          v.duracao,
+          v.valor_pago,
+          v.forma_pagamento,
+          v.status_pagamento
+        ));
         this.carregandoVagas = false;
       },
       error: err => {
