@@ -250,18 +250,18 @@ private enviarSaida(duracaoStr: string, valor: number, saida: Date) {
     formaPag = this.formaPagamento.charAt(0).toUpperCase() + this.formaPagamento.slice(1);
   }
 
-  const dados = {
-    saida: this.formatarDataParaMySQL(saida),
-    duracao: duracaoStr,
-    valor: valor,
-    formaPagamento: formaPag
-  };
+ const dados = {
+  saida: this.formatarDataParaMySQL(new Date()), // 'YYYY-MM-DD HH:MM:SS'
+  duracao: this.duracao,
+  valor: this.valorTotal,
+  formaPagamento: this.formaPagamento // 'Dinheiro', 'Cartão' ou 'Pix'
+};
 
   const vagaId = this.vagaSelecionada?.id;
 
-  this.vagaService.registrarSaida(vagaId!, dados)
+  this.vagaService.registrarSaida(this.vagaSelecionada!.id, dados)
     .subscribe({
-      next: (relatorio: Relatorio) => {
+      next: relatorio => {
         this.messageService.add({
           severity: 'success',
           summary: 'Saída registrada',

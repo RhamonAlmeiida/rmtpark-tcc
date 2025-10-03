@@ -22,10 +22,9 @@ export class ConfiguracoesService {
     return this.http.post<Configuracoes>(this.apiUrl, config);
   }
 
-  // NOVO método
-  obterValorHora(): Observable<number> {
-    return this.obterConfiguracoes().pipe(
-      map(config => config.valorHora) // supondo que Configuracoes tem a propriedade valorHora
-    );
-  }
+obterValorHora(): Observable<number> {
+  return this.obterConfiguracoes().pipe(
+    map(config => config?.valorHora ?? 10) // valor default
+  );
+}
 }
