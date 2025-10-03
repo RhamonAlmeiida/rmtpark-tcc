@@ -1,14 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface Configuracoes {
-  valorHora: number;
-  valorDiaria: number;
-  valorMensalista: number;
-  arredondamento: number;
-  formaPagamento: string;
-}
+import { map } from 'rxjs/operators';
+import { Configuracoes } from '../models/configuracoes';
 
 @Injectable({
   providedIn: 'root'
@@ -28,18 +22,10 @@ export class ConfiguracoesService {
     return this.http.post<Configuracoes>(this.apiUrl, config);
   }
 
+  // NOVO método
   obterValorHora(): Observable<number> {
-    return new Observable<number>(observer => {
-      this.obterConfiguracoes().subscribe({
-        next: (config) => {
-          observer.next(config.valorHora);
-          observer.complete();
-        },
-        error: () => {
-          observer.next(10); // fallback
-          observer.complete();
-        }
-      });
-    });
+    return this.obterConfiguracoes().pipe(
+      map(config => config.valorHora) // supondo que Configuracoes tem a propriedade valorHora
+    );
   }
 }

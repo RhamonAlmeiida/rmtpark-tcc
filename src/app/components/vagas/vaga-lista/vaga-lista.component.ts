@@ -64,9 +64,11 @@ export class VagaListaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.configuracoesService.obterValorHora().subscribe({
-      next: valor => this.valorHora = valor
-    });
+   this.configuracoesService.obterValorHora().subscribe({
+    next: valor => this.valorHora = valor,
+    error: () => this.valorHora = 10
+  });
+
     this.carregarVagas();
   }
 
@@ -92,24 +94,12 @@ export class VagaListaComponent implements OnInit {
     this.dialogVisivelCadastrar = true;
   }
 
-  atualizarPlaca(): void {
-    if (this.vagaCadastro.placa)
-      this.vagaCadastro.placa = this.vagaCadastro.placa.toUpperCase();
-    this.verificarTipoPorPlaca(this.vagaCadastro.placa ?? '');
-  }
+atualizarPlaca(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  this.vagaCadastro.placa = input.value.toUpperCase();
+}
 
-  private verificarTipoPorPlaca(placa: string): void {
-    if (!placa) return;
-    this.mensalistaService.obterTodos().subscribe({
-      next: mensalistas => {
-        const encontrado = mensalistas.find(
-          m => m.placa.replace('-', '').toUpperCase() === placa.replace('-', '').toUpperCase()
-        );
-        this.vagaCadastro.tipo = encontrado ? 'Mensalista' : 'Diarista';
-      },
-      error: () => this.vagaCadastro.tipo = 'Diarista'
-    });
-  }
+
 
   salvar(): void {
     const placa = (this.vagaCadastro.placa ?? '').toUpperCase().trim();
@@ -120,21 +110,25 @@ export class VagaListaComponent implements OnInit {
     this.vagaCadastro.placa = placa;
     this.vagaCadastro.dataHora = new Date();
 
-    this.vagaService.obterTodos().subscribe({
-      next: vagas => {
-        const placaEmUso = vagas.find((v: Vaga) =>
-          v.placa.replace('-', '').toUpperCase() === placa && !v.dataHoraSaida
-        );
-        if (placaEmUso) {
-          this.messageService.add({ severity: 'warn', summary: 'Placa em uso', detail: 'Já existe um veículo com essa placa estacionado.' });
-          return;
-        }
+    // Obtem mensalistas para determinar tipo
+    this.mensalistaService.obterTodos().subscribe({
+      next: mensalistas => {
+        const mensalistaEncontrado = mensalistas.find(m => m.placa.replace('-', '').toUpperCase() === placa);
+        this.vagaCadastro.tipo = mensalistaEncontrado ? 'Mensalista' : 'Diarista';
 
-        this.mensalistaService.obterTodos().subscribe({
-          next: mensalistas => {
-            const mensalistaEncontrado = mensalistas.find(m => m.placa.replace('-', '').toUpperCase() === placa);
-            this.vagaCadastro.tipo = mensalistaEncontrado ? 'Mensalista' : 'Diarista';
+        // Verifica se a placa já está em uso
+        this.vagaService.obterTodos().subscribe({
+          next: vagas => {
+            const placaEmUso = vagas.find((v: Vaga) =>
+  v.placa.replace('-', '').toUpperCase() === placa && !v.dataHoraSaida
+);
 
+            if (placaEmUso) {
+              this.messageService.add({ severity: 'warn', summary: 'Placa em uso', detail: 'Já existe um veículo com essa placa estacionado.' });
+              return;
+            }
+
+            // Cadastra a vaga
             this.vagaService.cadastrar(this.vagaCadastro).subscribe({
               next: () => {
                 this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Veículo cadastrado com sucesso' });
@@ -148,6 +142,9 @@ export class VagaListaComponent implements OnInit {
             });
           }
         });
+      },
+      error: () => {
+        this.vagaCadastro.tipo = 'Diarista';
       }
     });
   }
@@ -176,11 +173,12 @@ export class VagaListaComponent implements OnInit {
     this.dataHoraSaida = new Date();
 
     if (this.vagaSelecionada.tipo === 'Mensalista') {
+      // Mensalista → registra saída direto
       this.finalizarSaida();
       return;
     }
 
-    // Diarista → abrir modal de resumo
+    // Diarista → abre modal de resumo
     const diffMs = this.dataHoraSaida.getTime() - this.vagaSelecionada.dataHora.getTime();
     const diffHoras = diffMs / (1000 * 60 * 60);
 
@@ -196,6 +194,11 @@ export class VagaListaComponent implements OnInit {
       },
       error: () => {
         this.valorHora = 10;
+        this.valorTotal = Math.ceil(diffHoras) * this.valorHora;
+        const minutos = Math.round((diffHoras % 1) * 60);
+        this.duracao = `${Math.floor(diffHoras)}h ${minutos}min`;
+
+        this.dialogResumoSaidaVisivel = true;
       }
     });
   }
@@ -256,4 +259,7 @@ export class VagaListaComponent implements OnInit {
       }
     });
   }
+
+  
+
 }

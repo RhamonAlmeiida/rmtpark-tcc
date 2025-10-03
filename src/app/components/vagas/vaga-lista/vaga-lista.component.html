@@ -48,15 +48,16 @@
   <div class="form-container">
     <div>
       <label for="placa">Placa:</label>
-      <input
-        id="placa"
-        pInputText
-        class="input-dark"
-        [(ngModel)]="vagaCadastro.placa"
-        maxlength="7"
-        (input)="atualizarPlaca()"
-        placeholder="ABC1234"
-      />
+     <input
+  id="placa"
+  pInputText
+  class="input-dark"
+  [(ngModel)]="vagaCadastro.placa"
+  maxlength="7"
+  (input)="atualizarPlaca($event)"
+  placeholder="ABC1234"
+/>
+
     </div>
 
     <div>
