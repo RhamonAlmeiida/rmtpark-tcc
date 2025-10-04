@@ -46,18 +46,19 @@ export class ConfiguracoesComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit(): void {
-    this.configuracoesService.obterConfiguracoes().subscribe(
-      (dados) => {
-        this.empresa = dados;
-        localStorage.setItem('config_empresa', JSON.stringify(dados));
-      },
-      () => {
-        const local = localStorage.getItem('config_empresa');
-        if (local) this.empresa = JSON.parse(local);
-      }
-    );
-  }
+ngOnInit(): void {
+  this.configuracoesService.obterConfiguracoes().subscribe(
+    (dados) => {
+      this.empresa = dados;
+      localStorage.setItem('config_empresa', JSON.stringify(dados));
+    },
+    () => {
+      console.warn('Configuração não encontrada, criando padrão...');
+      this.criarConfiguracoesPadrao();
+    }
+  );
+}
+
 
   SalvarConfiguracoes() {
     this.configuracoesService.salvarConfiguracoes(this.empresa).subscribe(
@@ -71,5 +72,36 @@ export class ConfiguracoesComponent implements OnInit {
   testarImpressao() {
   console.log('Teste de impressão acionado!');
 }
+private criarConfiguracoesPadrao(): void {
+  const configPadrao: Configuracoes = {
+    valorHora: 10,
+    valorDiaria: 50,
+    valorMensalista: 300,
+    arredondamento: 15,
+    formaPagamento: 'Pix',
+    nome: '',
+    fantasia: '',   // ← adiciona aqui
+    cnpj: '',
+    endereco: '',
+    cidade: '',
+    estado: '',
+    cep: '',
+    rodape: '',
+    pix: ''
+  };
+
+  this.configuracoesService.salvarConfiguracoes(configPadrao).subscribe({
+    next: (dados) => {
+      this.empresa = dados;
+      localStorage.setItem('config_empresa', JSON.stringify(dados));
+      this.messageService.add({ severity: 'success', summary: 'Configuração criada', detail: 'Configuração padrão criada com sucesso.' });
+    },
+    error: (err) => {
+      console.error('Erro ao criar configuração padrão', err);
+      this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível criar configuração padrão.' });
+    }
+  });
+}
+
 
 }

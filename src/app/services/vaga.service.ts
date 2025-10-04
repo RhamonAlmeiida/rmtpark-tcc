@@ -47,7 +47,7 @@ deletar(id: number): Observable<void> {
 }
 
 registrarSaida(vagaId: number, dados: any): Observable<any> {
-  return this.http.put<any>(`${this.apiUrl}/${vagaId}/saida`, dados, { headers: this.getHeaders() });
+  return this.http.put<any>(`${this.apiUrl}${vagaId}/saida`, dados, { headers: this.getHeaders() });
 }
 
 

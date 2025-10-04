@@ -94,10 +94,13 @@ export class VagaListaComponent implements OnInit {
     this.dialogVisivelCadastrar = true;
   }
 
-atualizarPlaca(event: Event): void {
+ atualizarPlaca(event?: Event): void {
+  if (!event) return;
   const input = event.target as HTMLInputElement;
   this.vagaCadastro.placa = input.value.toUpperCase();
 }
+
+
 
 
 
@@ -134,6 +137,22 @@ salvar(): void {
     }
   });
 }
+
+confirmaSaida(event: Event, id: number): void {
+  const vaga = this.vagas.find(v => v.id === id);
+  if (!vaga) return;
+
+  this.confirmationService.confirm({
+    target: event.target ?? undefined, // garante que nunca seja null
+    message: 'Deseja realmente registrar a saída?',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      this.vagaSelecionada = vaga;
+      this.registrarSaidaFluxo();
+    }
+  });
+}
+
 
   private registrarSaidaFluxo(): void {
     if (!this.vagaSelecionada || !this.vagaSelecionada.dataHora) return;
@@ -212,53 +231,45 @@ finalizarSaida(): void {
 
 // Função separada para enviar a saída e atualizar UI
 private enviarSaida(duracaoStr: string, valor: number, saida: Date) {
-  let formaPag: string | null = null;
+  if (!this.vagaSelecionada) return;
 
-  if (this.vagaSelecionada?.tipo === 'Diarista' && this.formaPagamento) {
-    formaPag = this.formaPagamento.charAt(0).toUpperCase() + this.formaPagamento.slice(1);
+  const dados: any = {
+    saida: saida.toISOString(),
+    duracao: duracaoStr,
+    valor: valor
+  };
+
+  if (this.vagaSelecionada.tipo === 'Diarista' && this.formaPagamento) {
+    dados.formaPagamento = this.formaPagamento.charAt(0).toUpperCase() + this.formaPagamento.slice(1);
   }
 
-const now = new Date();
-// Substitua este trecho dentro de enviarSaida:
-const dados: any = {
-  saida: now.toISOString(), // ISO string
-  duracao: this.vagaSelecionada!.tipo === 'Mensalista' ? 'Mensalista ativo' : this.duracao,
-  valor: this.vagaSelecionada!.tipo === 'Mensalista' ? 0 : this.valorTotal,
-};
+  const vagaId = this.vagaSelecionada.id;
 
-if (this.vagaSelecionada!.tipo !== 'Mensalista') {
-  dados.formaPagamento = this.formaPagamento;
+  this.vagaService.registrarSaida(vagaId, dados).subscribe({
+    next: (res: any) => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Saída registrada',
+        detail: `Veículo ${res.placa ?? ''} registrado no relatório`
+      });
+
+      this.dialogResumoSaidaVisivel = false;
+      this.vagaSelecionada = null;
+
+      // Remove da tabela imediatamente
+      this.vagas = this.vagas.filter(v => v.id !== vagaId);
+    },
+    error: err => {
+      console.error(err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível registrar a saída.'
+      });
+    }
+  });
 }
 
-
-
-  const vagaId = this.vagaSelecionada?.id;
-
-  this.vagaService.registrarSaida(this.vagaSelecionada!.id, dados)
-    .subscribe({
-      next: relatorio => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Saída registrada',
-          detail: `Veículo ${relatorio.placa} registrado no relatório`
-        });
-
-        this.dialogResumoSaidaVisivel = false;
-        this.vagaSelecionada = null;
-
-        // Atualiza tabela localmente
-        this.vagas = this.vagas.filter(v => v.id !== vagaId);
-      },
-      error: err => {
-        console.error(err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível registrar a saída.'
-        });
-      }
-    });
-}
 
 
 
