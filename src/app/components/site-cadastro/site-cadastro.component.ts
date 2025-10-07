@@ -50,29 +50,35 @@ export class SiteCadastroComponent implements OnInit {
   carregando: boolean = false;
 
   planos: Plano[] = [
-    { label: 'Básico', preco: 'R$ 199,00/mês', descricao: [
-      'Controle de até 50 vagas',
-      'Relatórios básicos',
-      'Suporte por email',
-      'Atualizações gratuitas'] },
-
-    { label: 'Profissional', preco: 'R$ 299,00/mês', descricao: [
-      'Controle de até 150 vagas',
-      'Relatórios avançados',
-      'Suporte prioritário',
-      'Gestão de mensalistas',
-      'Aplicativo móvel'] },
-
-    { label: 'Empresarial', preco: 'R$ 499,00/mês', descricao: [
-      'Vagas ilimitadas',
-      'Relatórios personalizados',
-      'Suporte 24/7',
-      'Gestão multi-estacionamentos',
-      'Integração com sistemas de pagamento',
-      'API para integrações'] },
+    {
+      label: 'Básico', preco: 'R$ 199,00/mês', descricao: [
+        'Controle de até 50 vagas',
+        'Relatórios básicos',
+        'Suporte por email',
+        'Atualizações gratuitas'
+      ]
+    },
+    {
+      label: 'Profissional', preco: 'R$ 299,00/mês', descricao: [
+        'Controle de até 150 vagas',
+        'Relatórios avançados',
+        'Suporte prioritário',
+        'Gestão de mensalistas',
+        'Aplicativo móvel'
+      ]
+    },
+    {
+      label: 'Empresarial', preco: 'R$ 499,00/mês', descricao: [
+        'Vagas ilimitadas',
+        'Relatórios personalizados',
+        'Suporte 24/7',
+        'Gestão multi-estacionamentos',
+        'Integração com sistemas de pagamento',
+        'API para integrações'
+      ]
+    },
   ];
 
-  // Getter para manter o mesmo HTML com "cadastro.xxx"
   get cadastro() {
     return this.cadastroForm.value;
   }
@@ -91,20 +97,23 @@ export class SiteCadastroComponent implements OnInit {
       cnpj: ['', Validators.required],
       senha: ['', [Validators.required, Validators.minLength(6)]],
       aceite: [false, Validators.requiredTrue],
-      plano: ['Gold', Validators.required]
+      plano: [this.planos[0], Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['plano']) {
-        this.planoSelecionado = params['plano'];
-        this.cadastroForm.patchValue({ plano: this.planoSelecionado });
+        const planoEncontrado = this.planos.find(p => p.label === params['plano']);
+        if (planoEncontrado) {
+          this.planoSelecionado = planoEncontrado.label;
+          this.cadastroForm.patchValue({ plano: planoEncontrado });
+        }
       }
     });
   }
 
- cadastrar() {
+  cadastrar() {
     if (this.cadastroForm.invalid) {
       this.messageService.add({ 
         severity: 'warn', 
@@ -116,7 +125,7 @@ export class SiteCadastroComponent implements OnInit {
 
     const formValue = this.cadastroForm.value;
 
-    // Mapear plano para o formato esperado pelo backend
+    // Garantir que o plano é enviado como objeto
     const planoBackend = {
       titulo: formValue.plano.label,
       preco: formValue.plano.preco,
@@ -137,12 +146,16 @@ export class SiteCadastroComponent implements OnInit {
         if (res.pagamento_link) {
           window.location.href = res.pagamento_link;
         } else {
+          // Exibe toast antes de navegar
           this.messageService.add({
             severity: 'success',
             summary: 'Sucesso',
             detail: 'Cadastro realizado! Confirme seu e-mail antes de acessar.'
           });
-          this.router.navigate(['/login']);
+
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1500);
         }
       },
       error: (err) => {
@@ -156,8 +169,6 @@ export class SiteCadastroComponent implements OnInit {
       }
     });
   }
-
-
 
   voltarPagina() {
     this.router.navigate(['/']);

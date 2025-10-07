@@ -4,11 +4,12 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { ButtonModule } from 'primeng/button';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ButtonModule, NavbarComponent, CommonModule],
+  imports: [RouterOutlet, ButtonModule, NavbarComponent, CommonModule, ToastModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
