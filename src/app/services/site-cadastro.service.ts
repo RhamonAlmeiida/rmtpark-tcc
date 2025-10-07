@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SiteCadastro, SiteCadastroCreate } from '../models/site-cadastro';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +9,12 @@ import { environment } from '../../environments/environment';
 export class SiteCadastroService {  
   urlAPI = window.location.hostname === 'localhost'
     ? 'http://127.0.0.1:8000/api/empresa'
-    : 'https://rmtpark-bd.onrender.com/api/empresa';;
+    : 'https://rmtpark-bd.onrender.com/api/empresa';
 
   constructor(private http: HttpClient) {}
 
-  cadastrar(dados: any): Observable<any> {
-    return this.http.post(this.urlAPI, dados);
+  cadastrar(dados: SiteCadastroCreate): Observable<SiteCadastro> {
+    return this.http.post<SiteCadastro>(this.urlAPI, dados);
   }
 
   obterTodos(): Observable<SiteCadastro[]> {

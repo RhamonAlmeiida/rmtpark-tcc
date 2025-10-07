@@ -2,8 +2,7 @@
 
 <div class="cadastro-container">
   <div class="page-bg">
-    <p-button label="Página Principal" (click)="voltarPagina()" icon="pi pi-arrow-left">
-    </p-button>
+    <p-button label="Página Principal" (click)="voltarPagina()" icon="pi pi-arrow-left"></p-button>
   </div>
 
   <!-- Coluna Esquerda -->
@@ -23,49 +22,64 @@
 
   <!-- Coluna Direita -->
   <div class="cadastro-form">
-    <p>
-      Preencha os dados abaixo para realizar o seu cadastro e entraremos em contato:
-    </p>
+    <p>Preencha os dados abaixo para realizar o seu cadastro e entraremos em contato:</p>
 
-    <!-- 👇 Formulário Angular -->
-    <div class="form">
+    <form [formGroup]="cadastroForm" class="form">
       <div class="input-group">
-        <input type="text" placeholder="Nome" required name="nome" [(ngModel)]="cadastro.nome" autocomplete="name" />
+        <input type="text" placeholder="Nome" required formControlName="nome" autocomplete="name" />
       </div>
 
       <div class="input-group">
-        <input type="email" placeholder="Email" required name="email" [(ngModel)]="cadastro.email"
-          autocomplete="email" />
+        <input type="email" placeholder="Email" required formControlName="email" autocomplete="email" />
       </div>
 
       <div class="input-group">
-        <p-inputmask mask="(99) 99999-9999" required [(ngModel)]="cadastro.telefone" placeholder="(99) 99999-9999" />
+        <p-inputmask mask="(99) 99999-9999" required formControlName="telefone" placeholder="(99) 99999-9999" />
       </div>
 
       <div class="input-group">
-        <p-inputmask mask="99.999.999/9999-99" required [(ngModel)]="cadastro.cnpj" placeholder="99.999.999/9999-99" />
+        <p-inputmask mask="99.999.999/9999-99" required formControlName="cnpj" placeholder="99.999.999/9999-99" />
       </div>
 
       <div class="input-group">
-        <input type="password" placeholder="Senha" name="senha" required [(ngModel)]="cadastro.senha"
-          autocomplete="new-password" />
+        <input type="password" placeholder="Senha" required formControlName="senha" autocomplete="new-password" />
+      </div>
+
+      <!-- 🔹 Campo de Plano -->
+      <div class="planos-section">
+        <label for="plano">Selecione um plano:</label>
+        <p-dropdown 
+          [options]="planos" 
+          formControlName="plano" 
+          optionLabel="label" 
+          placeholder="Escolha seu plano"
+          class="w-full">
+        </p-dropdown>
+
+        <div *ngIf="cadastroForm.get('plano')?.value" class="plano-resumo">
+          <h3>{{ cadastroForm.get('plano')?.value.label }}</h3>
+          <p class="preco">{{ cadastroForm.get('plano')?.value.preco }}</p>
+          <ul>
+            <li *ngFor="let item of cadastroForm.get('plano')?.value.descricao">
+              <i class="pi pi-check-circle"></i> {{ item }}
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="checkbox">
-        <input type="checkbox" id="privacy" [(ngModel)]="cadastro.aceite" name="aceite" required />
+        <input type="checkbox" id="privacy" formControlName="aceite" required />
         <label for="privacy">
           Estou de acordo com a <a href="#">Política de Privacidade</a>
         </label>
       </div>
 
-      <button type="button" class="btn-submit" (click)="finalizarCadastro()">
+      <button type="button" class="btn-submit" (click)="cadastrar()">
         Finalizar <i class="pi pi-arrow-right"></i>
       </button>
-    </div>
+    </form>
 
-    <small>
-      Prometemos não utilizar suas informações de contato para enviar qualquer tipo de SPAM
-    </small>
+    <small>Prometemos não utilizar suas informações de contato para enviar SPAM</small>
   </div>
 </div>
 

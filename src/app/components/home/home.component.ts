@@ -27,64 +27,61 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-
   loadingIndex: number | null = null; 
 
-  
-    posts = [
-  {
-    imagem: 'assets/blog1.jpg',
-    tempoLeitura: '6 min leitura',
-    data: '6 maio 2025',
-    titulo: 'Como evitar perdas com a cobrança manual de estacionamentos',
-    resumo: 'A cobrança em estacionamentos pode gerar erros e prejuízos. Saiba como minimizar perdas com soluções mais...',
-    link: '/blog'
-  },
-  {
-    imagem: 'assets/blog2.jpg',
-    tempoLeitura: '6 min leitura',
-    data: '6 maio 2025',
-    titulo: 'Estacionamento 24h: como manter a operação segura',
-    resumo: 'Um estacionamento 24 horas exige protocolos rigorosos de segurança. Entenda como proteger a operação, os clientes...',
-    link: '/blog1'
-  },
-  {
-    imagem: 'assets/blog3.jpg',
-    tempoLeitura: '5 min leitura',
-    data: '6 maio 2025',
-    titulo: 'Sazonalidade em estacionamento: como se preparar para picos e quedas',
-    resumo: 'A sazonalidade no estacionamento afeta o volume de clientes. Veja como prever os ciclos e manter a lucratividade...',
-    link: '/blog2'
-  }
-];
+  posts = [
+    {
+      imagem: 'assets/blog1.jpg',
+      tempoLeitura: '6 min leitura',
+      data: '6 maio 2025',
+      titulo: 'Como evitar perdas com a cobrança manual de estacionamentos',
+      resumo: 'A cobrança em estacionamentos pode gerar erros e prejuízos. Saiba como minimizar perdas com soluções mais...',
+      link: '/blog'
+    },
+    {
+      imagem: 'assets/blog2.jpg',
+      tempoLeitura: '6 min leitura',
+      data: '6 maio 2025',
+      titulo: 'Estacionamento 24h: como manter a operação segura',
+      resumo: 'Um estacionamento 24 horas exige protocolos rigorosos de segurança. Entenda como proteger a operação, os clientes...',
+      link: '/blog1'
+    },
+    {
+      imagem: 'assets/blog3.jpg',
+      tempoLeitura: '5 min leitura',
+      data: '6 maio 2025',
+      titulo: 'Sazonalidade em estacionamento: como se preparar para picos e quedas',
+      resumo: 'A sazonalidade no estacionamento afeta o volume de clientes. Veja como prever os ciclos e manter a lucratividade...',
+      link: '/blog2'
+    }
+  ];
 
   recursos = [
-  { icone: 'pi pi-car', titulo: 'Controle total', descricao: 'Gerencie todas as vagas em tempo real' },
-  { icone: 'pi pi-chart-line', titulo: 'Relatórios inteligentes', descricao: 'Visualize indicadores e aumente sua receita' },
-  { icone: 'pi pi-lock', titulo: 'Segurança', descricao: 'Acesso seguro e dados protegidos' }
-];
+    { icone: 'pi pi-car', titulo: 'Controle total', descricao: 'Gerencie todas as vagas em tempo real' },
+    { icone: 'pi pi-chart-line', titulo: 'Relatórios inteligentes', descricao: 'Visualize indicadores e aumente sua receita' },
+    { icone: 'pi pi-lock', titulo: 'Segurança', descricao: 'Acesso seguro e dados protegidos' }
+  ];
 
-depoimentos = [
-  {
-    texto: 'O sistema RMT Park revolucionou a forma como gerencio meu estacionamento!',
-    nome: 'João da Silva',
-    cargo: 'Gerente',
-    empresa: 'Estaciona Fácil'
-  },
-  {
-    texto: 'Simples, rápido e confiável. Aumentou minha receita em 30% em 3 meses.',
-    nome: 'Maria Oliveira',
-    cargo: 'Proprietária',
-    empresa: 'Parking Center'
-  },
-  {
-    texto: 'O suporte é excelente e o sistema muito fácil de usar.',
-    nome: 'Carlos Santos',
-    cargo: 'Administrador',
-    empresa: 'City Park'
-  }
-];
-
+  depoimentos = [
+    {
+      texto: 'O sistema RMT Park revolucionou a forma como gerencio meu estacionamento!',
+      nome: 'João da Silva',
+      cargo: 'Gerente',
+      empresa: 'Estaciona Fácil'
+    },
+    {
+      texto: 'Simples, rápido e confiável. Aumentou minha receita em 30% em 3 meses.',
+      nome: 'Maria Oliveira',
+      cargo: 'Proprietária',
+      empresa: 'Parking Center'
+    },
+    {
+      texto: 'O suporte é excelente e o sistema muito fácil de usar.',
+      nome: 'Carlos Santos',
+      cargo: 'Administrador',
+      empresa: 'City Park'
+    }
+  ];
 
   planos = [
     {
@@ -123,8 +120,6 @@ depoimentos = [
       ],
       destaque: false
     }
-
-    
   ];
 
   constructor(private router: Router, private messageService: MessageService) {}
@@ -136,26 +131,37 @@ depoimentos = [
   direcionarCadastro() {
     this.router.navigate(['/site-cadastro']);
   }
-      direcionarblog(){
-    this.router.navigate(['/blog'])
-    
+
+  direcionarblog() {
+    this.router.navigate(['/blog']);
   }
 
-  contratarPlano(index: number) {
-    this.loadingIndex = index; 
+contratarPlano(index: number) {
+  const planoSelecionado = this.planos[index];
+  this.loadingIndex = index;
 
-    
-    setTimeout(() => {
-      this.loadingIndex = null; 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Plano contratado',
-        detail: `Você contratou o plano ${this.planos[index].titulo}`
-      });
-    }, 2000);
-  }
-  irParaPost(link: string) {
-  this.router.navigate([link]);
+  // Simula carregamento
+  setTimeout(() => {
+    this.loadingIndex = null;
+
+    // Salva o plano no localStorage caso queira persistir
+    localStorage.setItem('planoSelecionado', planoSelecionado.titulo);
+
+    // Redireciona para SiteCadastro já com o plano selecionado via queryParams
+    this.router.navigate(['/site-cadastro'], {
+      queryParams: { plano: planoSelecionado.titulo }
+    });
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Plano selecionado',
+      detail: `Você escolheu o plano ${planoSelecionado.titulo}`
+    });
+  }, 500);
 }
 
+
+  irParaPost(link: string) {
+    this.router.navigate([link]);
+  }
 }

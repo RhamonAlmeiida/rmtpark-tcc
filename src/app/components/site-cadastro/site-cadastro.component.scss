@@ -431,4 +431,27 @@ a {
   .footer-content {
     flex-direction: column;
   }
+
+  .label-plano {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #111;
+  color: #eee;
+  outline: none;
+  font-size: 15px;
+
+  option {
+    color: #000;
+  }
+}
+
 }

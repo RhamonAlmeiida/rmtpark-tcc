@@ -1,91 +1,165 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DialogModule } from 'primeng/dialog';
-import { MessageModule } from 'primeng/message';
-import { ToastModule } from 'primeng/toast';
-import { InputMaskModule } from 'primeng/inputmask';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SiteCadastroService } from '../../services/site-cadastro.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { TagModule } from 'primeng/tag';
+import { InputTextModule } from 'primeng/inputtext';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputMaskModule } from 'primeng/inputmask';
+import { MessageService } from 'primeng/api';
+
+interface Plano {
+  label: string;
+  preco: string;
+  descricao: string[];
+}
 
 @Component({
   selector: 'app-site-cadastro',
+  templateUrl: './site-cadastro.component.html',
+  styleUrls: ['./site-cadastro.component.scss'],
   standalone: true,
   imports: [
-    FormsModule,
-    ToastModule,
-    MessageModule,
-    RouterModule,
-    DialogModule,
-    ButtonModule,
-    CardModule,
-    InputMaskModule,
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    TableModule,
+    ToastModule,
+    ConfirmDialogModule,
+    DialogModule,
+    TagModule,
+    InputTextModule,
+    CalendarModule,
+    DropdownModule,
+    InputMaskModule
   ],
-  providers: [ConfirmationService, MessageService],
-  templateUrl: './site-cadastro.component.html',
-  styleUrls: ['./site-cadastro.component.scss']
+  providers: [MessageService]
 })
-export class SiteCadastroComponent {
+export class SiteCadastroComponent implements OnInit {
+  cadastroForm: FormGroup;
+  planoSelecionado: string = 'Gold';
+  carregando: boolean = false;
 
-  cadastro = {
-  nome: '',
-  email: '',
-  telefone: '',
-  cnpj: '',
-  senha: '',
-  aceite: false
-};
+  planos: Plano[] = [
+    { label: 'Básico', preco: 'R$ 199,00/mês', descricao: [
+      'Controle de até 50 vagas',
+      'Relatórios básicos',
+      'Suporte por email',
+      'Atualizações gratuitas'] },
 
+    { label: 'Profissional', preco: 'R$ 299,00/mês', descricao: [
+      'Controle de até 150 vagas',
+      'Relatórios avançados',
+      'Suporte prioritário',
+      'Gestão de mensalistas',
+      'Aplicativo móvel'] },
 
-  constructor(
-    private siteCadastroService: SiteCadastroService,
-    private router: Router,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService,
-  ) {}
+    { label: 'Empresarial', preco: 'R$ 499,00/mês', descricao: [
+      'Vagas ilimitadas',
+      'Relatórios personalizados',
+      'Suporte 24/7',
+      'Gestão multi-estacionamentos',
+      'Integração com sistemas de pagamento',
+      'API para integrações'] },
+  ];
 
-  voltarPagina() {
-    this.router.navigate(['/home']);
+  // Getter para manter o mesmo HTML com "cadastro.xxx"
+  get cadastro() {
+    return this.cadastroForm.value;
   }
 
-  finalizarCadastro() {
-    if (!this.cadastro.nome || !this.cadastro.email || !this.cadastro.senha) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Atenção',
-        detail: 'Preencha todos os campos obrigatórios!'
+  constructor(
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private router: Router,
+    private siteCadastroService: SiteCadastroService,
+    private messageService: MessageService
+  ) {
+    this.cadastroForm = this.fb.group({
+      nome: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      telefone: ['', Validators.required],
+      cnpj: ['', Validators.required],
+      senha: ['', [Validators.required, Validators.minLength(6)]],
+      aceite: [false, Validators.requiredTrue],
+      plano: ['Gold', Validators.required]
+    });
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['plano']) {
+        this.planoSelecionado = params['plano'];
+        this.cadastroForm.patchValue({ plano: this.planoSelecionado });
+      }
+    });
+  }
+
+ cadastrar() {
+    if (this.cadastroForm.invalid) {
+      this.messageService.add({ 
+        severity: 'warn', 
+        summary: 'Atenção', 
+        detail: 'Preencha todos os campos corretamente!' 
       });
       return;
     }
-  
-    // Remove a formatação do CNPJ antes de enviar
-    const cadastroFormatado = {
-      ...this.cadastro,
-      cnpj: this.cadastro.cnpj.replace(/\D/g, '')  // Remove tudo que não for número
+
+    const formValue = this.cadastroForm.value;
+
+    // Mapear plano para o formato esperado pelo backend
+    const planoBackend = {
+      titulo: formValue.plano.label,
+      preco: formValue.plano.preco,
+      recursos: formValue.plano.descricao,
+      destaque: formValue.plano.label === 'Empresarial'
     };
-  
-    this.siteCadastroService.cadastrar(cadastroFormatado).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Cadastro realizado',
-          detail: 'Entraremos em contato em breve!'
-        });
-        this.router.navigate(['/login']);
+
+    const payload = {
+      ...formValue,
+      plano: planoBackend
+    };
+
+    this.carregando = true;
+    this.siteCadastroService.cadastrar(payload).subscribe({
+      next: (res: any) => {
+        this.carregando = false;
+
+        if (res.pagamento_link) {
+          window.location.href = res.pagamento_link;
+        } else {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Cadastro realizado! Confirme seu e-mail antes de acessar.'
+          });
+          this.router.navigate(['/login']);
+        }
       },
       error: (err) => {
-        const detalhe = err.error?.detail || 'CNPJ já cadastrado!';
+        this.carregando = false;
+        console.error(err);
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
-          detail: detalhe
+          detail: err.error?.detail || 'Erro ao cadastrar. Verifique os dados.'
         });
       }
     });
   }
-  
+
+
+
+  voltarPagina() {
+    this.router.navigate(['/']);
+  }
 }

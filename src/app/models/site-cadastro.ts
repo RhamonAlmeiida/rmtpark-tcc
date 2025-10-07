@@ -4,8 +4,16 @@ export interface SiteCadastroCreate {
   telefone: string;
   cnpj: string;
   senha: string;
-  aceite?: boolean;
+  aceite: boolean;
+  plano: {
+    titulo: string;
+    preco: string;
+    recursos: string[];
+    destaque: boolean;
+  };
 }
+
+
 
 export interface SiteCadastro {
   id: number;
@@ -14,4 +22,11 @@ export interface SiteCadastro {
   telefone: string;
   cnpj: string;
   email_confirmado: boolean;
+}
+
+export interface SiteCadastro extends SiteCadastroCreate {
+  id: number;
+  pagamento_link?: string;
+  status_pagamento?: string;
+  criado_em?: Date;
 }
