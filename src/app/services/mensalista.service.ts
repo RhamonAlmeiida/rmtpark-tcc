@@ -15,15 +15,15 @@ export class MensalistaService {
 
   constructor(private http: HttpClient, private loginService: LoginService) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = this.loginService.getToken();
-    if (!token) throw new Error('Usuário não autenticado');
+private getHeaders(): HttpHeaders {
+  const token = this.loginService.getToken();
+  if (!token) throw new Error('Usuário não autenticado');
 
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-  }
+  return new HttpHeaders({
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  });
+}
 
   cadastrar(mensalista: MensalistaCadastro): Observable<Mensalista> {
     return this.http.post<Mensalista>(this.API_URL, mensalista, { headers: this.getHeaders() });

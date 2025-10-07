@@ -1,36 +1,6 @@
-
-.input-dark {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
-  padding: 0.75rem !important;
-  border-radius: 0.5rem !important;
-}
-
-::ng-deep .p-inputtext::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-::ng-deep .p-dialog.custom-dark-dialog .p-dialog-content {
-  background-color: #1e1e1e;
-  color: white;
-}
-.p-button-success {
-  background-color: #00c853 !important;
-  color: white !important;
-  border: none !important;
-}
-.botao-azul {
-  background-color: #2196f3 !important; // azul
-  color: white !important;
-  border: none !important;
-}
-.botao-azul {
-  background-color: #007bff !important;
-  border: none !important;
-  color: white !important;
-}
-
+// ==============================================
+// ESTILO ESCURO - INPUTS, BOTÕES E MODAIS
+// ==============================================
 
 // ----------------------------------------------
 // Variáveis de breakpoint
@@ -40,14 +10,15 @@ $lg: 992px;
 $xl: 1200px;
 
 // ----------------------------------------------
-// Input e formulário responsivo
+// Inputs escuros
 .input-dark {
-  background-color: #2c2c2c;
-  border: 1px solid #444;
-  color: #fff;
-  padding: 0.5rem;
-  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  padding: 0.25rem 0.5rem !important; // padding interno menor
+  border-radius: 0.5rem !important;
   width: 100%;
+  margin-bottom: 0.25rem !important; // espaço entre inputs
 
   &:focus {
     border-color: #007ad9;
@@ -55,6 +26,11 @@ $xl: 1200px;
   }
 }
 
+::ng-deep .p-inputtext::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+// Calendário customizado
 .custom-calendar {
   .p-inputtext {
     @extend .input-dark;
@@ -62,7 +38,24 @@ $xl: 1200px;
 }
 
 // ----------------------------------------------
-// Modal responsivo
+// Botões
+.p-button-success,
+.botao-azul {
+  border: none !important;
+  color: white !important;
+  margin: 0.25rem; // espaço menor entre botões
+}
+
+.p-button-success {
+  background-color: #00c853 !important;
+}
+
+.botao-azul {
+  background-color: #007bff !important;
+}
+
+// ----------------------------------------------
+// Modal / Dialog
 .custom-dark-dialog {
   ::ng-deep .p-dialog {
     width: 100% !important;
@@ -72,7 +65,7 @@ $xl: 1200px;
     }
 
     .p-dialog-content {
-      padding: 1.5rem;
+      padding: 0.5rem 1rem; // padding menor e mais compacto
       background-color: #1e1e1e;
       color: white;
     }
@@ -81,8 +74,54 @@ $xl: 1200px;
       background-color: #1e1e1e;
       color: white;
       border-bottom: 1px solid #333;
+      padding: 0.5rem 1rem;
     }
   }
 }
 
+// ----------------------------------------------
+// Grid/formulário compacto
+.grid-compact {
+  gap: 0.25rem !important; // reduz espaço entre linhas/colunas
+  padding: 0.5rem !important; // padding interno do container
+}
 
+// Labels compactos
+label {
+  margin-bottom: 0.25rem !important;
+}
+
+// ----------------------------------------------
+// Containers flex e grid gerais
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem; // espaço menor entre elementos
+}
+
+.grid-container {
+  display: grid;
+  gap: 0.5rem;
+}
+
+// ----------------------------------------------
+// Geral
+body, html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  scroll-behavior: smooth;
+  background-color: #121212; // fundo escuro
+}
+
+// Links
+a {
+  color: #2196f3;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
