@@ -8,11 +8,13 @@ import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { DropdownModule } from 'primeng/dropdown'; // ✅ corrigido
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+import { InputTextModule } from 'primeng/inputtext';
+import { ChartModule } from 'primeng/chart';
 import { Relatorio } from '../../models/relatorio';
 import { Router } from '@angular/router';
 import { RelatorioService } from '../../services/relatorio.service';
-
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
@@ -24,6 +26,7 @@ import * as XLSX from 'xlsx';
   standalone: true,
   imports: [
     CommonModule,
+    ChartModule,
     FormsModule,
     ButtonModule,
     TableModule,
@@ -31,7 +34,9 @@ import * as XLSX from 'xlsx';
     ConfirmDialogModule,
     TagModule,
     DialogModule,
-    DropdownModule
+    DropdownModule,
+    CalendarModule,
+    InputTextModule
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -41,9 +46,14 @@ export class RelatorioComponent implements OnInit {
   relatorios: Relatorio[] = [];
   relatoriosFiltrados: Relatorio[] = [];
 
+  // filtros textuais
   filtroPlaca: string = '';
   filtroTipo: string = '';
   filtroPagamento: string = '';
+
+  // filtro por data (dia) ou intervalo
+  filtroDia: Date | null = null;
+  filtroPeriodo: Date[] | null = null; // [start, end]
 
   tiposFiltro = [
     { label: 'Todos', value: '' },
@@ -58,12 +68,35 @@ export class RelatorioComponent implements OnInit {
     { label: 'Cartão', value: 'Cartão' },
   ];
 
+  // dashboard values
+  totalArrecadado = 0;
+  totalRegistros = 0;
+  tipoMaisComum = '—';
+
+  // dados dos gráficos
+  monthlyRevenueData: any;
+  entriesByHourData: any;
+  proportionData: any;
+  chartOptions: any;
+
   constructor(
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private relatorioService: RelatorioService
-  ) {}
+  ) {
+    // opções para charts (modo escuro)
+    this.chartOptions = {
+      plugins: {
+        legend: { labels: { color: '#cbd5e1' } }
+      },
+      scales: {
+        x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+      },
+      maintainAspectRatio: false,
+    };
+  }
 
   ngOnInit() {
     this.carregarRelatorios();
@@ -72,6 +105,7 @@ export class RelatorioComponent implements OnInit {
   carregarRelatorios(): void {
     this.carregandoRelatorios = true;
 
+    // busca os relatórios do backend (backend filtra pelo usuário via token)
     this.relatorioService.getRelatorios().subscribe({
       next: (res: any[]) => {
         this.relatorios = res.map((r: any) => ({
@@ -80,11 +114,11 @@ export class RelatorioComponent implements OnInit {
           tipo: r.tipo,
           dataHoraEntrada: r.data_hora_entrada ? new Date(r.data_hora_entrada) : null,
           dataHoraSaida: r.data_hora_saida ? new Date(r.data_hora_saida) : null,
-          duracao: r.duracao 
-            ? r.duracao 
-            : (r.data_hora_entrada && r.data_hora_saida 
-                ? this.calcularDuracao(r.data_hora_entrada, r.data_hora_saida) 
-                : ''),
+          duracao: r.duracao
+            ? r.duracao
+            : (r.data_hora_entrada && r.data_hora_saida
+              ? this.calcularDuracao(r.data_hora_entrada, r.data_hora_saida)
+              : ''),
           tempoPermanencia: r.tempo_permanencia ?? '',
           valorPago: r.valor_pago ?? 0,
           formaPagamento: r.forma_pagamento ?? '',
@@ -93,6 +127,9 @@ export class RelatorioComponent implements OnInit {
 
         this.relatoriosFiltrados = [...this.relatorios];
         this.carregandoRelatorios = false;
+
+        // popula dashboard e gráficos com os dados iniciais
+        this.recalcularDashboard();
       },
       error: (erro) => {
         this.messageService.add({
@@ -106,7 +143,7 @@ export class RelatorioComponent implements OnInit {
     });
   }
 
-  calcularDuracao(entrada: string, saida: string): string {
+  calcularDuracao(entrada: string | Date, saida: string | Date): string {
     const inicio = new Date(entrada);
     const fim = new Date(saida);
     const diffMs = fim.getTime() - inicio.getTime();
@@ -117,20 +154,140 @@ export class RelatorioComponent implements OnInit {
     return `${horas}h ${minutos}min`;
   }
 
+  // função central de filtragem (considera todos os filtros, inclusive data)
   filtrarRelatorios() {
-    this.relatoriosFiltrados = this.relatorios.filter((r) => {
-      const placaMatch = !this.filtroPlaca || (r.placa?.toLowerCase() || '').includes(this.filtroPlaca.toLowerCase());
-      const tipoMatch = !this.filtroTipo || (r.tipo?.toLowerCase() || '') === this.filtroTipo.toLowerCase();
-      const pagamentoMatch = !this.filtroPagamento || (r.formaPagamento?.toLowerCase() || '') === this.filtroPagamento.toLowerCase();
-      return placaMatch && tipoMatch && pagamentoMatch;
+    const placaFiltro = this.filtroPlaca?.trim().toLowerCase() || '';
+    const tipoFiltro = this.filtroTipo || '';
+    const pagamentoFiltro = this.filtroPagamento || '';
+
+    this.relatoriosFiltrados = this.relatorios.filter(r => {
+      const placaMatch = !placaFiltro || (r.placa?.toLowerCase() || '').includes(placaFiltro);
+      const tipoMatch = !tipoFiltro || (r.tipo || '').toLowerCase() === (tipoFiltro || '').toLowerCase();
+      const pagamentoMatch = !pagamentoFiltro || (r.formaPagamento || '').toLowerCase() === (pagamentoFiltro || '').toLowerCase();
+
+      let diaMatch = true;
+      if (this.filtroDia) {
+        const fd = new Date(this.filtroDia);
+        const entrada = r.dataHoraEntrada ? new Date(r.dataHoraEntrada) : null;
+        diaMatch = entrada
+          ? (entrada.getFullYear() === fd.getFullYear() && entrada.getMonth() === fd.getMonth() && entrada.getDate() === fd.getDate())
+          : false;
+      }
+
+      let periodoMatch = true;
+      if (this.filtroPeriodo && this.filtroPeriodo.length === 2 && this.filtroPeriodo[0] && this.filtroPeriodo[1]) {
+        const start = new Date(this.filtroPeriodo[0]);
+        const end = new Date(this.filtroPeriodo[1]);
+        // normaliza horas para englobar o dia completo
+        start.setHours(0,0,0,0);
+        end.setHours(23,59,59,999);
+        const entrada = r.dataHoraEntrada ? new Date(r.dataHoraEntrada) : null;
+        periodoMatch = entrada ? (entrada >= start && entrada <= end) : false;
+      }
+
+      return placaMatch && tipoMatch && pagamentoMatch && diaMatch && periodoMatch;
     });
+
+    this.recalcularDashboard();
   }
 
   limparFiltros() {
     this.filtroPlaca = '';
     this.filtroTipo = '';
     this.filtroPagamento = '';
+    this.filtroDia = null;
+    this.filtroPeriodo = null;
     this.relatoriosFiltrados = [...this.relatorios];
+    this.recalcularDashboard();
+  }
+
+  // recalcula todos os itens do dashboard e atualiza charts
+  recalcularDashboard() {
+    const filas = this.relatoriosFiltrados || [];
+
+    // total arrecadado
+    this.totalArrecadado = filas.reduce((acc, r) => acc + (r.valorPago || 0), 0);
+
+    // total registros
+    this.totalRegistros = filas.length;
+
+    // tipo mais comum
+    const tipoCount: Record<string, number> = {};
+    filas.forEach(r => tipoCount[r.tipo || 'Outros'] = (tipoCount[r.tipo || 'Outros'] || 0) + 1);
+    const sortedTipos = Object.entries(tipoCount).sort((a,b) => b[1]-a[1]);
+    this.tipoMaisComum = sortedTipos.length ? sortedTipos[0][0] : '—';
+
+    // preparar dados dos gráficos
+    this.buildMonthlyRevenueChart(filas);
+    this.buildEntriesByHourChart(filas);
+    this.buildProportionChart(filas);
+  }
+
+  private buildMonthlyRevenueChart(rows: Relatorio[]) {
+    const map: Record<string, number> = {};
+    rows.forEach(r => {
+      if (!r.dataHoraEntrada) return;
+      const d = new Date(r.dataHoraEntrada);
+      const key = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`; // YYYY-MM
+      map[key] = (map[key] || 0) + (r.valorPago || 0);
+    });
+
+    const labels = Object.keys(map).sort();
+    const data = labels.map(l => map[l]);
+
+    this.monthlyRevenueData = {
+      labels,
+      datasets: [
+        {
+          label: 'Faturamento (R$)',
+          data,
+          fill: true,
+        }
+      ]
+    };
+  }
+
+  private buildEntriesByHourChart(rows: Relatorio[]) {
+    const hours = new Array<number>(24).fill(0);
+    rows.forEach(r => {
+      if (!r.dataHoraEntrada) return;
+      const d = new Date(r.dataHoraEntrada);
+      const h = d.getHours();
+      hours[h] = (hours[h] || 0) + 1;
+    });
+
+    this.entriesByHourData = {
+      labels: hours.map((_, i) => `${i}:00`),
+      datasets: [
+        {
+          label: 'Entradas por Hora',
+          data: hours,
+          fill: false,
+        }
+      ]
+    };
+  }
+
+  private buildProportionChart(rows: Relatorio[]) {
+    let mensalista = 0;
+    let diarista = 0;
+    let outros = 0;
+    rows.forEach(r => {
+      if (!r.tipo) { outros++; return; }
+      const t = (r.tipo || '').toLowerCase();
+      if (t.includes('mensal')) mensalista++;
+      else if (t.includes('diar')) diarista++;
+      else outros++;
+    });
+
+    this.proportionData = {
+      labels: ['Mensalista', 'Diarista', 'Outros'],
+      datasets: [
+        {
+          data: [mensalista, diarista, outros],
+        }
+      ]
+    };
   }
 
   exportarPDF() {
@@ -154,7 +311,7 @@ export class RelatorioComponent implements OnInit {
       r.tipo,
       r.dataHoraEntrada ? r.dataHoraEntrada.toLocaleString() : '-',
       r.dataHoraSaida ? r.dataHoraSaida.toLocaleString() : '-',
-      r.valorPago.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      (r.valorPago || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
       r.formaPagamento,
       r.statusPagamento
     ]);
@@ -163,7 +320,9 @@ export class RelatorioComponent implements OnInit {
       head: [colunas],
       body: dados,
       startY: 20,
-      styles: { fontSize: 8 }
+      styles: { fontSize: 8, textColor: '#e6eef8' },
+      theme: 'striped',
+      headStyles: { fillColor: [24, 30, 36] }
     });
 
     doc.save('relatorio_pagamentos.pdf');
@@ -176,7 +335,7 @@ export class RelatorioComponent implements OnInit {
       Tipo: r.tipo,
       Entrada: r.dataHoraEntrada ? r.dataHoraEntrada.toLocaleString() : '-',
       Saída: r.dataHoraSaida ? r.dataHoraSaida.toLocaleString() : '-',
-      Valor: r.valorPago.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      Valor: (r.valorPago || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
       FormaPagamento: r.formaPagamento,
       Status: r.statusPagamento,
     }));
