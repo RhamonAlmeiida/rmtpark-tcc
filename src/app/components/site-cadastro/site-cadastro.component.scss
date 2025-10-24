@@ -15,14 +15,12 @@ body {
   color: #f8f8f8;
 }
 
-
-
 a {
   color: #000;
   text-decoration: none;
 }
 
-
+/* Navbar */
 .container {
   display: flex;
   justify-content: space-between;
@@ -40,7 +38,6 @@ a {
   position: sticky;
   top: 0;
   z-index: 1000;
-
 }
 
 .rmt {
@@ -56,7 +53,6 @@ a {
 .menu {
   display: flex;
   gap: 2rem;
-
 }
 
 .menu a {
@@ -81,7 +77,6 @@ a {
   background: #32a37b;
 }
 
-
 /* Cadastro */
 .cadastro-container {
   display: flex;
@@ -101,7 +96,6 @@ a {
   padding-right: 40px;
   margin-left: 200px;
   margin-top: 100px;
-
 }
 
 .cadastro-info .tag {
@@ -119,7 +113,6 @@ a {
   font-weight: bold;
   color: #111;
   margin-bottom: 30px;
-
 }
 
 .cadastro-info .subtext {
@@ -145,16 +138,15 @@ a {
 
 .benefits i {
   font-size: 30px;
-  color: #0d0e0d;
-  margin-right: 10px;
-  border-radius: 1px;
   border: 2px solid #07f77fd8;
   border-radius: 1px;
   color: #080808;
+  margin-right: 10px;
 }
 
-/* FORMULÁRIO */
-.cadastro-form {
+/* Formulário */
+.cadastro-form,
+.p-inputmask {
   flex: 1;
   background: #f9f9f9;
   padding: 30px;
@@ -162,57 +154,63 @@ a {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 80px;
   margin-right: 200px;
-  margin-top: 150px;
-
+  margin-top: 100px;
 }
 
 .cadastro-form p {
-  margin-bottom: 80px;
+  margin-bottom: 30px;
   font-size: 20px;
   color: #1a1a1a;
 }
 
-.input-group {
+.input-group, 
+.p-inputmask {
   margin-bottom: 15px;
 }
 
 .input-group input {
   width: 100%;
   padding: 12px 15px;
-  border: 1px solid #ddd;
+  border: 1px solid #e9e3e3;
   border-radius: 6px;
   font-size: 16px;
-  background: #fff;
-  color: #222;
+  background: #ffffff;
+  color: #222222;
   outline: none;
   transition: border 0.2s, box-shadow 0.2s;
 }
 
+
+
 .input-group input:focus {
-  border-color: #28a745;
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15);
+ border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15); 
 }
 
+/* Checkbox */
 .checkbox {
   display: flex;
   align-items: center;
-  margin: 15px 0;
+  margin: 20px 0;
   font-size: 14px;
-
+  color: #444;
 }
 
 .checkbox input {
   margin-right: 8px;
-
 }
 
 .checkbox a {
-  color: #6be29d;
-  font-weight: bold;
+  color: #28a745;
+  font-weight: 600;
   text-decoration: none;
-
 }
 
+.checkbox a:hover {
+  text-decoration: underline;
+}
+
+/* Botão submit */
 .btn-submit {
   width: 100%;
   padding: 14px;
@@ -241,18 +239,56 @@ a {
   color: #666;
 }
 
-/* Responsivo */
-@media (max-width: 900px) {
-  .cadastro-container {
-    flex-direction: column;
-  }
-
-  .cadastro-info {
-    padding-right: 0;
-  }
+/* Campo de plano */
+.planos-section {
+  margin-top: 25px;
 }
 
+.planos-section label {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
 
+.plano-resumo {
+  background: #f7fdf9;
+  border: 1px solid #c9ebd3;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+.plano-resumo h3 {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.plano-resumo .preco {
+  color: #111;
+  font-weight: 600;
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+
+.plano-resumo ul {
+  list-style: none;
+  padding: 0;
+}
+
+.plano-resumo li {
+  color: #333;
+  margin-bottom: 6px;
+  font-size: 14.5px;
+}
+
+.plano-resumo i {
+  color: #28a745;
+  margin-right: 8px;
+}
 
 /* Footer */
 .home-footer {
@@ -370,7 +406,7 @@ a {
   background: #32a37b;
 }
 
-/* Responsividade */
+/* Responsivo */
 @media (max-width: 992px) {
   .hero-section {
     flex-direction: column;
@@ -408,50 +444,61 @@ a {
   .plan-highlight:hover {
     transform: translateY(-10px);
   }
-}
 
-@media (max-width: 768px) {
-  .hero-content h1 {
-    font-size: 2.5rem;
-  }
-
-  .hero-content h2 {
-    font-size: 1.5rem;
-  }
-
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .cta-buttons {
+  .cadastro-container {
     flex-direction: column;
-    gap: 1rem;
+    padding: 40px 20px;
   }
 
-  .footer-content {
-    flex-direction: column;
+  .cadastro-info {
+    margin: 0;
   }
 
-  .label-plano {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #fff;
-}
-
-select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #111;
-  color: #eee;
-  outline: none;
-  font-size: 15px;
-
-  option {
-    color: #000;
+  .cadastro-form {
+    margin-top: 30px;
   }
 }
 
+/* 🔧 Correção: campos com fundo preto para branco */
+p-inputmask ,
+.p-dropdown,
+.p-dropdown-label {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #ddd !important;
 }
+
+.p-dropdown-panel,
+.p-dropdown-items-wrapper {
+  background: #fff !important;
+}
+
+.p-dropdown-item {
+  color: #000 !important;
+}
+/* Força o estilo do PrimeNG InputText e InputMask */
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-inputmask,
+:host ::ng-deep .p-dropdown {
+  background: #ffffff !important;
+  color: #000 !important;
+  border: 1px solid #e0dbdb !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  width: 100% !important;
+  font-size: 1rem !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .p-select-label{
+  color: #adaaaa;
+}
+
+:host ::ng-deep .p-inputtext:focus,
+:host ::ng-deep .p-inputmask:focus,
+:host ::ng-deep .p-dropdown:focus {
+  border-color: #28a745 !important;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.15) !important;
+}
+
+  
