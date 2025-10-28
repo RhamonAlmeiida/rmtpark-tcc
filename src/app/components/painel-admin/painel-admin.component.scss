@@ -1,0 +1,30 @@
+.admin-container {
+  background: #121212;
+  color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.ativo {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.inativo {
+  color: #f44336;
+  font-weight: bold;
+}
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+
+  .logout-button {
+    margin-left: auto;
+  }
+}

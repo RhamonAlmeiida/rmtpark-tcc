@@ -13,11 +13,14 @@ import { Blog1Component } from './components/blog1/blog1.component';
 import { Blog2Component } from './components/blog2/blog2.component';
 import { ConfirmarEmailComponent } from './components/confirmar-email/confirmar-email.component';
 import { RedefinirSenhaComponent } from './components/redefinir-senha/auth/redefinir-senha/redefinir-senha.component';
+import { PainelAdminComponent } from './components/painel-admin/painel-admin.component';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' }, 
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'painel-admin', component: PainelAdminComponent, canActivate: [authGuard] },
   { path: 'blog', component: BlogComponent },
   { path: 'blog1', component: Blog1Component},
   { path: 'blog2', component: Blog2Component},

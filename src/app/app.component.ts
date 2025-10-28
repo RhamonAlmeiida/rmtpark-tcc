@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
+import { LoginService } from './services/login.service';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,7 @@ export class AppComponent implements OnInit {
   title = 'rmt-park';
   usuarioLogado = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private loginService: LoginService) {}
 
   ngOnInit() {
     this.atualizarStatusUsuario();
@@ -29,40 +30,32 @@ export class AppComponent implements OnInit {
       });
   }
 
-atualizarStatusUsuario() {
-  const estaLogado = !!localStorage.getItem('access_token');
-  const rotaAtual = this.router.url.split('?')[0]; // remove query params
+  atualizarStatusUsuario() {
+    const estaLogado = this.loginService.estaLogado();
+    const ehAdmin = this.loginService.isAdmin();
 
-  const rotasSemNavbar = [
-    '/login',
-    '/home',
-    '/',
-    '/site-cadastro',
-    '/blog',
-    '/blog1',
-    '/blog2',
-    '/confirmar-email',
-    '/redefinir-senha'
-  ];
+    const rotaAtual = this.router.url.split('?')[0]; // remove query params
 
-  // só mostra navbar se usuário estiver logado e rota não estiver na lista
-  this.usuarioLogado = estaLogado && !rotasSemNavbar.includes(rotaAtual);
+    const rotasSemNavbar = [
+      '/login',
+      '/home',
+      '/',
+      '/site-cadastro',
+      '/blog',
+      '/blog1',
+      '/blog2',
+      '/confirmar-email',
+      '/redefinir-senha'
+    ];
+
+    // Navbar só aparece se usuário estiver logado, NÃO for admin e rota não estiver na lista
+    this.usuarioLogado = estaLogado && !ehAdmin && !rotasSemNavbar.includes(rotaAtual);
+  }
+
+  // Métodos de navegação
+  redirecionarHome() { this.router.navigate(['/vagas']); }
+  redirecionarVagas() { this.router.navigate(['/vagas']); }
+  redirecionarMensalistas() { this.router.navigate(['/mensalistas']); }
+  redirecionarRelatorios() { this.router.navigate(['/relatorio']); }
 }
 
-
-  redirecionarHome() {
-    this.router.navigate(['/vagas']);
-  }
-
-  redirecionarVagas() {
-    this.router.navigate(['/vagas']);
-  }
-
-  redirecionarMensalistas() {
-    this.router.navigate(['/mensalistas']);
-  }
-
-  redirecionarRelatorios() {
-    this.router.navigate(['/relatorio']);
-  }
-}

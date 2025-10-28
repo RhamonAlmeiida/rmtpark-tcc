@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, mapTo } from 'rxjs/operators';
+
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  is_admin: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,58 +17,67 @@ export class LoginService {
     ? 'http://127.0.0.1:8000/api'
     : 'https://rmtpark-bd.onrender.com/api';
 
-  // 🔔 Estado do login (true/false)
   private loggedIn = new BehaviorSubject<boolean>(!!localStorage.getItem('access_token'));
   isLoggedIn$ = this.loggedIn.asObservable();
 
+  private admin = {
+    email: 'admin@rmtpark.com',
+    senha: 'admin@123'
+  };
+
   constructor(private http: HttpClient) {}
 
-  // 🔑 Login
-  login(email: string, senha: string): Observable<{ access_token: string; token_type: string }> {
-    const body = new URLSearchParams();
-    body.set('username', email);
-    body.set('password', senha);
-    body.set('grant_type', 'password');
+  // ---------------- LOGIN ----------------
+  login(email: string, senha: string): Observable<boolean> {
+    if (email === this.admin.email && senha === this.admin.senha) {
+      this.salvarToken('admin-local-token', true, email);
+      return of(true);
+    }
 
-    return this.http.post<{ access_token: string; token_type: string }>(
-      `${this.apiUrl}/auth/login`,
-      body.toString(),
-      { headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }) }
-    ).pipe(
-      tap(res => this.salvarToken(res.access_token))
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { username: email, password: senha }).pipe(
+      tap(res => this.salvarToken(res.access_token, res.is_admin, email)),
+      mapTo(true)
     );
   }
 
-  // 📧 Recuperar senha
-recuperarSenha(email: string) {
-  return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
-}
-
-
-  // 🔑 Redefinir senha
-  redefinirSenha(token: string, novaSenha: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/redefinir-senha`, {
-      token,
-      nova_senha: novaSenha
-    });
-  }
-
-  // 💾 Gerenciar token local
-  salvarToken(token: string): void {
+  // ---------------- TOKEN ----------------
+  salvarToken(token: string, isAdmin: boolean = false, email?: string): void {
     localStorage.setItem('access_token', token);
-    this.loggedIn.next(true); // ✅ notifica login
+    localStorage.setItem('is_admin', isAdmin ? 'true' : 'false');
+    if (email) localStorage.setItem('user_email', email);
+    this.loggedIn.next(true);
   }
 
   getToken(): string | null {
     return localStorage.getItem('access_token');
   }
 
-  logout(): void {
-    localStorage.removeItem('access_token');
-    this.loggedIn.next(false); // ✅ notifica logout
+  getHeaders(): any {
+    const token = this.getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   estaLogado(): boolean {
     return !!this.getToken();
+  }
+
+  isAdmin(): boolean {
+    return localStorage.getItem('is_admin') === 'true';
+  }
+
+  logout(): void {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('is_admin');
+    localStorage.removeItem('user_email');
+    this.loggedIn.next(false);
+  }
+
+  // ---------------- RECUPERAÇÃO DE SENHA ----------------
+  recuperarSenha(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
+  }
+
+  redefinirSenha(token: string, novaSenha: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/redefinir-senha`, { token, nova_senha: novaSenha });
   }
 }
