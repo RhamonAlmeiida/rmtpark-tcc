@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; // 👈 importa aqui
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-confirmar-email',
@@ -20,7 +21,7 @@ export class ConfirmarEmailComponent implements OnInit {
   ngOnInit(): void {
     const token = this.route.snapshot.queryParamMap.get('token');
     if (token) {
-      this.http.get(`http://127.0.0.1:8000/api/auth/confirmar-email?token=${token}`)
+      this.http.get(`${environment.apiUrl}/api/auth/confirmar-email?token=${token}`)
         .subscribe({
           next: () => {
             this.mensagem = 'E-mail confirmado com sucesso! ✅';

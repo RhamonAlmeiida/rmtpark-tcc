@@ -4,14 +4,13 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Configuracoes } from '../models/configuracoes';
 import { LoginService } from './login.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfiguracoesService {
-  private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/vagas/configuracoes'
-    : 'https://rmtpark-bd.onrender.com/api/vagas/configuracoes';
+  private apiUrl = `${environment.apiUrl}/vagas/configuracoes`;
 
   constructor(private http: HttpClient, private loginService: LoginService) {}
 

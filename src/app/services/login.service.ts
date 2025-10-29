@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { tap, mapTo } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
   access_token: string;
@@ -13,9 +14,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api'
-    : 'https://rmtpark-bd.onrender.com/api';
+  private apiUrl = `${environment.apiUrl}`;
 
   private loggedIn = new BehaviorSubject<boolean>(!!localStorage.getItem('access_token'));
   isLoggedIn$ = this.loggedIn.asObservable();
@@ -25,22 +24,28 @@ export class LoginService {
     senha: 'admin@123'
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  // ---------------- LOGIN ----------------
-  login(email: string, senha: string): Observable<boolean> {
+
+  login(email: string, senha: string): Observable<LoginResponse> {
     if (email === this.admin.email && senha === this.admin.senha) {
-      this.salvarToken('admin-local-token', true, email);
-      return of(true);
+      const fakeResponse: LoginResponse = {
+        access_token: 'admin-local-token',
+        token_type: 'bearer',
+        is_admin: true
+      };
+      this.salvarToken(fakeResponse.access_token, fakeResponse.is_admin, email);
+      return of(fakeResponse);
     }
 
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { username: email, password: senha }).pipe(
-      tap(res => this.salvarToken(res.access_token, res.is_admin, email)),
-      mapTo(true)
-    );
+    // Envia login normal para o backend
+    const body = new HttpParams()
+      .set('username', email)
+      .set('password', senha);
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
   }
-
-  // ---------------- TOKEN ----------------
   salvarToken(token: string, isAdmin: boolean = false, email?: string): void {
     localStorage.setItem('access_token', token);
     localStorage.setItem('is_admin', isAdmin ? 'true' : 'false');

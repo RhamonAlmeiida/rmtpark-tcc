@@ -4,14 +4,13 @@ import { Observable } from 'rxjs';
 import { Mensalista } from '../models/mensalista';
 import { MensalistaCadastro } from '../models/mensalista-cadastro';
 import { LoginService } from './login.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MensalistaService {
-  private readonly API_URL = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/mensalistas'
-    : 'https://rmtpark-bd.onrender.com/api/mensalistas';
+  private apiUrl = `${environment.apiUrl}/mensalistas`;
 
   constructor(private http: HttpClient, private loginService: LoginService) {}
 
@@ -26,18 +25,18 @@ private getHeaders(): HttpHeaders {
 }
 
   cadastrar(mensalista: MensalistaCadastro): Observable<Mensalista> {
-    return this.http.post<Mensalista>(this.API_URL, mensalista, { headers: this.getHeaders() });
+    return this.http.post<Mensalista>(this.apiUrl, mensalista, { headers: this.getHeaders() });
   }
 
   obterTodos(): Observable<Mensalista[]> {
-    return this.http.get<Mensalista[]>(this.API_URL, { headers: this.getHeaders() });
+    return this.http.get<Mensalista[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
   obterPorId(id: number): Observable<Mensalista> {
-    return this.http.get<Mensalista>(`${this.API_URL}/${id}`, { headers: this.getHeaders() });
+    return this.http.get<Mensalista>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
   apagar(id: number): Observable<any> {
-    return this.http.delete(`${this.API_URL}/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }

@@ -1,20 +1,26 @@
 // src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 interface LoginResp { access_token: string; is_admin: boolean; token_type?: string; }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = window.location.hostname === 'localhost' ? 'http://127.0.0.1:8000/api' : 'https://rmtpark-bd.onrender.com/api';
+  private apiUrl = `${environment.apiUrl}`;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   login(email: string, senha: string): Observable<LoginResp> {
-    return this.http.post<LoginResp>(`${this.api}/auth/login`, { email, senha }).pipe(
+    const body = new HttpParams()
+      .set('username', email)
+      .set('password', senha);
+    return this.http.post<LoginResp>(`${this.apiUrl}/auth/login`, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(
       tap(res => {
         localStorage.setItem('access_token', res.access_token);
         localStorage.setItem('is_admin', String(res.is_admin));

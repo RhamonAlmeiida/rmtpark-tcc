@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SiteCadastro, SiteCadastroCreate } from '../models/site-cadastro';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SiteCadastroService {  
   urlAPI = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/empresa'
+    ? `${environment.apiUrl}/empresa`
     : 'https://rmtpark-bd.onrender.com/api/empresa';
 
   constructor(private http: HttpClient) {}

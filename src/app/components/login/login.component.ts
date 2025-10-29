@@ -35,7 +35,6 @@ export class LoginComponent {
     private messageService: MessageService
   ) {}
 
-  // ---------------- LOGIN ----------------
 login() {
   if (!this.email || !this.senha) {
     this.messageService.add({
@@ -48,7 +47,6 @@ login() {
 
   this.loginService.login(this.email, this.senha).subscribe({
     next: (res) => {
-      // Salva o token ANTES de navegar
       this.loginService.salvarToken(res.access_token, res.is_admin ?? false, this.email);
 
       this.messageService.add({
@@ -57,7 +55,6 @@ login() {
         detail: 'Bem-vindo ao sistema!'
       });
 
-      // Navega após salvar token
       if (res.is_admin) {
         this.router.navigate(['/painel-admin']);
       } else {
@@ -74,11 +71,6 @@ login() {
     }
   });
 }
-
-
-
-
-  // ---------------- ESQUECI SENHA ----------------
   esqueciSenha() {
     this.emailRecuperacao = '';
     this.dialogModalEsqueceuSenha = true;

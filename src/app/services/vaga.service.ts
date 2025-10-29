@@ -4,14 +4,13 @@ import { Observable } from 'rxjs';
 import { VagaCadastro } from '../models/vaga-cadastro';
 import { Vaga } from '../models/vaga';
 import { LoginService } from './login.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VagaService {
-  private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/vagas/'
-    : 'https://rmtpark-bd.onrender.com/api/vagas/';
+  private apiUrl = `${environment.apiUrl}/vagas`;
 
   constructor(private http: HttpClient, private loginService: LoginService) {}
 

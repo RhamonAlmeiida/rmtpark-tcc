@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Relatorio } from '../models/relatorio';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RelatorioService {
-  private apiUrl = window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:8000/api/relatorios/'
-    : 'https://rmtpark-bd.onrender.com/api/relatorios/';
+  private apiUrl = `${environment.apiUrl}/relatorios`;
 
   constructor(private http: HttpClient) {}
 
