@@ -50,7 +50,7 @@ export class VagaListaComponent implements OnInit {
   dataHoraSaida: Date | null = null;
   duracao = '';
   valorTotal = 0;
-  valorHora = 10;
+  valorHora = 0;
   formaPagamento: 'Dinheiro' | 'Cartão' | 'Pix' | null = null;
 
   constructor(
@@ -152,24 +152,29 @@ export class VagaListaComponent implements OnInit {
     });
   }
 
-  private registrarSaidaFluxo(): void {
-    if (!this.vagaSelecionada || !this.vagaSelecionada.dataHora) return;
+private registrarSaidaFluxo(): void {
+  if (!this.vagaSelecionada || !this.vagaSelecionada.dataHora) return;
 
-    this.dataHoraSaida = new Date();
+  this.dataHoraSaida = new Date();
 
-    if (this.vagaSelecionada.tipo === 'Mensalista') {
-      this.finalizarSaida();
-      return;
-    }
-
-    const diffMs = this.dataHoraSaida.getTime() - this.vagaSelecionada.dataHora.getTime();
-    const diffHoras = diffMs / (1000 * 60 * 60);
-
-    this.configuracoesService.obterValorHora().subscribe({
-      next: valor => this.processarSaida(diffHoras, valor),
-      error: () => this.processarSaida(diffHoras, 10)
-    });
+  if (this.vagaSelecionada.tipo === 'Mensalista') {
+    this.finalizarSaida();
+    return;
   }
+  const entrada = new Date(this.vagaSelecionada.dataHora);
+  const saida = new Date(this.dataHoraSaida);
+
+  let diffMs = saida.getTime() - entrada.getTime();
+  if (diffMs < 0) diffMs = Math.abs(diffMs);
+
+  const diffHoras = diffMs / (1000 * 60 * 60);
+
+  this.configuracoesService.obterValorHora().subscribe({
+    next: valor => this.processarSaida(diffHoras, valor),
+    error: () => this.processarSaida(diffHoras, 10)
+  });
+}
+
 
   private processarSaida(diffHoras: number, valorHora: number) {
     this.valorHora = valorHora;

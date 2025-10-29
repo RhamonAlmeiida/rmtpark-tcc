@@ -40,7 +40,7 @@ export class VagaService {
 
   /** Registrar saída de um veículo */
   registrarSaida(vagaId: number, dados: { saida: string; duracao: string; valor: number; formaPagamento?: string }): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}${vagaId}/saida`, dados, { headers: this.getHeaders() });
+    return this.http.put<any>(`${this.apiUrl}/${vagaId}/saida`, dados, { headers: this.getHeaders() });
   }
 
   /** Deletar vaga */
