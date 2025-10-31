@@ -1,52 +1,90 @@
-<div class="admin-header">
-  <h2>Painel do Administrador</h2>
-  <button
-    pButton
-    label="Sair"
-    icon="pi pi-sign-out"
-    class="p-button-danger p-button-sm logout-button"
-    (click)="logout()"
-  ></button>
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Painel do Administrador</h2>
+    <button
+      pButton
+      label="Sair"
+      icon="pi pi-sign-out"
+      class="p-button-danger p-button-rounded p-button-sm"
+      (click)="logout()"
+    ></button>
+  </div>
+
+  <p-table
+    [value]="empresas"
+    dataKey="id"
+    responsiveLayout="scroll"
+    [loading]="loading"
+    class="admin-table"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Empresa</th>
+        <th>CNPJ</th>
+        <th>E-mail</th>
+        <th>Status</th>
+        <th>Plano</th>
+        <th>Veículos</th>
+        <th>Ações</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-empresa>
+      <tr>
+        <td>
+          <div class="empresa-info">
+            <span class="empresa-nome">{{ empresa.nome }}</span>
+          </div>
+        </td>
+
+        <td>{{ formatarCnpj(empresa.cnpj) }}</td>
+
+        <td>
+          <span
+            [ngClass]="empresa.emailConfirmado ? 'email-ok' : 'email-pendente'"
+          >
+            {{ empresa.emailConfirmado ? 'Confirmado' : 'Não confirmado' }}
+          </span>
+          <br />
+          <small class="email-text">{{ empresa.email }}</small>
+        </td>
+
+        <td>
+          <span [ngClass]="empresa.ativa ? 'status-ativo' : 'status-inativo'">
+            {{ empresa.ativa ? 'Ativa' : 'Inativa' }}
+          </span>
+        </td>
+
+        <td>{{ empresa.dataExpiracao | date: 'dd/MM/yyyy' }}</td>
+
+        <td>{{ empresa.totalVeiculos }}</td>
+
+        <td class="acoes">
+          <button
+            pButton
+            label="Confirmar E-mail"
+            icon="pi pi-envelope"
+            (click)="confirmaEmail(empresa.id)"
+            class="p-button-success p-button-sm"
+          ></button>
+
+          <button
+            pButton
+            label="Renovar +30 dias"
+            icon="pi pi-calendar-plus"
+            (click)="renovarPlano(empresa.id)"
+            class="p-button-help p-button-sm"
+          ></button>
+
+          <button
+            pButton
+            label="Excluir"
+            icon="pi pi-trash"
+            (click)="excluirEmpresa(empresa.id)"
+            class="p-button-danger p-button-sm"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
-
-<p-table [value]="empresas" dataKey="id" responsiveLayout="scroll" [loading]="loading">
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Empresa</th>
-      <th>Status</th>
-      <th>Plano expira em</th>
-      <th>Veículos cadastrados</th>
-      <th>Ações</th>
-    </tr>
-  </ng-template>
-
-  <ng-template pTemplate="body" let-empresa>
-    <tr>
-      <td>{{ empresa.nome }}</td>
-      <td>
-        <span [ngClass]="empresa.ativa ? 'ativo' : 'inativo'">
-          {{ empresa.ativa ? 'Ativa' : 'Inativa' }}
-        </span>
-      </td>
-      <td>{{ empresa.dataExpiracao | date:'dd/MM/yyyy' }}</td>
-      <td>{{ empresa.totalVeiculos }}</td>
-      <td class="acoes">
-        <button
-          pButton
-          label="Renovar +30 dias"
-          icon="pi pi-refresh"
-          (click)="renovarPlano(empresa.id)"
-          class="p-button-success p-button-sm"
-        ></button>
-
-        <button
-          pButton
-          label="Excluir"
-          icon="pi pi-trash"
-          (click)="excluirEmpresa(empresa.id)"
-          class="p-button-danger p-button-sm"
-        ></button>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>

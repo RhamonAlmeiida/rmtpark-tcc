@@ -72,22 +72,43 @@ export class PainelAdminComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Normaliza os campos que o template espera
-  private mapEmpresa(e: any) {
-    return {
-      id: e.id,
-      nome: e.nome ?? e.name ?? '—',
-      ativa: ('ativa' in e) ? e.ativa : (e.is_active ?? false),
-      // normaliza data para um campo chamado dataExpiracao usado no template
-      dataExpiracao: e.dataExpiracao ?? e.data_expiracao ?? e.dataExpira ?? null,
-      totalVeiculos: e.totalVeiculos ?? e.total_veiculos ?? e.veiculos_count ?? 0,
-      // mantém o objeto original caso precise
-      _raw: e
-    };
+private mapEmpresa(e: any) {
+  return {
+    id: e.id,
+    nome: e.nome ?? e.name ?? '—',
+    email: e.email ?? e.email ?? '-',
+    cnpj: e.cnpj ?? e.cnpj ?? '_',
+    ativa: Boolean(e.ativa),
+    dataExpiracao: e.dataExpiracao ?? e.data_expiracao ?? e.dataExpira ?? null,
+    totalVeiculos: e.totalVeiculos ?? e.total_veiculos ?? e.veiculos_count ?? 0,
+    emailConfirmado: Boolean(e.email_confirmado),
+    _raw: e
+  };
+}
+
+formatarCnpj(cnpj: string): string {
+  if (!cnpj) return '';
+  cnpj = cnpj.replace(/\D/g, '');
+  return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+}
+
+
+
+  confirmaEmail(id: number){
+    if (!confirm('Confirmar email cadastrado ?')) return;
+    this.empresaService.confirmaEmail(id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Confirmado', detail: 'E-mail Confirmado '});
+        this.load();
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err?.error?.detail || 'Falha ao confirmar e-mail' })
+      }
+    });
   }
 
   renovarPlano(id: number) {
-    if (!confirm('Confirmar renovação do plano por +30 dias?')) return;
+    if (!confirm('Confirmar renovação do plano por +30 dias ?')) return;
     this.empresaService.renovarPlano(id).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Renovado', detail: 'Plano renovado por +30 dias' });
@@ -100,7 +121,7 @@ export class PainelAdminComponent implements OnInit, OnDestroy {
   }
 
   excluirEmpresa(id: number) {
-    if (!confirm('Esta ação é irreversível. Deseja continuar?')) return;
+    if (!confirm('Esta ação é irreversível. Deseja continuar ?')) return;
     this.empresaService.deletarEmpresa(id).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Removido', detail: 'Empresa removida' });

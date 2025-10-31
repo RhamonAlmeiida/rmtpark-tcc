@@ -1,30 +1,110 @@
 .admin-container {
-  background: #121212;
+  background: linear-gradient(180deg, #111111, #1a1a1a);
   color: #fff;
+  min-height: 100vh;
   padding: 2rem;
-  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
 }
 
-.ativo {
-  color: #4caf50;
-  font-weight: bold;
-}
-
-.inativo {
-  color: #f44336;
-  font-weight: bold;
-}
 .admin-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  border-bottom: 2px solid #00e676;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
 
-  h2 {
-    margin: 0;
-  }
+.admin-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #00e676;
+}
 
-  .logout-button {
-    margin-left: auto;
-  }
+.admin-table {
+  background: #1f1f1f !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+:host ::ng-deep .p-table-thead > tr > th {
+  background: #2a2a2a !important;
+  color: #ccc !important;
+  font-weight: 600;
+  text-align: left;
+}
+
+:host ::ng-deep .p-table-tbody > tr {
+  background: #1c1c1c;
+  border-bottom: 1px solid #2e2e2e;
+}
+
+:host ::ng-deep .p-table-tbody > tr:hover {
+  background: #252525;
+  transition: background 0.2s ease;
+}
+
+.empresa-nome {
+  font-weight: 600;
+  color: #fff;
+}
+
+.email-ok {
+  color: #00e676;
+  font-weight: 600;
+}
+
+.email-pendente {
+  color: #ff5252;
+  font-weight: 600;
+}
+
+.email-text {
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.status-ativo {
+  color: #00e676;
+  font-weight: bold;
+}
+
+.status-inativo {
+  color: #ff5252;
+  font-weight: bold;
+}
+
+.acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+:host ::ng-deep .p-button {
+  width: 160px;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+:host ::ng-deep .p-button-success {
+  background: #00e676 !important;
+  border: none;
+  color: #000;
+}
+
+:host ::ng-deep .p-button-help {
+  background: #00bcd4 !important;
+  border: none;
+  color: #000;
+}
+
+:host ::ng-deep .p-button-danger {
+  background: #ff5252 !important;
+  border: none;
+}
+
+:host ::ng-deep .p-datatable {
+  border-radius: 10px;
+  overflow: hidden;
 }

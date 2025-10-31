@@ -25,6 +25,10 @@ export class EmpresaService {
   }
 
   deletarEmpresa(id: number) {
-    return this.http.delete(`${this.apiUrl}/adim/empresas/${id}`, this.authHeaders());
+    return this.http.delete(`${this.apiUrl}/admin/empresas/${id}`, this.authHeaders());
+  }
+
+  confirmaEmail(id: number){
+    return this.http.put(`${this.apiUrl}/admin/empresas/${id}/confirma`, {}, this.authHeaders());
   }
 }
