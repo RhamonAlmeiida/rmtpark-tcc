@@ -1,4 +1,3 @@
-// src/app/components/admin-panel/painel-admin.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { interval, Subscription } from 'rxjs';
@@ -12,7 +11,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { EmpresaService } from '../../services/empresa.service';
 import { LoginService } from '../../services/login.service';
-import { routes } from '../../app.routes';
 import { Router } from '@angular/router';
 
 @Component({
@@ -28,23 +26,30 @@ import { Router } from '@angular/router';
   ],
   templateUrl: './painel-admin.component.html',
   styleUrls: ['./painel-admin.component.scss'],
-  providers: [MessageService, LoginService,Router]
+  providers: [MessageService, LoginService, Router]
 })
 export class PainelAdminComponent implements OnInit, OnDestroy {
   empresas: any[] = [];
   loading = false;
   pollingSub: Subscription | null = null;
+  public MAX_VAGAS = Number.MAX_SAFE_INTEGER;
+
+  private limitesPorPlano: Record<string, number | 'Ilimitado'> = {
+    Básico: 50,
+    Profissional: 150,
+    Premium: 'Ilimitado',
+    Empresarial: 'Ilimitado'
+  };
 
   constructor(
     private empresaService: EmpresaService,
     private messageService: MessageService,
-    private loginService: LoginService, 
-    private router: Router 
+    private loginService: LoginService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.load();
-    // polling opcional para "tempo real"
     this.pollingSub = interval(10000).subscribe(() => this.load());
   }
 
@@ -52,13 +57,11 @@ export class PainelAdminComponent implements OnInit, OnDestroy {
     this.pollingSub?.unsubscribe();
   }
 
-  // Carrega e mapeia dados para o formato do template
   load() {
     this.loading = true;
     this.empresaService.listarEmpresas().subscribe({
       next: (res: any[]) => {
-        // garante que res é array
-        this.empresas = Array.isArray(res) ? res.map(this.mapEmpresa) : [];
+        this.empresas = Array.isArray(res) ? res.map(e => this.mapEmpresa(e)) : [];
         this.loading = false;
       },
       error: (err) => {
@@ -72,43 +75,59 @@ export class PainelAdminComponent implements OnInit, OnDestroy {
     });
   }
 
-private mapEmpresa(e: any) {
-  return {
-    id: e.id,
-    nome: e.nome ?? e.name ?? '—',
-    email: e.email ?? e.email ?? '-',
-    cnpj: e.cnpj ?? e.cnpj ?? '_',
-    ativa: Boolean(e.ativa),
-    dataExpiracao: e.dataExpiracao ?? e.data_expiracao ?? e.dataExpira ?? null,
-    totalVeiculos: e.totalVeiculos ?? e.total_veiculos ?? e.veiculos_count ?? 0,
-    emailConfirmado: Boolean(e.email_confirmado),
-    _raw: e
-  };
-}
+  private mapEmpresa(e: any) {
+    const planoRaw = e.plano?.titulo?.toString()?.trim() ?? '';
+    const planoKey = planoRaw
+      ? planoRaw.charAt(0).toUpperCase() + planoRaw.slice(1).toLowerCase()
+      : '';
+    const limite = this.limitesPorPlano[planoKey] ?? 0;
 
-formatarCnpj(cnpj: string): string {
-  if (!cnpj) return '';
-  cnpj = cnpj.replace(/\D/g, '');
-  return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
-}
+    return {
+      id: e.id,
+      nome: e.nome ?? '—',
+      email: e.email ?? '-',
+      cnpj: e.cnpj ?? '_',
+      ativa: Boolean(e.ativa),
+      dataExpiracao: e.dataExpiracao ?? e.data_expiracao ?? null,
+      totalVeiculos: Number(e.total_veiculos ?? 0),
+      limiteVagas: limite,
+      plano: {
+        titulo: planoRaw || '',
+        preco: e.plano?.preco ?? '-',
+        recursos: e.plano?.recursos ?? [],
+        destaque: e.plano?.destaque ?? false
+      },
+      emailConfirmado: Boolean(e.email_confirmado),
+      _raw: e
+    };
+  }
 
+  formatarCnpj(cnpj: string): string {
+    if (!cnpj) return '';
+    cnpj = cnpj.replace(/\D/g, '');
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  }
 
+  getLimiteVagasNumerico(empresa: any): number {
+    if (empresa.limiteVagas === 'Ilimitado') return this.MAX_VAGAS;
+    return Number(empresa.limiteVagas ?? 0);
+  }
 
   confirmaEmail(id: number){
-    if (!confirm('Confirmar email cadastrado ?')) return;
+    if (!confirm('Confirmar email cadastrado?')) return;
     this.empresaService.confirmaEmail(id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Confirmado', detail: 'E-mail Confirmado '});
+        this.messageService.add({ severity: 'success', summary: 'Confirmado', detail: 'E-mail Confirmado' });
         this.load();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err?.error?.detail || 'Falha ao confirmar e-mail' })
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err?.error?.detail || 'Falha ao confirmar e-mail' });
       }
     });
   }
 
   renovarPlano(id: number) {
-    if (!confirm('Confirmar renovação do plano por +30 dias ?')) return;
+    if (!confirm('Confirmar renovação do plano por +30 dias?')) return;
     this.empresaService.renovarPlano(id).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Renovado', detail: 'Plano renovado por +30 dias' });
@@ -121,7 +140,7 @@ formatarCnpj(cnpj: string): string {
   }
 
   excluirEmpresa(id: number) {
-    if (!confirm('Esta ação é irreversível. Deseja continuar ?')) return;
+    if (!confirm('Esta ação é irreversível. Deseja continuar?')) return;
     this.empresaService.deletarEmpresa(id).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Removido', detail: 'Empresa removida' });
@@ -132,16 +151,14 @@ formatarCnpj(cnpj: string): string {
       }
     });
   }
-   logout() {
+
+  logout() {
     this.loginService.logout();
     this.messageService.add({
       severity: 'success',
       summary: 'Sucesso',
       detail: 'Você foi deslogado'
     });
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-    }, 500);
+    setTimeout(() => this.router.navigate(['/login']), 500);
   }
 }
-

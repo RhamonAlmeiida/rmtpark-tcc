@@ -101,40 +101,83 @@ export class VagaListaComponent implements OnInit {
     this.vagaCadastro.placa = input.value.toUpperCase();
   }
 
-  salvar(): void {
-    const placa = (this.vagaCadastro.placa ?? '').toUpperCase().trim();
-    if (placa.length !== 7) {
-      this.messageService.add({ severity: 'warn', summary: 'Placa inválida', detail: 'A placa deve conter exatamente 7 caracteres.' });
-      return;
-    }
-    this.vagaCadastro.placa = placa;
-    this.vagaCadastro.dataHora = new Date();
-
-    this.mensalistaService.obterTodos().subscribe({
-      next: mensalistas => {
-        this.vagaCadastro.tipo = mensalistas.some(m => m.placa.replace('-', '').toUpperCase() === placa)
-          ? 'Mensalista'
-          : 'Diarista';
-
-        // **CHAMADA CORRIGIDA: NÃO PASSAR HEADERS**
-        this.vagaService.cadastrar(this.vagaCadastro).subscribe({
-          next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Veículo cadastrado com sucesso' });
-            this.dialogVisivelCadastrar = false;
-            this.carregarVagas();
-          },
-          error: (err: any) => {
-            console.error(err);
-            this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível cadastrar a vaga.' });
-          }
-        });
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao obter mensalistas.' });
-      }
+salvar(): void {
+  const placa = (this.vagaCadastro.placa ?? '').toUpperCase().trim();
+  if (placa.length !== 7) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Placa inválida',
+      detail: 'A placa deve conter exatamente 7 caracteres.'
     });
+    return;
   }
+
+  this.vagaCadastro.placa = placa;
+  this.vagaCadastro.dataHora = new Date();
+
+  this.mensalistaService.obterTodos().subscribe({
+    next: mensalistas => {
+      this.vagaCadastro.tipo = mensalistas.some(
+        m => m.placa.replace('-', '').toUpperCase() === placa
+      )
+        ? 'Mensalista'
+        : 'Diarista';
+
+      this.vagaService.cadastrar(this.vagaCadastro).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Veículo cadastrado com sucesso'
+          });
+          this.dialogVisivelCadastrar = false;
+          this.carregarVagas();
+        },
+        error: (err: any) => {
+          console.error(err);
+          if (err.status === 403 && err.error?.detail?.includes('Limite')) {
+            this.confirmationService.confirm({
+              header: 'Limite do plano atingido 🚫',
+              message: `${err.error.detail}\nDeseja fazer upgrade agora?`,
+              icon: 'pi pi-exclamation-triangle',
+              acceptLabel: 'Atualizar Plano',
+              rejectLabel: 'Fechar',
+              acceptButtonStyleClass: 'p-button-success',
+              rejectButtonStyleClass: 'p-button-secondary',
+              accept: () => {
+                this.router.navigate(['/planos']);
+              },
+              reject: () => {
+                this.messageService.add({
+                  severity: 'info',
+                  summary: 'Aviso',
+                  detail: 'Você pode atualizar seu plano a qualquer momento nas configurações.'
+                });
+              }
+            });
+            return;
+          }
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Não foi possível cadastrar a vaga.'
+          });
+        }
+      });
+    },
+    error: (err: any) => {
+      console.error('Erro ao buscar mensalistas:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível verificar os mensalistas.'
+      });
+    }
+  });
+}
+
+
 
   // ================= SAÍDA =================
   confirmaSaida(event: Event, id: number): void {

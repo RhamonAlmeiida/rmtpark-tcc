@@ -1,22 +1,11 @@
 <div class="admin-container">
   <div class="admin-header">
     <h2>Painel do Administrador</h2>
-    <button
-      pButton
-      label="Sair"
-      icon="pi pi-sign-out"
-      class="p-button-danger p-button-rounded p-button-sm"
-      (click)="logout()"
-    ></button>
+    <button pButton label="Sair" icon="pi pi-sign-out" class="p-button-danger p-button-rounded p-button-sm"
+      (click)="logout()"></button>
   </div>
 
-  <p-table
-    [value]="empresas"
-    dataKey="id"
-    responsiveLayout="scroll"
-    [loading]="loading"
-    class="admin-table"
-  >
+  <p-table [value]="empresas" dataKey="id" responsiveLayout="scroll" [loading]="loading" class="admin-table">
     <ng-template pTemplate="header">
       <tr>
         <th>Empresa</th>
@@ -24,65 +13,63 @@
         <th>E-mail</th>
         <th>Status</th>
         <th>Plano</th>
-        <th>Veículos</th>
+        <th>Vagas (usadas / limite)</th>
         <th>Ações</th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-empresa>
       <tr>
+        <!-- Empresa -->
         <td>
           <div class="empresa-info">
             <span class="empresa-nome">{{ empresa.nome }}</span>
           </div>
         </td>
 
+        <!-- CNPJ -->
         <td>{{ formatarCnpj(empresa.cnpj) }}</td>
 
+        <!-- E-mail -->
         <td>
-          <span
-            [ngClass]="empresa.emailConfirmado ? 'email-ok' : 'email-pendente'"
-          >
+          <span [ngClass]="empresa.emailConfirmado ? 'email-ok' : 'email-pendente'">
             {{ empresa.emailConfirmado ? 'Confirmado' : 'Não confirmado' }}
           </span>
           <br />
           <small class="email-text">{{ empresa.email }}</small>
         </td>
 
+        <!-- Status -->
         <td>
           <span [ngClass]="empresa.ativa ? 'status-ativo' : 'status-inativo'">
             {{ empresa.ativa ? 'Ativa' : 'Inativa' }}
           </span>
         </td>
 
-        <td>{{ empresa.dataExpiracao | date: 'dd/MM/yyyy' }}</td>
+        <!-- Plano -->
+        <td>
+          <strong>{{ empresa.plano.titulo }}</strong>
+          <br />
+          <small>{{ empresa.plano.preco }}</small>
+        </td>
 
-        <td>{{ empresa.totalVeiculos }}</td>
+        <!-- Vagas -->
+        <td
+          [ngClass]="empresa.totalVeiculos >= getLimiteVagasNumerico(empresa) ? 'limite-alcancado' : ''">
+          {{ empresa.totalVeiculos }} /
+          {{ empresa.limiteVagas === 'Ilimitado' ? 'Ilimitado' : empresa.limiteVagas }}
+        </td>
 
+        <!-- Ações -->
         <td class="acoes">
-          <button
-            pButton
-            label="Confirmar E-mail"
-            icon="pi pi-envelope"
-            (click)="confirmaEmail(empresa.id)"
-            class="p-button-success p-button-sm"
-          ></button>
+          <button pButton label="Confirmar E-mail" icon="pi pi-envelope" (click)="confirmaEmail(empresa.id)"
+            class="p-button-success p-button-sm"></button>
 
-          <button
-            pButton
-            label="Renovar +30 dias"
-            icon="pi pi-calendar-plus"
-            (click)="renovarPlano(empresa.id)"
-            class="p-button-help p-button-sm"
-          ></button>
+          <button pButton label="Renovar +30 dias" icon="pi pi-calendar-plus" (click)="renovarPlano(empresa.id)"
+            class="p-button-help p-button-sm"></button>
 
-          <button
-            pButton
-            label="Excluir"
-            icon="pi pi-trash"
-            (click)="excluirEmpresa(empresa.id)"
-            class="p-button-danger p-button-sm"
-          ></button>
+          <button pButton label="Excluir" icon="pi pi-trash" (click)="excluirEmpresa(empresa.id)"
+            class="p-button-danger p-button-sm"></button>
         </td>
       </tr>
     </ng-template>
