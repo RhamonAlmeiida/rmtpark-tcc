@@ -21,7 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 || error.status === 403) {
+      if (error.status === 401) {
         messageService.add({
           severity: 'warn',
           summary: 'Sessão expirada',
@@ -32,7 +32,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         if (router.url !== '/login') {
           router.navigate(['/login']);
         }
+      } else if (error.status === 403) {
+        messageService.add({
+          severity: 'warn',
+          summary: 'Ação proibida',
+          detail: error.error?.detail || 'Você não tem permissão para realizar esta ação.'
+        });
       }
+
       return throwError(() => error);
     })
   );
