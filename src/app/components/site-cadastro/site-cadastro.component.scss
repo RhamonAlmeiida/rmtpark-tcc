@@ -93,8 +93,8 @@ a {
 
 .cadastro-info {
   flex: 1;
-  padding-right: 40px;
-  margin-left: 200px;
+  padding-right: 30px;
+  margin-left: 20px;
   margin-top: 100px;
 }
 
@@ -499,6 +499,221 @@ p-inputmask ,
 :host ::ng-deep .p-dropdown:focus {
   border-color: #28a745 !important;
   box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.15) !important;
+}
+
+/* ===== Responsividade Geral ===== */
+@media (max-width: 1200px) {
+  .cadastro-container {
+    flex-direction: column;
+    padding: 40px 20px;
+    margin: 0 auto;
+  }
+
+  .cadastro-info {
+    margin: 0 0 30px 0;
+    text-align: center;
+    padding-right: 0;
+  }
+
+  .benefits {
+    margin-top: 50px;
+  }
+
+  .cadastro-form {
+    margin-right: 0;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 992px) {
+  .container h1 {
+    margin-left: 20px;
+  }
+
+  .menu {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .btn-login {
+    margin-right: 0;
+  }
+
+  .cadastro-info h1 {
+    font-size: 36px;
+  }
+
+  .cadastro-info .subtext {
+    font-size: 14px;
+  }
+
+  .benefits li {
+    font-size: 18px;
+  }
+
+  .benefits i {
+    font-size: 25px;
+  }
+
+  .cadastro-form p {
+    font-size: 18px;
+  }
+
+  .input-group input,
+  .p-inputmask,
+  .p-dropdown {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+
+  .btn-submit {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .plano-resumo h3 {
+    font-size: 18px;
+  }
+
+  .plano-resumo .preco {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cadastro-info h1 {
+    font-size: 28px;
+  }
+
+  .cadastro-info .subtext {
+    font-size: 13px;
+  }
+
+  .benefits li {
+    font-size: 16px;
+  }
+
+  .benefits i {
+    font-size: 22px;
+  }
+
+  .cadastro-form p {
+    font-size: 16px;
+  }
+
+  .input-group input,
+  .p-inputmask,
+  .p-dropdown {
+    font-size: 0.9rem;
+    padding: 9px 10px;
+  }
+
+  .btn-submit {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .plano-resumo h3 {
+    font-size: 16px;
+  }
+
+  .plano-resumo .preco {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .cadastro-info {
+    margin-top: 30px;
+    padding: 0 10px;
+  }
+
+  .benefits li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .cadastro-form {
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .input-group input,
+  .p-inputmask,
+  .p-dropdown {
+    font-size: 0.85rem;
+    padding: 8px 10px;
+  }
+
+  .btn-submit {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .plano-resumo {
+    padding: 15px;
+  }
+
+  .plano-resumo h3 {
+    font-size: 15px;
+  }
+
+  .plano-resumo .preco {
+    font-size: 14px;
+  }
+
+  .plano-resumo ul li {
+    font-size: 13px;
+  }
+
+  .checkbox {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 13px;
+  }
+
+  .checkbox a {
+    margin-top: 5px;
+  }
+
+  .home-footer .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer-column h4 {
+    font-size: 1rem;
+  }
+
+  .footer-column li {
+    font-size: 0.85rem;
+  }
+}
+
+/* ===== Ajustes para PrimeNG Components ===== */
+@media (max-width: 768px) {
+  :host ::ng-deep .p-dropdown {
+    width: 100% !important;
+  }
+
+  :host ::ng-deep .p-inputmask,
+  :host ::ng-deep .p-inputtext {
+    width: 100% !important;
+  }
 }
 
   
