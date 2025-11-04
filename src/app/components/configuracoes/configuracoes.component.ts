@@ -21,7 +21,7 @@ import { InputMaskModule } from 'primeng/inputmask';
   templateUrl: './configuracoes.component.html',
   styleUrls: ['./configuracoes.component.scss'],
   providers: [MessageService],
-  standalone: true, // ← adicionar isto
+  standalone: true, 
   imports: [
     CommonModule,
     FormsModule,
@@ -32,9 +32,9 @@ import { InputMaskModule } from 'primeng/inputmask';
     TagModule,
     DialogModule,
     SelectModule,
-    InputNumberModule, // ← necessário para <p-inputNumber>
-    InputTextModule,   // ← necessário para pInputText
-    InputMaskModule    // ← necessário para pInputMask
+    InputNumberModule, 
+    InputTextModule,   
+    InputMaskModule    
   ],
 })
 export class ConfiguracoesComponent implements OnInit {
@@ -80,7 +80,7 @@ private criarConfiguracoesPadrao(): void {
     arredondamento: 15,
     formaPagamento: 'Pix',
     nome: '',
-    fantasia: '',   // ← adiciona aqui
+    fantasia: '',   
     cnpj: '',
     endereco: '',
     cidade: '',
