@@ -1,8 +1,7 @@
-version: "3.9"
-
+# docker-compose.yml do FRONT
 networks:
-  dokploy_proxy:
-    external: true
+  dokploy-network:
+    external: true   # use o nome exato listado no 'docker network ls'
 
 services:
   angular-app:
@@ -11,11 +10,11 @@ services:
     container_name: angular-app
     restart: always
     expose:
-      - "80"               # visível na rede docker (para o Dokploy)
+      - "80"           # visível na rede docker para o Traefik
     ports:
-      - "8081:80"          # você mantém acesso direto via IP:8081
+      - "8081:80"      # você mantém o acesso direto via IP:8081
     networks:
-      - dokploy_proxy
+      - dokploy-network
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
       interval: 10s
