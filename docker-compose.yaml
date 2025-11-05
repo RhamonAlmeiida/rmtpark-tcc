@@ -1,6 +1,7 @@
+# Compose v2: sem "version:"
 networks:
   dokploy-network:
-    external: true   # use o nome exato listado no 'docker network ls'
+    external: true  # rede do Traefik do Dokploy
 
 services:
   angular-app:
@@ -10,9 +11,9 @@ services:
     container_name: angular-app
     restart: always
     expose:
-      - "80"           # visível na rede docker para o Traefik
+      - "80"              # porta interna que o Traefik usa
     ports:
-      - "8081:80"      # você mantém o acesso direto via IP:8081
+      - "8081:80"         # você mantém acesso direto via IP:8081
     networks:
       - dokploy-network
     healthcheck:
@@ -20,9 +21,24 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    
+
+    # Se for usar Traefik por labels (sem a UI do Dokploy), use:
     labels:
       - traefik.enable=true
-      - traefik.http.routers.frontend.rule=Host(`front.rmtpark.com`)
-      - traefik.http.routers.frontend.entrypoints=web
-      - traefik.http.services.frontend.loadbalancer.server.port=8081
+
+      # Router HTTP (80)
+      - traefik.http.routers.rmtpark-frontend.rule=Host(`front.rmtpark.com`)
+      - traefik.http.routers.rmtpark-frontend.entrypoints=web
+      - traefik.http.services.rmtpark-frontend.loadbalancer.server.port=80
+      - traefik.docker.network=dokploy-network
+
+      # (Opcional) Redirect HTTP -> HTTPS
+      - traefik.http.middlewares.rmtpark-redirecthttps.redirectscheme.scheme=https
+      - traefik.http.routers.rmtpark-frontend.middlewares=rmtpark-redirecthttps
+
+      # Router HTTPS (443) — ative se seu Traefik já tem certresolver (Let’s Encrypt) configurado
+      - traefik.http.routers.rmtpark-frontend-secure.rule=Host(`front.rmtpark.com`)
+      - traefik.http.routers.rmtpark-frontend-secure.entrypoints=websecure
+      - traefik.http.routers.rmtpark-frontend-secure.tls=true
+      # Se o Dokploy expõe um resolver nomeado (ex.: "letsencrypt"), habilite a linha abaixo:
+      # - traefik.http.routers.rmtpark-frontend-secure.tls.certresolver=letsencrypt
