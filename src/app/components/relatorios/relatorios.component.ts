@@ -79,6 +79,8 @@ export class RelatorioComponent implements OnInit {
   proportionData: any;
   chartOptions: any;
 
+  
+
   constructor(
     private router: Router,
     private confirmationService: ConfirmationService,
@@ -103,17 +105,26 @@ export class RelatorioComponent implements OnInit {
   }
 
   carregarRelatorios(): void {
-    this.carregandoRelatorios = true;
+    function parseSPDate(dateStr: string | null): Date | null {
+  if (!dateStr) return null;
+  // cria objeto Date a partir da string do backend (assumindo ISO 8601)
+  const d = new Date(dateStr);
+  // converte para horário de São Paulo
+  const offset = -3; // GMT-3
+  const localDate = new Date(d.getTime() + offset * 60 * 60 * 1000);
+  return localDate;
+}
 
-    // busca os relatórios do backend (backend filtra pelo usuário via token)
+
     this.relatorioService.getRelatorios().subscribe({
       next: (res: any[]) => {
         this.relatorios = res.map((r: any) => ({
           id: r.id,
           placa: r.placa,
           tipo: r.tipo,
-          dataHoraEntrada: r.data_hora_entrada ? new Date(r.data_hora_entrada) : null,
-          dataHoraSaida: r.data_hora_saida ? new Date(r.data_hora_saida) : null,
+         dataHoraEntrada: parseSPDate(r.data_hora_entrada),
+         dataHoraSaida: parseSPDate(r.data_hora_saida),
+
           duracao: r.duracao
             ? r.duracao
             : (r.data_hora_entrada && r.data_hora_saida
@@ -128,7 +139,6 @@ export class RelatorioComponent implements OnInit {
         this.relatoriosFiltrados = [...this.relatorios];
         this.carregandoRelatorios = false;
 
-        // popula dashboard e gráficos com os dados iniciais
         this.recalcularDashboard();
       },
       error: (erro) => {
@@ -154,7 +164,6 @@ export class RelatorioComponent implements OnInit {
     return `${horas}h ${minutos}min`;
   }
 
-  // função central de filtragem (considera todos os filtros, inclusive data)
   filtrarRelatorios() {
     const placaFiltro = this.filtroPlaca?.trim().toLowerCase() || '';
     const tipoFiltro = this.filtroTipo || '';
@@ -178,7 +187,6 @@ export class RelatorioComponent implements OnInit {
       if (this.filtroPeriodo && this.filtroPeriodo.length === 2 && this.filtroPeriodo[0] && this.filtroPeriodo[1]) {
         const start = new Date(this.filtroPeriodo[0]);
         const end = new Date(this.filtroPeriodo[1]);
-        // normaliza horas para englobar o dia completo
         start.setHours(0,0,0,0);
         end.setHours(23,59,59,999);
         const entrada = r.dataHoraEntrada ? new Date(r.dataHoraEntrada) : null;
@@ -201,23 +209,17 @@ export class RelatorioComponent implements OnInit {
     this.recalcularDashboard();
   }
 
-  // recalcula todos os itens do dashboard e atualiza charts
   recalcularDashboard() {
     const filas = this.relatoriosFiltrados || [];
 
-    // total arrecadado
     this.totalArrecadado = filas.reduce((acc, r) => acc + (r.valorPago || 0), 0);
-
-    // total registros
     this.totalRegistros = filas.length;
 
-    // tipo mais comum
     const tipoCount: Record<string, number> = {};
     filas.forEach(r => tipoCount[r.tipo || 'Outros'] = (tipoCount[r.tipo || 'Outros'] || 0) + 1);
     const sortedTipos = Object.entries(tipoCount).sort((a,b) => b[1]-a[1]);
     this.tipoMaisComum = sortedTipos.length ? sortedTipos[0][0] : '—';
 
-    // preparar dados dos gráficos
     this.buildMonthlyRevenueChart(filas);
     this.buildEntriesByHourChart(filas);
     this.buildProportionChart(filas);
@@ -228,7 +230,7 @@ export class RelatorioComponent implements OnInit {
     rows.forEach(r => {
       if (!r.dataHoraEntrada) return;
       const d = new Date(r.dataHoraEntrada);
-      const key = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`; // YYYY-MM
+      const key = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
       map[key] = (map[key] || 0) + (r.valorPago || 0);
     });
 
@@ -238,11 +240,7 @@ export class RelatorioComponent implements OnInit {
     this.monthlyRevenueData = {
       labels,
       datasets: [
-        {
-          label: 'Faturamento (R$)',
-          data,
-          fill: true,
-        }
+        { label: 'Faturamento (R$)', data, fill: true }
       ]
     };
   }
@@ -258,20 +256,12 @@ export class RelatorioComponent implements OnInit {
 
     this.entriesByHourData = {
       labels: hours.map((_, i) => `${i}:00`),
-      datasets: [
-        {
-          label: 'Entradas por Hora',
-          data: hours,
-          fill: false,
-        }
-      ]
+      datasets: [{ label: 'Entradas por Hora', data: hours, fill: false }]
     };
   }
 
   private buildProportionChart(rows: Relatorio[]) {
-    let mensalista = 0;
-    let diarista = 0;
-    let outros = 0;
+    let mensalista = 0, diarista = 0, outros = 0;
     rows.forEach(r => {
       if (!r.tipo) { outros++; return; }
       const t = (r.tipo || '').toLowerCase();
@@ -282,11 +272,7 @@ export class RelatorioComponent implements OnInit {
 
     this.proportionData = {
       labels: ['Mensalista', 'Diarista', 'Outros'],
-      datasets: [
-        {
-          data: [mensalista, diarista, outros],
-        }
-      ]
+      datasets: [{ data: [mensalista, diarista, outros] }]
     };
   }
 
@@ -294,24 +280,14 @@ export class RelatorioComponent implements OnInit {
     const doc = new jsPDF();
     doc.text('Relatório de Pagamentos', 14, 16);
 
-    const colunas = [
-      'ID',
-      'Placa',
-      'Tipo',
-      'Entrada',
-      'Saída',
-      'Valor',
-      'Forma Pagamento',
-      'Status',
-    ];
-
+    const colunas = ['ID','Placa','Tipo','Entrada','Saída','Valor','Forma Pagamento','Status'];
     const dados = this.relatoriosFiltrados.map(r => [
       r.id,
       r.placa,
       r.tipo,
-      r.dataHoraEntrada ? r.dataHoraEntrada.toLocaleString() : '-',
-      r.dataHoraSaida ? r.dataHoraSaida.toLocaleString() : '-',
-      (r.valorPago || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      r.dataHoraEntrada ? r.dataHoraEntrada.toLocaleString('pt-BR',{ timeZone:'America/Sao_Paulo' }) : '-',
+      r.dataHoraSaida ? r.dataHoraSaida.toLocaleString('pt-BR',{ timeZone:'America/Sao_Paulo' }) : '-',
+      (r.valorPago || 0).toLocaleString('pt-BR',{ style:'currency', currency:'BRL' }),
       r.formaPagamento,
       r.statusPagamento
     ]);
@@ -333,11 +309,11 @@ export class RelatorioComponent implements OnInit {
       ID: r.id,
       Placa: r.placa,
       Tipo: r.tipo,
-      Entrada: r.dataHoraEntrada ? r.dataHoraEntrada.toLocaleString() : '-',
-      Saída: r.dataHoraSaida ? r.dataHoraSaida.toLocaleString() : '-',
-      Valor: (r.valorPago || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      Entrada: r.dataHoraEntrada ? r.dataHoraEntrada.toLocaleString('pt-BR',{ timeZone:'America/Sao_Paulo' }) : '-',
+      Saída: r.dataHoraSaida ? r.dataHoraSaida.toLocaleString('pt-BR',{ timeZone:'America/Sao_Paulo' }) : '-',
+      Valor: (r.valorPago || 0).toLocaleString('pt-BR',{ style:'currency', currency:'BRL' }),
       FormaPagamento: r.formaPagamento,
-      Status: r.statusPagamento,
+      Status: r.statusPagamento
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dadosExcel);

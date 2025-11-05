@@ -3,4 +3,5 @@ export interface VagaSaida {
   duracao: string;        // tempo total estacionado, ex: "02:30"
   valor: number;          // valor pago
   formaPagamento: string | null;
+  ultimoPagamento?: string;
 }

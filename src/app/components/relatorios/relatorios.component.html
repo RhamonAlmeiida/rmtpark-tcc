@@ -65,8 +65,9 @@
             [value]="relatorio.tipo"
           ></p-tag>
         </td>
-        <td>{{ relatorio.dataHoraEntrada ? (relatorio.dataHoraEntrada | date: 'short') : '-' }}</td>
-        <td>{{ relatorio.dataHoraSaida ? (relatorio.dataHoraSaida | date: 'short') : '-' }}</td>
+        <td>{{ relatorio.dataHoraEntrada | date:'dd/MM/yyyy, HH:mm:ss':'America/Sao_Paulo' }}</td>
+        <td>{{ relatorio.dataHoraSaida | date:'dd/MM/yyyy, HH:mm:ss':'America/Sao_Paulo' }}</td>
+
         <td>{{ relatorio.valorPago | currency: 'BRL' }}</td>
         <td>{{ relatorio.formaPagamento }}</td>
         <td>

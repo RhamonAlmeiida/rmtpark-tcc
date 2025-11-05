@@ -9,6 +9,7 @@ export class Vaga {
     public duracao?: string,
     public valor_pago?: number,         // valor pago
     public formaPagamento?: string,     // forma de pagamento
-    public status_pagamento?: string    // status do pagamento
+    public status_pagamento?: string,   // status do pagamento
+    public ultimoPagamento?: string
   ) {}
 }
