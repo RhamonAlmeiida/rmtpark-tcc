@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common'; // 👈 importa aqui
+import { CommonModule } from '@angular/common'; 
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-confirmar-email',
-  standalone: true, // 👈 standalone component
-  imports: [CommonModule], // 👈 adiciona o CommonModule
+  standalone: true, 
+  imports: [CommonModule], 
   templateUrl: './confirmar-email.component.html',
   styleUrls: ['./confirmar-email.component.scss']
 })

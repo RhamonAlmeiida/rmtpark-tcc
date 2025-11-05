@@ -12,7 +12,7 @@ services:
     expose:
       - "80"           # visível na rede docker para o Traefik
     ports:
-      - "8080:80"      # você mantém o acesso direto via IP:8081
+      - "8081:80"      # você mantém o acesso direto via IP:8081
     networks:
       - dokploy-network
     healthcheck:
