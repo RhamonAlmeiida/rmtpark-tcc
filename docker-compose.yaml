@@ -1,5 +1,9 @@
 version: "3.9"
 
+networks:
+  dokploy_proxy:
+    external: true
+
 services:
   angular-app:
     build:
@@ -7,6 +11,13 @@ services:
     container_name: angular-app
     restart: always
     expose:
-      - "80"
+      - "80"               # visível na rede docker (para o Dokploy)
     ports:
-      - "8081:80"   # Host port 8080 → Container port 80
+      - "8081:80"          # você mantém acesso direto via IP:8081
+    networks:
+      - dokploy_proxy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
