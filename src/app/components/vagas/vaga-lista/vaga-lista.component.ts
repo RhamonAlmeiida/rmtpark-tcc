@@ -116,7 +116,6 @@ export class VagaListaComponent implements OnInit {
           ? 'Mensalista'
           : 'Diarista';
 
-        // **CHAMADA CORRIGIDA: NÃO PASSAR HEADERS**
         this.vagaService.cadastrar(this.vagaCadastro).subscribe({
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Veículo cadastrado com sucesso' });
@@ -181,12 +180,14 @@ export class VagaListaComponent implements OnInit {
 
   finalizarSaida(): void {
     if (!this.vagaSelecionada) return;
+
     const now = new Date();
     let duracaoStr = 'Mensalista ativo';
     let valor = 0;
 
     if (this.vagaSelecionada.tipo === 'Diarista') {
-      const diffMs = now.getTime() - (this.vagaSelecionada.dataHora?.getTime() ?? now.getTime());
+      if (!this.vagaSelecionada.dataHora) return;
+      const diffMs = now.getTime() - this.vagaSelecionada.dataHora.getTime();
       const diffHoras = diffMs / (1000 * 60 * 60);
 
       this.configuracoesService.obterValorHora().subscribe({
@@ -207,48 +208,51 @@ export class VagaListaComponent implements OnInit {
   }
 
   private enviarSaida(duracaoStr: string, valor: number, saida: Date) {
-    if (!this.vagaSelecionada) return;
+  if (!this.vagaSelecionada) return;
 
-    const dados: any = {
-      saida: saida.toISOString(),
-      duracao: duracaoStr,
-      valor: valor
-    };
+  // Garantir que o valor enviado seja o calculado no modal
+  const valorCalculado = this.vagaSelecionada.tipo === 'Mensalista'
+    ? 0 // ou valor do mensalista, se for só cobrar mensalmente
+    : this.valorTotal; // para diarista, usar valor calculado por hora
 
-    if (this.vagaSelecionada.tipo === 'Diarista' && this.formaPagamento) {
-      dados.formaPagamento = this.formaPagamento.charAt(0).toUpperCase() + this.formaPagamento.slice(1);
+  const dados: any = {
+    saida: saida.toISOString(),
+    duracao: duracaoStr,
+    valor: valorCalculado,
+    formaPagamento: this.vagaSelecionada.tipo === 'Diarista' && this.formaPagamento
+      ? this.formaPagamento
+      : undefined
+  };
+
+  const vagaId = this.vagaSelecionada.id;
+
+  this.vagaService.registrarSaida(vagaId, dados).subscribe({
+    next: (res: any) => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Saída registrada',
+        detail: `Veículo ${res.placa ?? ''} registrado no relatório`
+      });
+      this.dialogResumoSaidaVisivel = false;
+      this.vagaSelecionada = null;
+      this.vagas = this.vagas.filter(v => v.id !== vagaId);
+    },
+    error: (err: any) => {
+      console.error(err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível registrar a saída.'
+      });
     }
+  });
+}
 
-    const vagaId = this.vagaSelecionada.id;
-
-    // **CHAMADA CORRIGIDA: NÃO PASSAR HEADERS**
-    this.vagaService.registrarSaida(vagaId, dados).subscribe({
-      next: (res: any) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Saída registrada',
-          detail: `Veículo ${res.placa ?? ''} registrado no relatório`
-        });
-        this.dialogResumoSaidaVisivel = false;
-        this.vagaSelecionada = null;
-        this.vagas = this.vagas.filter(v => v.id !== vagaId);
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível registrar a saída.'
-        });
-      }
-    });
-  }
 
   // ================= CARREGAMENTO =================
   carregarVagas(): void {
     this.carregandoVagas = true;
 
-    // **CHAMADA CORRIGIDA: NÃO PASSAR HEADERS**
     this.vagaService.obterTodos().subscribe({
       next: (vagas: any[]) => {
         this.vagas = vagas.map(v => new Vaga(
