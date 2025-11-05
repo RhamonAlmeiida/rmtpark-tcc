@@ -21,7 +21,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d
 
 # Copia os arquivos do build Angular
-COPY --from=build /app/dist/rmt-park /usr/share/nginx/html
+COPY --from=build /app/dist/rmt-park/browser /usr/share/nginx/html
 
 EXPOSE 80
 
