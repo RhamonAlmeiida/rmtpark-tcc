@@ -10,9 +10,9 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class VagaService {
-  private apiUrl = `${environment.apiUrl}/vagas`;
+  private apiUrl = `${environment.apiUrl}/vagas/`;
 
-  constructor(private http: HttpClient, private loginService: LoginService) {}
+  constructor(private http: HttpClient, private loginService: LoginService) { }
 
   private getHeaders(): HttpHeaders {
     const token = this.loginService.getToken();
