@@ -51,7 +51,7 @@ export class PainelAdminComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.load();
-    // this.pollingSub = interval(10000).subscribe(() => this.load());
+    this.pollingSub = interval(10000).subscribe(() => this.load());
   }
 
   ngOnDestroy() {
