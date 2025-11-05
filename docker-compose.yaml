@@ -9,4 +9,4 @@ services:
     expose:
       - "80"
     ports:
-      - "8080:80"   # Host port 8080 → Container port 80
+      - "8081:80"   # Host port 8080 → Container port 80
