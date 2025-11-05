@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class MensalistaService {
-  private apiUrl = `${environment.apiUrl}/mensalistas`;
+  private apiUrl = `${environment.apiUrl}/mensalistas/`;
 
   constructor(private http: HttpClient, private loginService: LoginService) {}
 
@@ -32,10 +32,10 @@ export class MensalistaService {
   }
 
   obterPorId(id: number): Observable<Mensalista> {
-    return this.http.get<Mensalista>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.get<Mensalista>(`${this.apiUrl}${id}`, { headers: this.getHeaders() });
   }
 
   apagar(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.apiUrl}${id}`, { headers: this.getHeaders() });
   }
 }
