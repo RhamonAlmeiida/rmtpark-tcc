@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  angular-app:
+    build:
+      context: .
+    container_name: angular-app
+    restart: always
+    expose:
+      - "80"
+    ports:
+      - "8080:80"   # Host port 8080 → Container port 80

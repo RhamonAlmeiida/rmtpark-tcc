@@ -8,29 +8,29 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class SiteCadastroService {  
-  urlAPI = window.location.hostname === 'localhost'
-    ? `${environment.apiUrl}/empresa`
-    : 'https://rmtpark-bd.onrender.com/api/empresa';
+  private apiUrl = `${environment.apiUrl}/empresa`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    
+  }
 
   cadastrar(dados: SiteCadastroCreate): Observable<SiteCadastro> {
-    return this.http.post<SiteCadastro>(this.urlAPI, dados);
+    return this.http.post<SiteCadastro>(this.apiUrl, dados);
   }
 
   obterTodos(): Observable<SiteCadastro[]> {
-    return this.http.get<SiteCadastro[]>(this.urlAPI);
+    return this.http.get<SiteCadastro[]>(this.apiUrl);
   }
 
   obterPorId(id: number): Observable<SiteCadastro> {
-    return this.http.get<SiteCadastro>(`${this.urlAPI}/${id}`);
+    return this.http.get<SiteCadastro>(`${this.apiUrl}/${id}`);
   }
 
   atualizar(id: number, dados: SiteCadastroCreate): Observable<SiteCadastro> {
-    return this.http.put<SiteCadastro>(`${this.urlAPI}/${id}`, dados);
+    return this.http.put<SiteCadastro>(`${this.apiUrl}/${id}`, dados);
   }
 
   apagar(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.urlAPI}/${id}`);
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }

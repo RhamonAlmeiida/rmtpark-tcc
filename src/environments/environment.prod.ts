@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://72.61.33.250:8000/api'
+  apiUrl: 'https://api.rmtpark.com/api'
 };

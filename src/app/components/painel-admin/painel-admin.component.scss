@@ -80,29 +80,13 @@
   gap: 0.5rem;
 }
 
-:host ::ng-deep .p-button {
+:host ::ng-deep .acoes .p-button {
   width: 160px;
   justify-content: center;
   font-size: 0.85rem;
   font-weight: 500;
 }
 
-:host ::ng-deep .p-button-success {
-  background: #00e676 !important;
-  border: none;
-  color: #000;
-}
-
-:host ::ng-deep .p-button-help {
-  background: #00bcd4 !important;
-  border: none;
-  color: #000;
-}
-
-:host ::ng-deep .p-button-danger {
-  background: #ff5252 !important;
-  border: none;
-}
 
 :host ::ng-deep .p-datatable {
   border-radius: 10px;
