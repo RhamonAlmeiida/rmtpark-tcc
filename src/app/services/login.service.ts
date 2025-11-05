@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { tap, mapTo } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
@@ -15,37 +15,23 @@ export interface LoginResponse {
 })
 export class LoginService {
   private apiUrl = `${environment.apiUrl}`;
-
   private loggedIn = new BehaviorSubject<boolean>(!!localStorage.getItem('access_token'));
   isLoggedIn$ = this.loggedIn.asObservable();
 
-  private admin = {
-    email: 'admin@rmtpark.com',
-    senha: 'admin@123'
-  };
-
   constructor(private http: HttpClient) { }
 
-
   login(email: string, senha: string): Observable<LoginResponse> {
-    if (email === this.admin.email && senha === this.admin.senha) {
-      const fakeResponse: LoginResponse = {
-        access_token: 'admin-local-token',
-        token_type: 'bearer',
-        is_admin: true
-      };
-      this.salvarToken(fakeResponse.access_token, fakeResponse.is_admin, email);
-      return of(fakeResponse);
-    }
-
-    // Envia login normal para o backend
     const body = new HttpParams()
       .set('username', email)
       .set('password', senha);
+
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, body.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    }).pipe(
+      tap(res => this.salvarToken(res.access_token, res.is_admin, email))
+    );
   }
+
   salvarToken(token: string, isAdmin: boolean = false, email?: string): void {
     localStorage.setItem('access_token', token);
     localStorage.setItem('is_admin', isAdmin ? 'true' : 'false');
@@ -77,9 +63,7 @@ export class LoginService {
     this.loggedIn.next(false);
   }
 
-  // ---------------- RECUPERAÇÃO DE SENHA ----------------
   recuperarSenha(email: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
   }
-
 }
