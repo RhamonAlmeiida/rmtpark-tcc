@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class RelatorioService {
-  private apiUrl = `${environment.apiUrl}/relatorios`;
+  private apiUrl = `${environment.apiUrl}/relatorios/`;
 
   constructor(private http: HttpClient) {}
 
