@@ -1,4 +1,3 @@
-# docker-compose.yml do FRONT
 networks:
   dokploy-network:
     external: true   # use o nome exato listado no 'docker network ls'
@@ -7,6 +6,7 @@ services:
   angular-app:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: angular-app
     restart: always
     expose:
@@ -20,3 +20,9 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+    
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rmtpark-frontend-4dolk1.rule=Host(`front.rmtpark.com`)
+      - traefik.http.routers.rmtpark-frontend-4dolk1.entrypoints=web
+      - traefik.http.services.rmtpark-frontend-4dolk1.loadbalancer.server.port=8081
