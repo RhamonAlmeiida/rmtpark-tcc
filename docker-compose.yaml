@@ -23,6 +23,6 @@ services:
     
     labels:
       - traefik.enable=true
-      - traefik.http.routers.rmtpark-frontend-4dolk1.rule=Host(`front.rmtpark.com`)
-      - traefik.http.routers.rmtpark-frontend-4dolk1.entrypoints=web
-      - traefik.http.services.rmtpark-frontend-4dolk1.loadbalancer.server.port=8081
+      - traefik.http.routers.frontend.rule=Host(`front.rmtpark.com`)
+      - traefik.http.routers.frontend.entrypoints=web
+      - traefik.http.services.frontend.loadbalancer.server.port=8081
