@@ -82,7 +82,4 @@ export class LoginService {
     return this.http.post(`${this.apiUrl}/auth/recuperar-senha`, { email });
   }
 
-  redefinirSenha(token: string, novaSenha: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/redefinir-senha`, { token, nova_senha: novaSenha });
-  }
 }

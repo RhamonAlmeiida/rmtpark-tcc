@@ -1,6 +1,6 @@
 .admin-container {
-  background: linear-gradient(180deg, #111111, #1a1a1a);
-  color: #fff;
+  background: radial-gradient(circle at top left, #0c0c0c 0%, #151515 100%);
+  color: #f0f0f0;
   min-height: 100vh;
   padding: 2rem;
   font-family: 'Inter', sans-serif;
@@ -15,33 +15,78 @@
   margin-bottom: 2rem;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.admin-icon {
+  font-size: 1.8rem;
+  color: #00e676;
+}
+
 .admin-header h2 {
   font-size: 1.8rem;
   font-weight: 600;
   color: #00e676;
+  margin: 0;
 }
 
+.logout-btn {
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+}
+
+/* TABELA */
 .admin-table {
-  background: #1f1f1f !important;
+  background: #1e1e1e !important;
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+:host ::ng-deep .p-datatable {
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 :host ::ng-deep .p-table-thead > tr > th {
-  background: #2a2a2a !important;
-  color: #ccc !important;
+  background: linear-gradient(90deg, #1f1f1f, #242424) !important;
+  color: #00e676 !important;
   font-weight: 600;
   text-align: left;
+  padding: 1rem;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 :host ::ng-deep .p-table-tbody > tr {
-  background: #1c1c1c;
-  border-bottom: 1px solid #2e2e2e;
+  background: #121212;
+  border-bottom: 1px solid #242424;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 :host ::ng-deep .p-table-tbody > tr:hover {
-  background: #252525;
-  transition: background 0.2s ease;
+  background: #1a1a1a;
+  transform: scale(1.01);
+}
+
+/* COLUNAS E DADOS */
+.empresa-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.empresa-icon {
+  color: #4a90e2;
+  font-size: 1.2rem;
 }
 
 .empresa-nome {
@@ -74,6 +119,12 @@
   font-weight: bold;
 }
 
+.limite-alcancado {
+  color: #ff5252;
+  font-weight: bold;
+}
+
+/* BOTÕES DE AÇÃO */
 .acoes {
   display: flex;
   flex-direction: column;
@@ -81,18 +132,13 @@
 }
 
 :host ::ng-deep .acoes .p-button {
-  width: 160px;
+  width: 170px;
   justify-content: center;
   font-size: 0.85rem;
   font-weight: 500;
+  transition: transform 0.2s ease;
 }
 
-
-:host ::ng-deep .p-datatable {
-  border-radius: 10px;
-  overflow: hidden;
-}
-.limite-alcancado {
-  color: red;
-  font-weight: bold;
+:host ::ng-deep .acoes .p-button:hover {
+  transform: scale(1.05);
 }

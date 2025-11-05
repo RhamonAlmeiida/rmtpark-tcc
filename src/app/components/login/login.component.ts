@@ -108,4 +108,7 @@ login() {
       complete: () => this.carregandoRecuperacao = false
     });
   }
+  voltarHome() {
+  this.router.navigate(['/']);
+}
 }

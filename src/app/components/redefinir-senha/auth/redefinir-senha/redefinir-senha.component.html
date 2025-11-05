@@ -1,33 +1,43 @@
-<div class="reset-container">
-  <h2>Redefinir Senha</h2>
+<p-toast></p-toast>
 
-  <div class="field">
-    <label for="novaSenha">Nova Senha</label>
-    <input
-      id="novaSenha"
-      type="password"
-      [(ngModel)]="novaSenha"
-      class="p-inputtext p-component"
-      style="width: 100%; padding: 0.5rem"
-    />
+<div class="reset-wrapper">
+  <div class="reset-card">
+    <h2>Redefinir Senha</h2>
+    <p>Crie uma nova senha segura para acessar sua conta.</p>
+
+    <div class="field">
+      <label for="novaSenha">Nova Senha</label>
+      <input
+        id="novaSenha"
+        type="password"
+        [(ngModel)]="novaSenha"
+        class="p-inputtext p-component"
+        placeholder="Digite sua nova senha"
+      />
+    </div>
+
+    <div class="field">
+      <label for="confirmarSenha">Confirmar Senha</label>
+      <input
+        id="confirmarSenha"
+        type="password"
+        [(ngModel)]="confirmarSenha"
+        class="p-inputtext p-component"
+        placeholder="Confirme sua nova senha"
+      />
+    </div>
+
+    <button
+      pButton
+      label="Redefinir Senha"
+      icon="pi pi-refresh"
+      (click)="redefinirSenha()"
+      [disabled]="carregando"
+      class="reset-button"
+    ></button>
+
+    <div class="footer-text">
+      <p>© 2025 RmtPark - Sistema de Estacionamento Inteligente</p>
+    </div>
   </div>
-
-  <div class="field">
-    <label for="confirmarSenha">Confirmar Senha</label>
-    <input
-      id="confirmarSenha"
-      type="password"
-      [(ngModel)]="confirmarSenha"
-      class="p-inputtext p-component"
-      style="width: 100%; padding: 0.5rem"
-    />
-  </div>
-
-  <button
-    pButton
-    label="Redefinir Senha"
-    icon="pi pi-check"
-    (click)="redefinirSenha()"
-    [disabled]="carregando"
-  ></button>
 </div>
