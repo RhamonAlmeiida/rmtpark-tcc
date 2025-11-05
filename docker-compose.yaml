@@ -27,7 +27,7 @@ services:
       - traefik.enable=true
 
       # Router HTTP (80)
-      - traefik.http.routers.rmtpark-frontend.rule=Host(`front.rmtpark.com`)
+      - traefik.http.routers.rmtpark-frontend.rule=Host(`rmtpark.com`)
       - traefik.http.routers.rmtpark-frontend.entrypoints=web
       - traefik.http.services.rmtpark-frontend.loadbalancer.server.port=80
       - traefik.docker.network=dokploy-network
@@ -37,7 +37,7 @@ services:
       - traefik.http.routers.rmtpark-frontend.middlewares=rmtpark-redirecthttps
 
       # Router HTTPS (443) — ative se seu Traefik já tem certresolver (Let’s Encrypt) configurado
-      - traefik.http.routers.rmtpark-frontend-secure.rule=Host(`front.rmtpark.com`)
+      - traefik.http.routers.rmtpark-frontend-secure.rule=Host(`rmtpark.com`)
       - traefik.http.routers.rmtpark-frontend-secure.entrypoints=websecure
       - traefik.http.routers.rmtpark-frontend-secure.tls=true
       # Se o Dokploy expõe um resolver nomeado (ex.: "letsencrypt"), habilite a linha abaixo:
