@@ -333,10 +333,10 @@
   color: #666;
 }
 
-/* Blog */
+/* Blog - Dark Mode */
 .blog-section {
   padding: 4rem 2rem;
-  background: #fff;
+  background: radial-gradient(circle at top, #2c2f30f8 0%, #262628a6 100%);
   text-align: center;
 }
 
@@ -351,8 +351,8 @@
 }
 
 .blog-tag {
-  background: #e8f9f1;
-  color: #3cbc8d;
+  background: #1e1e1e;
+  color: #0a42ecc0;
   padding: 0.4rem 1rem;
   border-radius: 20px;
   font-weight: 600;
@@ -364,7 +364,7 @@
 .blog-title {
   font-size: 2rem;
   margin: 1.5rem 0 2rem;
-  color: #111;
+  color: #ffffff;
 }
 
 .blog-cards {
@@ -381,13 +381,14 @@
   max-width: 350px;
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-  transition: transform 0.3s ease;
+  background: #1e1e1e;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .blog-card:hover {
   transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
 }
 
 .blog-img {
@@ -399,20 +400,34 @@
 .blog-overlay {
   text-align: left;
   padding: 1rem;
+  color: #cccccc;
 }
 
 .blog-post-titulo {
   font-size: 1.1rem;
   margin: 0.8rem 1rem 0.4rem;
-  color: #111;
+  color: #ffffff;
 }
 
 .blog-post-resumo {
   font-size: 0.95rem;
-  color: #555;
+  color: #b0b0b0;
   text-align: left;
   padding: 0 1rem 1.5rem;
 }
+
+/* Optional: Categoria & Info in overlay */
+.blog-categoria {
+  font-size: 0.8rem;
+  color: #0a52ee;
+  margin-bottom: 0.2rem;
+}
+
+.blog-info {
+  font-size: 0.75rem;
+  color: #aaaaaa;
+}
+
 
 /* Seção CTA */
 .cta {
