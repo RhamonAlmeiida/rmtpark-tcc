@@ -22,7 +22,8 @@
     </ng-template>
     <ng-template pTemplate="body" let-vaga>
       <tr>
-        <td>{{ vaga.id }}</td>
+    <td>{{ vaga.numero_interno }}</td>
+
         <td>{{ vaga.placa }}</td>
         <td>
           <p-tag [severity]="vaga.tipo === 'Mensalista' ? 'success' : 'info'" [value]="vaga.tipo"></p-tag>

@@ -39,6 +39,7 @@ export class VagaListaComponent implements OnInit {
   valorTotal = 0;
   valorHora = 10;
   formaPagamento: 'Dinheiro' | 'Cartão' | 'Pix' | null = null;
+ 
 
   constructor(
     private router: Router,
@@ -161,17 +162,19 @@ carregarVagas(): void {
 
   this.vagaService.obterTodos().subscribe({
     next: (res: any[]) => {
-      this.vagas = (res ?? []).map(v => new Vaga(
-        v.id ?? 0,
-        v.placa ?? '',
-        v.tipo ?? 'Diarista',
-        v.data_hora ? new Date(v.data_hora) : null,
-        v.data_hora_saida ? new Date(v.data_hora_saida) : null,
-        v.duracao ?? '',
-        v.valor_pago ?? 0,
-        v.forma_pagamento ?? null,
-        v.status_pagamento ?? null
-      ));
+      this.vagas = (res ?? []).map(v => ({
+          id: v.id ?? 0,
+          numero_interno: v.numero_interno ?? 0,
+          placa: v.placa ?? '',
+          tipo: v.tipo ?? 'Diarista',
+          dataHora: v.data_hora ? new Date(v.data_hora) : null,
+          dataHoraSaida: v.data_hora_saida ? new Date(v.data_hora_saida) : null,
+          duracao: v.duracao ?? '',
+          valorPago: v.valor_pago ?? 0,
+          formaPagamento: v.forma_pagamento ?? null,
+          statusPagamento: v.status_pagamento ?? null,
+        }));
+
       this.carregandoVagas = false;
     },
     error: (err: any) => {
