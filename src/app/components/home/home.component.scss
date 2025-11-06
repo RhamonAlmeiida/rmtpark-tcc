@@ -460,7 +460,7 @@
 
 /* Footer */
 .home-footer {
-  background-color: #333;
+  background: radial-gradient(circle at top, #2c2f30f8 0%, #171718a6 100%);
   color: white;
   padding: 4rem 2rem 2rem;
 }
@@ -529,6 +529,7 @@
   font-size: 0.9rem;
   color: #aaa;
 }
+
 
 /* Responsividade Geral */
 @media (max-width: 1200px) {

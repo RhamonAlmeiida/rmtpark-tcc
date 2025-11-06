@@ -3,15 +3,17 @@
 
 <body>
 
-  <!-- Badge -->
-  <p class="badge"><i class="pi pi-book"></i> BLOG</p>  
-
-  <div class="page-bg">
-    <p-button label="Página Principal" (click)="voltarPagina()" icon="pi pi-arrow-left"></p-button>
-  </div>
-  <!-- Artigo -->
+ 
   <article class="blog-article">
+    <button
+    pButton
+    icon="pi pi-arrow-left"
+    label="Voltar ao Início"
+    class="back-button"
+    (click)="voltarPagina()"
+  ></button>
 
+  
     <header>
       <h1>Como evitar perdas com a cobrança manual de estacionamentos</h1>
       <p class="blog-meta">

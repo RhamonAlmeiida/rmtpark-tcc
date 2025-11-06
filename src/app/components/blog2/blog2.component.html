@@ -3,16 +3,15 @@
 
 <body>
 
-  <!-- Badge -->
-  <p class="badge"><i class="pi pi-book"></i> BLOG</p>  
-
-  <div class="page-bg">
-    <p-button label="Página Principal" (click)="voltarPagina()" icon="pi pi-arrow-left"></p-button>
-  </div>
-
   <!-- Artigo -->
   <article class="blog-article">
-
+    <button
+    pButton
+    icon="pi pi-arrow-left"
+    label="Voltar ao Início"
+    class="back-button"
+    (click)="voltarPagina()"
+  ></button>
     <!-- Cabeçalho -->
     <header>
       <h1>Sazonalidade em estacionamento: como se preparar para picos e quedas</h1>
