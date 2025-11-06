@@ -1,61 +1,59 @@
 <p-toast></p-toast>
 
-<div class="cadastro-container">
-  <div class="page-bg">
-    <p-button label="Página Principal" (click)="voltarPagina()" icon="pi pi-arrow-left"></p-button>
-  </div>
-
-  <!-- Coluna Esquerda -->
-  <div class="cadastro-info">
+<div class="dark-cadastro-container">
+    <button
+    pButton
+    icon="pi pi-arrow-left"
+    label="Voltar ao Início"
+    class="back-button"
+    (click)="voltarPagina()"
+  ></button>
+  <!-- Coluna esquerda: informações -->
+  <div class="dark-cadastro-info">
     <span class="tag">💬 Fale conosco</span>
     <h1>Dê o próximo passo na evolução da sua operação</h1>
     <p class="subtext">
-      Saiba porque milhares de clientes confiam na RmtPark para a sua gestão
+      Milhares de clientes confiam na RmtPark para gerir seus estacionamentos.
     </p>
 
     <ul class="benefits">
-      <li><i class="pi pi-car"></i> +2mil estacionamentos confiam na RmtPark</li>
+      <li><i class="pi pi-car"></i> +2 mil estacionamentos confiáveis</li>
       <li><i class="pi pi-users"></i> +10 milhões de usuários conectados</li>
       <li><i class="pi pi-car"></i> +50 milhões de veículos estacionados</li>
     </ul>
   </div>
 
-  <!-- Coluna Direita -->
-  <div class="cadastro-form">
-    <p>Preencha os dados abaixo para realizar o seu cadastro e entraremos em contato:</p>
+  <!-- Coluna direita: formulário -->
+  <div class="dark-cadastro-form">
+    <p>Preencha os dados para cadastro e entraremos em contato:</p>
 
     <form [formGroup]="cadastroForm" class="form">
       <div class="input-group">
-        <input type="text" placeholder="Nome" required formControlName="nome" autocomplete="name" />
+        <input type="text" placeholder="Nome" formControlName="nome" />
       </div>
 
       <div class="input-group">
-        <input type="email" placeholder="Email" required formControlName="email" autocomplete="email" />
+        <input type="email" placeholder="Email" formControlName="email" />
       </div>
 
       <div class="input-group">
-        <p-inputmask mask="(99) 99999-9999" required formControlName="telefone" placeholder="Telefone" />
+        <p-inputmask mask="(99) 99999-9999" placeholder="Telefone" formControlName="telefone"></p-inputmask>
       </div>
 
       <div class="input-group">
-        <p-inputmask mask="99.999.999/9999-99" required formControlName="cnpj" placeholder="CNPJ" />
+        <p-inputmask mask="99.999.999/9999-99" placeholder="CNPJ" formControlName="cnpj"></p-inputmask>
       </div>
 
       <div class="input-group">
-        <input type="password" placeholder="Senha" required formControlName="senha" autocomplete="new-password" />
+        <input type="password" placeholder="Senha" formControlName="senha" />
       </div>
 
-      <!-- 🔹 Campo de Plano -->
-      <div class="planos-section">
-        <label for="plano">Selecione um plano:</label>
-        <p-dropdown 
-          [options]="planos" 
-          formControlName="plano" 
-          optionLabel="label" 
-          placeholder="Escolha seu plano"
-          class="w-full">
-        </p-dropdown>
-
+      <!-- Seleção de plano -->
+      <div class="input-group">
+        <label>Escolha seu plano :</label>
+        <br>
+        <br>
+        <p-dropdown [options]="planos" formControlName="plano" optionLabel="label" placeholder="Escolha seu plano"></p-dropdown>
         <div *ngIf="cadastroForm.get('plano')?.value" class="plano-resumo">
           <h3>{{ cadastroForm.get('plano')?.value.label }}</h3>
           <p class="preco">{{ cadastroForm.get('plano')?.value.preco }}</p>
@@ -67,11 +65,10 @@
         </div>
       </div>
 
+      <!-- Checkbox privacidade -->
       <div class="checkbox">
-        <input type="checkbox" id="privacy" formControlName="aceite" required />
-        <label for="privacy">
-          Estou de acordo com a <a href="#">Política de Privacidade</a>
-        </label>
+        <input type="checkbox" id="privacy" formControlName="aceite" />
+        <label type="checkbox" for="privacy">Aceito a <a href="#">Política de Privacidade</a></label>
       </div>
 
       <button type="button" class="btn-submit" (click)="cadastrar()">
@@ -79,45 +76,45 @@
       </button>
     </form>
 
-    <small>Prometemos não utilizar suas informações de contato para enviar SPAM</small>
+    <small>Não enviaremos SPAM para você.</small>
   </div>
 </div>
 
-<!-- Footer -->
-<footer class="home-footer">
-  <div class="footer-content">
-    <div class="footer-logo">
-      <h3>RMT Park</h3>
-      <p>A melhor solução para seu estacionamento</p>
+ <!-- Footer -->
+  <footer class="home-footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <h3>RMT Park</h3>
+        <p>A melhor solução para seu estacionamento</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Produto</h4>
+          <ul>
+            <li><a href="#">Recursos</a></li>
+            <li><a href="#">Planos</a></li>
+            <li><a href="#">Demonstração</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#">Sobre nós</a></li>
+            <li><a href="#">Contato</a></li>
+            <li><a href="#">Carreiras</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="#">Central de ajuda</a></li>
+            <li><a href="#">Documentação</a></li>
+            <li><a href="#">Status</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="footer-links">
-      <div class="footer-column">
-        <h4>Produto</h4>
-        <ul>
-          <li><a href="#">Recursos</a></li>
-          <li><a href="#">Planos</a></li>
-          <li><a href="#">Demonstração</a></li>
-        </ul>
-      </div>
-      <div class="footer-column">
-        <h4>Empresa</h4>
-        <ul>
-          <li><a href="#">Sobre nós</a></li>
-          <li><a href="#">Contato</a></li>
-          <li><a href="#">Carreiras</a></li>
-        </ul>
-      </div>
-      <div class="footer-column">
-        <h4>Suporte</h4>
-        <ul>
-          <li><a href="#">Central de ajuda</a></li>
-          <li><a href="#">Documentação</a></li>
-          <li><a href="#">Status</a></li>
-        </ul>
-      </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 RMT Park. Todos os direitos reservados.</p>
     </div>
-  </div>
-  <div class="footer-bottom">
-    <p>&copy; 2025 RMT Park. Todos os direitos reservados.</p>
-  </div>
-</footer>
+  </footer>

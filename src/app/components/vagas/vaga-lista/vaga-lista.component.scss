@@ -1,12 +1,25 @@
-/* Modal escura */
-::ng-deep .custom-dark-dialog .p-dialog-content {
+.dark-table ::ng-deep input.p-inputtext {
+  background: rgba(0,255,255,0.05);
+  border: 1px solid #0ff;
+  color: #e0e0e0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.dark-table ::ng-deep input.p-inputtext:focus {
+  border-color: #0ff;
+  box-shadow: 0 0 10px #0ff;
+}
+
+.custom-dark-dialog .p-dialog-content {
   background-color: #1e1e1e !important;
   color: #ffffff !important;
   border-radius: 12px !important;
   padding: 2rem !important;
 }
 
-::ng-deep .custom-dark-dialog .p-dialog-header {
+.custom-dark-dialog .p-dialog-header {
   background-color: #1e1e1e !important;
   color: #ffffff !important;
   border-top-left-radius: 12px !important;
@@ -14,14 +27,6 @@
   border-bottom: 1px solid #333 !important;
 }
 
-/* Título */
-.dialog-header {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #ffffff;
-}
-
-/* Container dos campos */
 .form-container {
   display: flex;
   flex-direction: column;
@@ -29,30 +34,11 @@
   padding: 1rem 0;
 }
 
-/* Labels */
 label {
   color: #ffffff;
   font-weight: 500;
 }
 
-/* Inputs */
-::ng-deep input.p-inputtext {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  color: #ffffff !important;
-  padding: 0.75rem 1rem !important;
-  font-size: 1rem !important;
-  border-radius: 0.5rem !important;
-  width: 100% !important;
-  transition: all 0.2s ease-in-out;
-}
-
-/* Placeholder claro */
-::ng-deep input.p-inputtext::placeholder {
-  color: rgba(255, 255, 255, 0.4) !important;
-}
-
-/* Estilo opcional alternativo para inputs (se precisar usar com classe adicional) */
 .input-dark {
   background-color: #2a2a2a !important;
   border: 1px solid #444 !important;
@@ -61,9 +47,64 @@ label {
   border-radius: 0.5rem !important;
 }
 
-/* Botões do rodapé */
 .footer-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
+}
+
+.tag-futuristic {
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.p-tag-success {
+  background: #0f0 !important;
+  color: #000 !important;
+}
+
+.p-tag-info {
+  background: #00f !important;
+  color: #fff !important;
+}
+
+.p-button-futuristic {
+  background: linear-gradient(45deg,#0ff,#08f);
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.p-button-futuristic:hover {
+  box-shadow: 0 0 15px #0ff;
+}
+
+.p-button-futuristic-danger {
+  background: linear-gradient(45deg,#f00,#f88);
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.p-button-futuristic-danger:hover {
+  box-shadow: 0 0 15px #f00;
+}
+.input-dark {
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+  color: #fff !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 0.5rem !important;
+  width: 250px;
+  transition: all 0.2s ease-in-out;
+}
+
+.p-tag-success {
+  background-color: #2f7a2f !important;
+  color: #fff !important;
+}
+
+.p-tag-info {
+  background-color: #1f4f8a !important;
+  color: #fff !important;
 }

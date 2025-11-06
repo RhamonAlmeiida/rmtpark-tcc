@@ -75,6 +75,9 @@ login() {
     this.emailRecuperacao = '';
     this.dialogModalEsqueceuSenha = true;
   }
+criarConta(){
+  this.router.navigate(['/site-cadastro']);
+}
 
   enviarEmailRecuperacao() {
     if (!this.emailRecuperacao) {

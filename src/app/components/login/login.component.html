@@ -1,10 +1,16 @@
 <p-toast></p-toast>
 
-<div class="login-page">
+<div class="login-wrapper">
   <!-- Botão Voltar -->
-  <button pButton icon="pi pi-arrow-left" label="Voltar ao Início" class="back-button" (click)="voltarHome()"></button>
+  <button
+    pButton
+    icon="pi pi-arrow-left"
+    label="Voltar ao Início"
+    class="back-button"
+    (click)="voltarHome()"
+  ></button>
 
-  <div class="login-box">
+  <div class="login-card">
     <h2>Bem-vindo</h2>
     <p>Acesse sua conta para continuar</p>
 
@@ -37,7 +43,7 @@
         label="Esqueceu a senha?"
         icon="pi pi-key"
         (click)="esqueciSenha()"
-        class="p-button-text p-button-sm text-blue"
+        class="p-button-text text-blue"
       ></button>
     </div>
 
@@ -47,7 +53,16 @@
       (click)="login()"
       label="Entrar"
       icon="pi pi-sign-in"
-      class="p-button-rounded p-button-lg p-button-primary w-full mt-2"
+      class="login-button"
+    ></button>
+
+    <button
+      pButton
+      type="button"
+      label="Criar Conta"
+      icon="pi pi-user-plus"
+      class="create-button"
+      (click)="criarConta()"
     ></button>
   </div>
 </div>
@@ -69,7 +84,6 @@
       [(ngModel)]="emailRecuperacao"
       placeholder="Digite seu email"
       class="p-inputtext p-component"
-      style="width: 100%; padding: 0.5rem"
     />
   </div>
 

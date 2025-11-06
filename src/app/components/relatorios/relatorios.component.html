@@ -2,46 +2,21 @@
 <p-confirmDialog></p-confirmDialog>
 
 <div class="card relatorio-card">
-  <div class="toolbar flex gap-2 mb-3">
-    <div class="filters-left flex gap-2 items-center">
-      <input pInputText placeholder="Placa" [(ngModel)]="filtroPlaca" class="input-dark" />
+  <div class="toolbar flex gap-2 mb-3 flex-wrap">
+    <input pInputText placeholder="Placa" [(ngModel)]="filtroPlaca" class="input-dark" />
+    <p-dropdown [(ngModel)]="filtroTipo" [options]="tiposFiltro" optionLabel="label" optionValue="value" placeholder="Tipo" class="input-dark" ></p-dropdown> <p-dropdown [(ngModel)]="filtroPagamento" [options]="formasPagamentoFiltro" optionLabel="label" optionValue="value" placeholder="Pagamento" class="input-dark" ></p-dropdown> <!-- Filtro por dia --> <p-calendar [(ngModel)]="filtroDia" dateFormat="dd/mm/yy" placeholder="Filtrar por dia" class="input-dark" showIcon></p-calendar> <!-- Filtro por periodo --> <p-calendar [(ngModel)]="filtroPeriodo" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Período" class="input-dark" showIcon></p-calendar>
 
-      <p-dropdown
-        [(ngModel)]="filtroTipo"
-        [options]="tiposFiltro"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Tipo"
-        class="input-dark"
-      ></p-dropdown>
+    <button pButton type="button" label="Buscar" icon="pi pi-search" (click)="filtrarRelatorios()" class="p-button-success"></button>
+    <button pButton type="button" label="Limpar Filtros" icon="pi pi-times" (click)="limparFiltros()" class="p-button-secondary ml-auto"></button>
 
-      <p-dropdown
-        [(ngModel)]="filtroPagamento"
-        [options]="formasPagamentoFiltro"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Pagamento"
-        class="input-dark"
-      ></p-dropdown>
-
-      <!-- Filtro por dia -->
-      <p-calendar [(ngModel)]="filtroDia" dateFormat="dd/mm/yy" placeholder="Filtrar por dia" class="input-dark" showIcon></p-calendar>
-
-      <!-- Filtro por periodo -->
-      <p-calendar [(ngModel)]="filtroPeriodo" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Período" class="input-dark" showIcon></p-calendar>
-
-      <button pButton type="button" label="Buscar" icon="pi pi-search" (click)="filtrarRelatorios()" class="p-button-success"></button>
-      <button pButton type="button" label="Limpar Filtros" icon="pi pi-times" (click)="limparFiltros()" class="p-button-secondary"></button>
-    </div>
-
-    <div class="actions-right ml-auto flex gap-2">
-      <button pButton label="Exportar PDF" icon="pi pi-file-pdf" class="p-button-danger" (click)="exportarPDF()"></button>
-      <button pButton label="Exportar Excel" icon="pi pi-file-excel" class="p-button-success" (click)="exportarExcel()"></button>
-      <button pButton label="Imprimir" icon="pi pi-print" class="p-button-secondary" (click)="imprimir()"></button>
+    <div class="actions-right flex gap-2 mt-2">
+      <button pButton label="Exportar PDF" icon="pi pi-file-pdf" class="p-button-danger"></button>
+      <button pButton label="Exportar Excel" icon="pi pi-file-excel" class="p-button-success"></button>
+      <button pButton label="Imprimir" icon="pi pi-print" class="p-button-secondary"></button>
     </div>
   </div>
 
-  <p-table [value]="relatoriosFiltrados" [tableStyle]="{ 'min-width': '60rem' }" class="p-datatable-dark">
+  <p-table [value]="relatoriosFiltrados" [tableStyle]="{ 'min-width': '60rem' }" class="p-datatable-dark futuristic-table">
     <ng-template pTemplate="header">
       <tr>
         <th>ID</th>
@@ -61,19 +36,18 @@
         <td>{{ relatorio.placa }}</td>
         <td>
           <p-tag
-            [severity]="relatorio.tipo === 'Mensalista' ? 'info' : 'secondary'"
             [value]="relatorio.tipo"
+            [severity]="relatorio.tipo === 'Mensalista' ? 'success' : 'info'"
           ></p-tag>
         </td>
         <td>{{ relatorio.dataHoraEntrada | date:'dd/MM/yyyy, HH:mm:ss':'America/Sao_Paulo' }}</td>
         <td>{{ relatorio.dataHoraSaida | date:'dd/MM/yyyy, HH:mm:ss':'America/Sao_Paulo' }}</td>
-
-        <td>{{ relatorio.valorPago | currency: 'BRL' }}</td>
+        <td>{{ relatorio.valorPago | currency:'BRL' }}</td>
         <td>{{ relatorio.formaPagamento }}</td>
         <td>
           <p-tag
-            [severity]="relatorio.statusPagamento === 'Pago' ? 'success' : 'warning'"
             [value]="relatorio.statusPagamento"
+            [severity]="relatorio.statusPagamento === 'Pago' ? 'success' : 'warning'"
           ></p-tag>
         </td>
       </tr>
@@ -81,21 +55,18 @@
   </p-table>
 </div>
 
-<!-- DASHBOARD DARK -->
 <section class="dashboard">
   <h3>Dashboard</h3>
 
   <div class="dashboard-cards">
     <div class="card-small">
       <small>Total Arrecadado</small>
-      <h2>{{ totalArrecadado | currency: 'BRL' }}</h2>
+      <h2>{{ totalArrecadado | currency:'BRL' }}</h2>
     </div>
-
     <div class="card-small">
       <small>Total Registros</small>
       <h2>{{ totalRegistros }}</h2>
     </div>
-
     <div class="card-small">
       <small>Tipo Mais Comum</small>
       <h2>{{ tipoMaisComum }}</h2>
@@ -109,14 +80,12 @@
         <p-chart type="bar" [data]="monthlyRevenueData" [options]="chartOptions" style="height:260px"></p-chart>
       </div>
     </div>
-
     <div class="chart-card">
       <h4>Entradas por Hora</h4>
       <div class="chart-wrapper">
         <p-chart type="line" [data]="entriesByHourData" [options]="chartOptions" style="height:260px"></p-chart>
       </div>
     </div>
-
     <div class="chart-card">
       <h4>Proporção (Mensalista x Diarista)</h4>
       <div class="chart-wrapper pie">
