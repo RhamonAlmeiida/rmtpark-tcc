@@ -262,5 +262,101 @@
   border-color: #0a59e1 !important;
   box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.15) !important;
 }
+/* ==================== Responsividade ==================== */
+
+/* Para tablets e telas médias */
+@media (max-width: 992px) {
+  .dark-cadastro-container {
+    flex-direction: column;
+    padding: 30px;
+    gap: 30px;
+  }
+
+  .dark-cadastro-form {
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .dark-cadastro-info {
+    margin-top: 30px;
+    text-align: center;
+  }
+
+  .benefits {
+    width: 100%;
+    margin-top: 50px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .benefits li {
+    font-size: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .benefits i {
+    font-size: 40px;
+  }
+
+  .dark-cadastro-info h1 {
+    font-size: 32px;
+  }
+
+  .dark-cadastro-info .subtext {
+    font-size: 14px;
+  }
+}
+
+/* Para celulares */
+@media (max-width: 576px) {
+  .dark-cadastro-container {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .dark-cadastro-info h1 {
+    font-size: 26px;
+  }
+
+  .dark-cadastro-info .subtext {
+    font-size: 13px;
+  }
+
+  .benefits li {
+    font-size: 16px;
+  }
+
+  .benefits i {
+    font-size: 32px;
+  }
+
+  .dark-cadastro-form {
+    padding: 20px;
+  }
+
+  .btn-submit {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .plano-resumo h3 {
+    font-size: 16px;
+  }
+
+  .plano-resumo .preco {
+    font-size: 14px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .footer-column {
+    min-width: 100%;
+  }
+}
 
   
