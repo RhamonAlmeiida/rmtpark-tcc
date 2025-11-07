@@ -1,0 +1,48 @@
+.grafico-container {
+  padding: 2rem;
+  color: #e2e8f0;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+}
+
+.resumo-cards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+
+  .resumo-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 255, 100, 0.1);
+
+    small {
+      color: #94a3b8;
+      display: block;
+    }
+
+    h2 {
+      margin-top: 0.5rem;
+      color: #22c55e;
+    }
+  }
+}
+
+.graficos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+
+  .grafico-card {
+    background: #0f172a;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 0 10px rgba(0, 255, 100, 0.1);
+  }
+}

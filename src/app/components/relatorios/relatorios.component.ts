@@ -68,17 +68,6 @@ export class RelatorioComponent implements OnInit {
     { label: 'Cartão', value: 'Cartão' },
   ];
 
-  // dashboard values
-  totalArrecadado = 0;
-  totalRegistros = 0;
-  tipoMaisComum = '—';
-
-  // dados dos gráficos
-  monthlyRevenueData: any;
-  entriesByHourData: any;
-  proportionData: any;
-  chartOptions: any;
-
   
 
   constructor(
@@ -87,17 +76,6 @@ export class RelatorioComponent implements OnInit {
     private messageService: MessageService,
     private relatorioService: RelatorioService
   ) {
-    // opções para charts (modo escuro)
-    this.chartOptions = {
-      plugins: {
-        legend: { labels: { color: '#cbd5e1' } }
-      },
-      scales: {
-        x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.04)' } }
-      },
-      maintainAspectRatio: false,
-    };
   }
 
   ngOnInit() {
@@ -139,7 +117,7 @@ export class RelatorioComponent implements OnInit {
         this.relatoriosFiltrados = [...this.relatorios];
         this.carregandoRelatorios = false;
 
-        this.recalcularDashboard();
+       
       },
       error: (erro) => {
         this.messageService.add({
@@ -196,7 +174,7 @@ export class RelatorioComponent implements OnInit {
       return placaMatch && tipoMatch && pagamentoMatch && diaMatch && periodoMatch;
     });
 
-    this.recalcularDashboard();
+
   }
 
   limparFiltros() {
@@ -206,75 +184,10 @@ export class RelatorioComponent implements OnInit {
     this.filtroDia = null;
     this.filtroPeriodo = null;
     this.relatoriosFiltrados = [...this.relatorios];
-    this.recalcularDashboard();
+   
   }
 
-  recalcularDashboard() {
-    const filas = this.relatoriosFiltrados || [];
-
-    this.totalArrecadado = filas.reduce((acc, r) => acc + (r.valorPago || 0), 0);
-    this.totalRegistros = filas.length;
-
-    const tipoCount: Record<string, number> = {};
-    filas.forEach(r => tipoCount[r.tipo || 'Outros'] = (tipoCount[r.tipo || 'Outros'] || 0) + 1);
-    const sortedTipos = Object.entries(tipoCount).sort((a,b) => b[1]-a[1]);
-    this.tipoMaisComum = sortedTipos.length ? sortedTipos[0][0] : '—';
-
-    this.buildMonthlyRevenueChart(filas);
-    this.buildEntriesByHourChart(filas);
-    this.buildProportionChart(filas);
-  }
-
-  private buildMonthlyRevenueChart(rows: Relatorio[]) {
-    const map: Record<string, number> = {};
-    rows.forEach(r => {
-      if (!r.dataHoraEntrada) return;
-      const d = new Date(r.dataHoraEntrada);
-      const key = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
-      map[key] = (map[key] || 0) + (r.valorPago || 0);
-    });
-
-    const labels = Object.keys(map).sort();
-    const data = labels.map(l => map[l]);
-
-    this.monthlyRevenueData = {
-      labels,
-      datasets: [
-        { label: 'Faturamento (R$)', data, fill: true }
-      ]
-    };
-  }
-
-  private buildEntriesByHourChart(rows: Relatorio[]) {
-    const hours = new Array<number>(24).fill(0);
-    rows.forEach(r => {
-      if (!r.dataHoraEntrada) return;
-      const d = new Date(r.dataHoraEntrada);
-      const h = d.getHours();
-      hours[h] = (hours[h] || 0) + 1;
-    });
-
-    this.entriesByHourData = {
-      labels: hours.map((_, i) => `${i}:00`),
-      datasets: [{ label: 'Entradas por Hora', data: hours, fill: false }]
-    };
-  }
-
-  private buildProportionChart(rows: Relatorio[]) {
-    let mensalista = 0, diarista = 0, outros = 0;
-    rows.forEach(r => {
-      if (!r.tipo) { outros++; return; }
-      const t = (r.tipo || '').toLowerCase();
-      if (t.includes('mensal')) mensalista++;
-      else if (t.includes('diar')) diarista++;
-      else outros++;
-    });
-
-    this.proportionData = {
-      labels: ['Mensalista', 'Diarista', 'Outros'],
-      datasets: [{ data: [mensalista, diarista, outros] }]
-    };
-  }
+  
 
   exportarPDF() {
     const doc = new jsPDF();

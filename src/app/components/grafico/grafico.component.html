@@ -1,0 +1,37 @@
+<p-toast></p-toast>
+
+<div class="grafico-container">
+  <h2>📊 Painel de Estatísticas</h2>
+
+  <div class="resumo-cards">
+    <div class="resumo-card">
+      <small>Total Arrecadado</small>
+      <h2>{{ totalArrecadado | currency:'BRL' }}</h2>
+    </div>
+    <div class="resumo-card">
+      <small>Total Registros</small>
+      <h2>{{ totalRegistros }}</h2>
+    </div>
+    <div class="resumo-card">
+      <small>Tipo Mais Comum</small>
+      <h2>{{ tipoMaisComum }}</h2>
+    </div>
+  </div>
+
+  <div class="graficos-grid">
+    <div class="grafico-card">
+      <h3>Faturamento Mensal</h3>
+      <p-chart type="bar" [data]="monthlyRevenueData" [options]="chartOptions" style="height: 350px"></p-chart>
+    </div>
+
+    <div class="grafico-card">
+      <h3>Entradas por Hora</h3>
+      <p-chart type="line" [data]="entriesByHourData" [options]="chartOptions" style="height: 350px"></p-chart>
+    </div>
+
+    <div class="grafico-card">
+      <h3>Proporção de Tipos</h3>
+      <p-chart type="doughnut" [data]="proportionData" [options]="chartOptions" style="height: 350px"></p-chart>
+    </div>
+  </div>
+</div>

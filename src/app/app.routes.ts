@@ -14,6 +14,7 @@ import { Blog2Component } from './components/blog2/blog2.component';
 import { ConfirmarEmailComponent } from './components/confirmar-email/confirmar-email.component';
 import { RedefinirSenhaComponent } from './components/redefinir-senha/auth/redefinir-senha/redefinir-senha.component';
 import { PainelAdminComponent } from './components/painel-admin/painel-admin.component';
+import { GraficoComponent } from './components/grafico/grafico.component';
 
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
   { path: 'vagas', component: VagaListaComponent, canActivate: [authGuard] },
   { path: 'mensalistas', component: MensalistasComponent, canActivate: [authGuard] },
   { path: 'relatorio', component: RelatorioComponent, canActivate: [authGuard] },
+  { path: 'grafico', component: GraficoComponent, canActivate: [authGuard] },
   { path: 'configuracoes', component: ConfiguracoesComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: 'login' } 
 ];

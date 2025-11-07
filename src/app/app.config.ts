@@ -25,7 +25,7 @@ export const appConfig: ApplicationConfig = {
     }),
     MessageService,
     provideHttpClient(
-      withInterceptors([authInterceptor]) // ✅ agora funciona
+      withInterceptors([authInterceptor]) 
     )
   ]
 };

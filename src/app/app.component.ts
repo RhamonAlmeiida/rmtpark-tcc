@@ -57,5 +57,6 @@ export class AppComponent implements OnInit {
   redirecionarVagas() { this.router.navigate(['/vagas']); }
   redirecionarMensalistas() { this.router.navigate(['/mensalistas']); }
   redirecionarRelatorios() { this.router.navigate(['/relatorio']); }
+  redirecionarGrafico() { this.router.navigate(['/grafico']);}
 }
 

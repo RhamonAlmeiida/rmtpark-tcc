@@ -97,7 +97,7 @@
     <div class="blog-card" *ngFor="let post of posts" (click)="irParaPost(post.link)">
       <img [src]="post.imagem" alt="Imagem do post" class="blog-img" />
       <div class="blog-overlay">
-        <p class="blog-categoria">Sem categoria</p>
+        
         <p class="blog-info">{{ post.tempoLeitura }} • {{ post.data }}</p>
       </div>
       <h3 class="blog-post-titulo">{{ post.titulo }}</h3>
