@@ -162,7 +162,8 @@ carregarVagas(): void {
 
   this.vagaService.obterTodos().subscribe({
     next: (res: any[]) => {
-      this.vagas = (res ?? []).map(v => ({
+      this.vagas = (res ?? [])
+        .map(v => ({
           id: v.id ?? 0,
           numero_interno: v.numero_interno ?? 0,
           placa: v.placa ?? '',
@@ -173,7 +174,13 @@ carregarVagas(): void {
           valorPago: v.valor_pago ?? 0,
           formaPagamento: v.forma_pagamento ?? null,
           statusPagamento: v.status_pagamento ?? null,
-        }));
+        }))
+        
+        .sort((a, b) => {
+          const dataA = a.dataHora ? a.dataHora.getTime() : 0;
+          const dataB = b.dataHora ? b.dataHora.getTime() : 0;
+          return dataB - dataA;
+        });
 
       this.carregandoVagas = false;
     },

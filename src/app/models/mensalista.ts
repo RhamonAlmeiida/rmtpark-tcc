@@ -7,6 +7,6 @@ export class Mensalista {
         public cor: string,
         public cpf: string,
         public validade: string, 
-        public status: 'ativo' | 'inadimplente' | 'vencendo'
+        public status: 'ativo' | 'inadimplente' | 'vencendo' | string
     ) { }
 }

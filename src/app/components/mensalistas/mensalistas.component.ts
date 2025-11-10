@@ -62,16 +62,50 @@ export class MensalistasComponent implements OnInit {
 
   private carregarMensalistas() {
     this.carregandoMensalista = true;
+
     this.mensalistaService.obterTodos().subscribe({
       next: (mensalistas) => {
-        this.mensalistas = mensalistas;
+        const hoje = new Date();
+
+        this.mensalistas = (mensalistas ?? []).map((m) => {
+          const validade = m.validade ? new Date(m.validade) : null;
+
+          let status = 'ativo';
+          if (validade) {
+            const diffDias = Math.ceil((validade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+
+            if (diffDias < 0) {
+              status = 'inadimplente';
+            } else if (diffDias <= 5) {
+              status = 'vencendo';
+            }
+          }
+
+          return { ...m, status };
+        });
+
+        this.notificarMensalidadesVencidas();
         this.carregandoMensalista = false;
       },
-      error: erro => {
+      error: (erro) => {
         console.error(`Erro ao carregar mensalistas: ${erro}`);
         this.carregandoMensalista = false;
       }
     });
+  }
+
+  private notificarMensalidadesVencidas() {
+    const vencidos = this.mensalistas.filter((m) => m.status === 'inadimplente');
+
+    if (vencidos.length > 0) {
+      const nomes = vencidos.map((v) => v.nome || v.placa).join(', ');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Mensalidades vencidas',
+        detail: `Existem ${vencidos.length} mensalista(s) com mensalidade vencida: ${nomes}`,
+        life: 8000
+      });
+    }
   }
 
 
