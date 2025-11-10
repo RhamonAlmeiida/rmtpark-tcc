@@ -49,4 +49,4 @@ logout() {
     this.router.navigate(['/login']);
   }, 1000);
 }
-}
+}  
