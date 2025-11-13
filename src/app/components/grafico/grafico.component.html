@@ -1,37 +1,102 @@
 <p-toast></p-toast>
 
-<div class="grafico-container">
-  <h2>📊 Painel de Estatísticas</h2>
+<div class="filtros-container">
+  <input
+    type="text"
+    placeholder="Filtrar por placa"
+    (input)="onPlacaChange($event)"
+  />
 
-  <div class="resumo-cards">
-    <div class="resumo-card">
-      <small>Total Arrecadado</small>
-      <h2>{{ totalArrecadado | currency:'BRL' }}</h2>
+  <select (change)="onTipoChange($event)">
+    <option value="">Todos os tipos</option>
+    <option value="Mensalista">Mensalista</option>
+    <option value="Diarista">Diarista</option>
+  </select>
+
+  <select (change)="onPagamentoChange($event)">
+    <option value="">Todos os pagamentos</option>
+    <option value="Dinheiro">Dinheiro</option>
+    <option value="Pix">Pix</option>
+    <option value="Cartão">Cartão</option>
+  </select>
+
+  <input
+    type="date"
+    (change)="onDataInicioChange($event)"
+    title="Data de início"
+  />
+
+  <input
+    type="date"
+    (change)="onDataFimChange($event)"
+    title="Data de fim"
+  />
+
+  <div class="actions-right flex gap-2 mt-2">
+    <button pButton label="Filtrar" icon="pi pi-filter" class="p-button-info" (click)="filtrarRelatorios()"></button>
+    <button pButton label="Limpar" icon="pi pi-times" class="p-button-secondary" (click)="limparFiltros()"></button>
+    
+  </div>
+  
+</div>
+
+<!-- Loader -->
+<div *ngIf="carregandoRelatorios" class="spinner-container">
+  <p>Carregando relatórios...</p>
+</div>
+
+<!-- Dashboard -->
+<div *ngIf="!carregandoRelatorios" class="dashboard-container">
+
+  <div class="cards-container">
+    <div class="card-info">
+      <h3>Total Arrecadado</h3>
+      <p class="valor">R$ {{ totalArrecadado | number:'1.2-2' }}</p>
     </div>
-    <div class="resumo-card">
-      <small>Total Registros</small>
-      <h2>{{ totalRegistros }}</h2>
+
+    <div class="card-info">
+      <h3>Total de Registros</h3>
+      <p>{{ totalRegistros }}</p>
     </div>
-    <div class="resumo-card">
-      <small>Tipo Mais Comum</small>
-      <h2>{{ tipoMaisComum }}</h2>
+
+    <div class="card-info">
+      <h3>Tipo Mais Comum</h3>
+      <p>{{ tipoMaisComum }}</p>
     </div>
   </div>
 
-  <div class="graficos-grid">
-    <div class="grafico-card">
+  <div class="charts-grid">
+
+    <div class="chart-container">
       <h3>Faturamento Mensal</h3>
-      <p-chart type="bar" [data]="monthlyRevenueData" [options]="chartOptions" style="height: 350px"></p-chart>
+      <p-chart
+        type="bar"
+        [data]="monthlyRevenueData"
+        [options]="chartOptions"
+        style="height: 350px"
+      ></p-chart>
     </div>
 
-    <div class="grafico-card">
+    <div class="chart-container">
       <h3>Entradas por Hora</h3>
-      <p-chart type="line" [data]="entriesByHourData" [options]="chartOptions" style="height: 350px"></p-chart>
+      <p-chart
+        type="line"
+        [data]="entriesByHourData"
+        [options]="chartOptions"
+        style="height: 350px"
+      ></p-chart>
     </div>
 
-    <div class="grafico-card">
-      <h3>Proporção de Tipos</h3>
-      <p-chart type="doughnut" [data]="proportionData" [options]="chartOptions" style="height: 350px"></p-chart>
+    <div class="chart-container1">
+      <h3>Tipos de Cliente</h3>
+      <p-chart
+        type="pie"
+        [data]="proportionData"
+        [options]="chartOptions"
+        style="height: 350px"
+      ></p-chart>
     </div>
+
   </div>
+
 </div>

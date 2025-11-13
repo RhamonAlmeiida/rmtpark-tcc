@@ -1,22 +1,50 @@
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 
-<div class="card relatorio-card">
-  <div class="toolbar flex gap-2 mb-3 flex-wrap">
-    <input pInputText placeholder="Placa" [(ngModel)]="filtroPlaca" class="input-dark" />
-    <p-dropdown [(ngModel)]="filtroTipo" [options]="tiposFiltro" optionLabel="label" optionValue="value" placeholder="Tipo" class="input-dark" ></p-dropdown> <p-dropdown [(ngModel)]="filtroPagamento" [options]="formasPagamentoFiltro" optionLabel="label" optionValue="value" placeholder="Pagamento" class="input-dark" ></p-dropdown> <!-- Filtro por dia --> <p-calendar [(ngModel)]="filtroDia" dateFormat="dd/mm/yy" placeholder="Filtrar por dia" class="input-dark" showIcon></p-calendar> <!-- Filtro por periodo --> <p-calendar [(ngModel)]="filtroPeriodo" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Período" class="input-dark" showIcon></p-calendar>
+<div class="filtros-container">
+  <input
+    type="text"
+    placeholder="Filtrar por placa"
+    (input)="onPlacaChange($event)"
+  />
 
-    <button pButton type="button" label="Buscar" icon="pi pi-search" (click)="filtrarRelatorios()" class="p-button-success"></button>
-    <button pButton type="button" label="Limpar Filtros" icon="pi pi-times" (click)="limparFiltros()" class="p-button-secondary ml-auto"></button>
+  <select (change)="onTipoChange($event)">
+    <option value="">Todos os tipos</option>
+    <option value="Mensalista">Mensalista</option>
+    <option value="Diarista">Diarista</option>
+  </select>
 
-    <div class="actions-right flex gap-2 mt-2">
-      <button pButton label="Exportar PDF" icon="pi pi-file-pdf" class="p-button-danger"></button>
-      <button pButton label="Exportar Excel" icon="pi pi-file-excel" class="p-button-success"></button>
-      <button pButton label="Imprimir" icon="pi pi-print" class="p-button-secondary"></button>
-    </div>
+  <select (change)="onPagamentoChange($event)">
+    <option value="">Todos os pagamentos</option>
+    <option value="Dinheiro">Dinheiro</option>
+    <option value="Pix">Pix</option>
+    <option value="Cartão">Cartão</option>
+  </select>
+
+  <input
+    type="date"
+    (change)="onDataInicioChange($event)"
+    title="Data de início"
+  />
+
+  <input
+    type="date"
+    (change)="onDataFimChange($event)"
+    title="Data de fim"
+  />
+
+  
+  <div class="actions-right flex gap-2 mt-2">
+    <button pButton label="Filtrar" icon="pi pi-filter" class="p-button-info" (click)="filtrarRelatorios()"></button>
+    <button pButton label="Limpar" icon="pi pi-times" class="p-button-secondary" (click)="limparFiltros()"></button>
+    <button pButton label="Exportar PDF" icon="pi pi-file-pdf" class="p-button-danger"></button>
+    <button pButton label="Exportar Excel" icon="pi pi-file-excel" class="p-button-success"></button>
+    <button pButton label="Imprimir" icon="pi pi-print" class="p-button-secondary"></button>
   </div>
+</div>
 
-  <p-table [value]="relatoriosFiltrados" [tableStyle]="{ 'min-width': '60rem' }" class="p-datatable-dark futuristic-table">
+<div class="card relatorio-card">
+  <p-table [value]="relatoriosFiltrados" [tableStyle]="{ 'min-width': '60rem' }" dataKey="id" [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="10"class="p-datatable-dark futuristic-table">
     <ng-template pTemplate="header">
       <tr>
         <th>ID</th>

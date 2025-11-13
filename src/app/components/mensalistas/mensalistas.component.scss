@@ -1,9 +1,4 @@
-// ==============================================
-// ESTILO ESCURO - INPUTS, BOTÕES E MODAIS
-// ==============================================
 
-// ----------------------------------------------
-// Variáveis de breakpoint
 $sm: 576px;
 $md: 768px;
 $lg: 992px;
@@ -17,6 +12,8 @@ $xl: 1200px;
   color: white !important;
   padding: 0.25rem 0.5rem !important; // padding interno menor
   border-radius: 0.5rem !important;
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeUp 0.8s ease forwards;
   width: 100%;
   margin-bottom: 0.25rem !important; // espaço entre inputs
 
@@ -28,6 +25,8 @@ $xl: 1200px;
 
 ::ng-deep .p-inputtext::placeholder {
   color: rgba(255, 255, 255, 0.4);
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeUp 0.8s ease forwards;
 }
 
 // Calendário customizado

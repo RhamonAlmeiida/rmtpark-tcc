@@ -1,25 +1,38 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
-import { RelatorioService } from '../../services/relatorio.service';
-import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { RelatorioService } from '../../services/relatorio.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-grafico',
   standalone: true,
-  imports: [CommonModule, ChartModule, ToastModule],
+  imports: [CommonModule, ChartModule, ToastModule, ButtonModule],
   providers: [MessageService],
   templateUrl: './grafico.component.html',
   styleUrls: ['./grafico.component.scss']
 })
 export class GraficoComponent implements OnInit {
-  relatorios: any[] = [];
 
+  relatorios: any[] = [];
+  relatoriosFiltrados: any[] = [];
+
+  // Filtros (sem ngModel)
+  placaFiltro = '';
+  tipoFiltro = '';
+  pagamentoFiltro = '';
+  dataInicioFiltro: Date | null = null;
+  dataFimFiltro: Date | null = null;
+
+  // Indicadores
   totalArrecadado = 0;
   totalRegistros = 0;
   tipoMaisComum = '—';
+  carregandoRelatorios = false;
 
+  // Gráficos
   monthlyRevenueData: any;
   entriesByHourData: any;
   proportionData: any;
@@ -46,22 +59,25 @@ export class GraficoComponent implements OnInit {
   }
 
   carregarRelatorios(): void {
+    this.carregandoRelatorios = true;
     this.relatorioService.getRelatorios().subscribe({
       next: (res: any[]) => {
-        this.relatorios = res.map((r: any) => ({
+        this.relatorios = res.map(r => ({
           id: r.id,
           placa: r.placa,
           tipo: r.tipo,
           data_hora_entrada: r.data_hora_entrada,
           data_hora_saida: r.data_hora_saida,
-          valor_pago: r.valor_pago ?? 0,
+          valor_pago: Number(r.valor_pago) || 0, // ✅ garante número
           forma_pagamento: r.forma_pagamento ?? '',
           status_pagamento: r.status_pagamento ?? ''
         }));
-
-        this.recalcularDashboard();
+        this.relatoriosFiltrados = [...this.relatorios];
+        this.recalcularDashboard(this.relatoriosFiltrados);
+        this.carregandoRelatorios = false;
       },
       error: (err) => {
+        this.carregandoRelatorios = false;
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
@@ -72,9 +88,61 @@ export class GraficoComponent implements OnInit {
     });
   }
 
-  recalcularDashboard(): void {
-    const rows = this.relatorios || [];
+  // === FILTROS ===
+  onPlacaChange(e: Event) {
+    this.placaFiltro = (e.target as HTMLInputElement).value;
+  }
 
+  onTipoChange(e: Event) {
+    this.tipoFiltro = (e.target as HTMLSelectElement).value;
+  }
+
+  onPagamentoChange(e: Event) {
+    this.pagamentoFiltro = (e.target as HTMLSelectElement).value;
+  }
+
+  onDataInicioChange(e: Event) {
+    const val = (e.target as HTMLInputElement).value;
+    this.dataInicioFiltro = val ? new Date(val) : null;
+  }
+
+  onDataFimChange(e: Event) {
+    const val = (e.target as HTMLInputElement).value;
+    this.dataFimFiltro = val ? new Date(val) : null;
+  }
+
+  filtrarRelatorios() {
+    const placaFiltro = this.placaFiltro.toLowerCase();
+    const tipoFiltro = this.tipoFiltro.toLowerCase();
+    const pagamentoFiltro = this.pagamentoFiltro.toLowerCase();
+
+    this.relatoriosFiltrados = this.relatorios.filter(r => {
+      const placaMatch = !placaFiltro || r.placa.toLowerCase().includes(placaFiltro);
+      const tipoMatch = !tipoFiltro || r.tipo.toLowerCase() === tipoFiltro;
+      const pagamentoMatch = !pagamentoFiltro || (r.forma_pagamento || '').toLowerCase() === pagamentoFiltro;
+
+      const entrada = r.data_hora_entrada ? new Date(r.data_hora_entrada) : null;
+      const inicioMatch = !this.dataInicioFiltro || (entrada && entrada >= this.dataInicioFiltro);
+      const fimMatch = !this.dataFimFiltro || (entrada && entrada <= this.dataFimFiltro);
+
+      return placaMatch && tipoMatch && pagamentoMatch && inicioMatch && fimMatch;
+    });
+
+    this.recalcularDashboard(this.relatoriosFiltrados);
+  }
+
+  limparFiltros() {
+    this.placaFiltro = '';
+    this.tipoFiltro = '';
+    this.pagamentoFiltro = '';
+    this.dataInicioFiltro = null;
+    this.dataFimFiltro = null;
+    this.relatoriosFiltrados = [...this.relatorios];
+    this.recalcularDashboard(this.relatoriosFiltrados);
+  }
+
+  // === CÁLCULOS ===
+  recalcularDashboard(rows: any[]) {
     this.totalArrecadado = rows.reduce((acc, r) => acc + (r.valor_pago || 0), 0);
     this.totalRegistros = rows.length;
 
@@ -88,6 +156,7 @@ export class GraficoComponent implements OnInit {
     this.buildProportionChart(rows);
   }
 
+  // === GRÁFICOS ===
   private buildMonthlyRevenueChart(rows: any[]) {
     const map: Record<string, number> = {};
     rows.forEach(r => {

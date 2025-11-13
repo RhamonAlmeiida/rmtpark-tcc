@@ -46,10 +46,18 @@ export class RelatorioComponent implements OnInit {
   relatorios: Relatorio[] = [];
   relatoriosFiltrados: Relatorio[] = [];
 
-  // filtros textuais
-  filtroPlaca: string = '';
-  filtroTipo: string = '';
-  filtroPagamento: string = '';
+  // Filtros (sem ngModel)
+  placaFiltro = '';
+  tipoFiltro = '';
+  pagamentoFiltro = '';
+  dataInicioFiltro: Date | null = null;
+  dataFimFiltro: Date | null = null;
+
+    // Indicadores
+  totalArrecadado = 0;
+  totalRegistros = 0;
+  tipoMaisComum = '—';
+
 
   // filtro por data (dia) ou intervalo
   filtroDia: Date | null = null;
@@ -80,6 +88,28 @@ export class RelatorioComponent implements OnInit {
 
   ngOnInit() {
     this.carregarRelatorios();
+  }
+   // === FILTROS ===
+  onPlacaChange(e: Event) {
+    this.placaFiltro = (e.target as HTMLInputElement).value;
+  }
+
+  onTipoChange(e: Event) {
+    this.tipoFiltro = (e.target as HTMLSelectElement).value;
+  }
+
+  onPagamentoChange(e: Event) {
+    this.pagamentoFiltro = (e.target as HTMLSelectElement).value;
+  }
+
+  onDataInicioChange(e: Event) {
+    const val = (e.target as HTMLInputElement).value;
+    this.dataInicioFiltro = val ? new Date(val) : null;
+  }
+
+  onDataFimChange(e: Event) {
+    const val = (e.target as HTMLInputElement).value;
+    this.dataFimFiltro = val ? new Date(val) : null;
   }
 
   carregarRelatorios(): void {
@@ -143,48 +173,43 @@ export class RelatorioComponent implements OnInit {
   }
 
   filtrarRelatorios() {
-    const placaFiltro = this.filtroPlaca?.trim().toLowerCase() || '';
-    const tipoFiltro = this.filtroTipo || '';
-    const pagamentoFiltro = this.filtroPagamento || '';
+    const placaFiltro = this.placaFiltro.toLowerCase();
+    const tipoFiltro = this.tipoFiltro.toLowerCase();
+    const pagamentoFiltro = this.pagamentoFiltro.toLowerCase();
 
-    this.relatoriosFiltrados = this.relatorios.filter(r => {
-      const placaMatch = !placaFiltro || (r.placa?.toLowerCase() || '').includes(placaFiltro);
-      const tipoMatch = !tipoFiltro || (r.tipo || '').toLowerCase() === (tipoFiltro || '').toLowerCase();
-      const pagamentoMatch = !pagamentoFiltro || (r.formaPagamento || '').toLowerCase() === (pagamentoFiltro || '').toLowerCase();
+    
+      this.relatoriosFiltrados = this.relatorios.filter(r => {
+      const placaMatch = !placaFiltro || r.placa.toLowerCase().includes(placaFiltro);
+      const tipoMatch = !tipoFiltro || r.tipo.toLowerCase() === tipoFiltro;
+      const pagamentoMatch = !pagamentoFiltro || (r.formaPagamento || '').toLowerCase() === pagamentoFiltro;
 
-      let diaMatch = true;
-      if (this.filtroDia) {
-        const fd = new Date(this.filtroDia);
-        const entrada = r.dataHoraEntrada ? new Date(r.dataHoraEntrada) : null;
-        diaMatch = entrada
-          ? (entrada.getFullYear() === fd.getFullYear() && entrada.getMonth() === fd.getMonth() && entrada.getDate() === fd.getDate())
-          : false;
-      }
+      const entrada = r.dataHoraEntrada ? new Date(r.dataHoraEntrada) : null;
+      const inicioMatch = !this.dataInicioFiltro || (entrada && entrada >= this.dataInicioFiltro);
+      const fimMatch = !this.dataFimFiltro || (entrada && entrada <= this.dataFimFiltro);
 
-      let periodoMatch = true;
-      if (this.filtroPeriodo && this.filtroPeriodo.length === 2 && this.filtroPeriodo[0] && this.filtroPeriodo[1]) {
-        const start = new Date(this.filtroPeriodo[0]);
-        const end = new Date(this.filtroPeriodo[1]);
-        start.setHours(0,0,0,0);
-        end.setHours(23,59,59,999);
-        const entrada = r.dataHoraEntrada ? new Date(r.dataHoraEntrada) : null;
-        periodoMatch = entrada ? (entrada >= start && entrada <= end) : false;
-      }
+      return placaMatch && tipoMatch && pagamentoMatch && inicioMatch && fimMatch;
+ });
+ this.recalcularDashboard(this.relatoriosFiltrados);
 
-      return placaMatch && tipoMatch && pagamentoMatch && diaMatch && periodoMatch;
-    });
-
-
-  }
+}
 
   limparFiltros() {
-    this.filtroPlaca = '';
-    this.filtroTipo = '';
-    this.filtroPagamento = '';
-    this.filtroDia = null;
-    this.filtroPeriodo = null;
+    this.placaFiltro = '';
+    this.tipoFiltro = '';
+    this.pagamentoFiltro = '';
+    this.dataInicioFiltro = null;
+    this.dataFimFiltro = null;
     this.relatoriosFiltrados = [...this.relatorios];
-   
+    this.recalcularDashboard(this.relatoriosFiltrados);
+  }
+  recalcularDashboard(rows: any[]) {
+    this.totalArrecadado = rows.reduce((acc, r) => acc + (r.valor_pago || 0), 0);
+    this.totalRegistros = rows.length;
+
+    const tipoCount: Record<string, number> = {};
+    rows.forEach(r => tipoCount[r.tipo || 'Outros'] = (tipoCount[r.tipo || 'Outros'] || 0) + 1);
+    const sortedTipos = Object.entries(tipoCount).sort((a,b) => b[1]-a[1]);
+    this.tipoMaisComum = sortedTipos.length ? sortedTipos[0][0] : '—';
   }
 
   
